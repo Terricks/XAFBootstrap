@@ -19,3 +19,6 @@ Microsoft Web Optimization Framework
 - Detecting unsaved data when closing browser tab or navigating in application
 - Custom popup managing functionality (all over main window)
 - Default 16 bootstrap themes and importing functionality
+
+# License
+Apache 2.0
