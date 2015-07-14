@@ -219,11 +219,9 @@
     <Compile Include="Templates\LogonTemplate.ascx.cs">
       <DependentUpon>LogonTemplate.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="Templates\LogonTemplate.ascx.designer.cs">
       <DependentUpon>LogonTemplate.ascx</DependentUpon>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="Templates\NestedFrameControl.ascx.cs">
       <DependentUpon>NestedFrameControl.ascx</DependentUpon>
@@ -344,7 +342,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Templates\LogonTemplate.ascx">
-      <SubType>ASPXCodeBehind</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Templates\NestedFrameControl.ascx">
