@@ -25,17 +25,6 @@ Apache 2.0
 
 # Releasing
 For correct access to optimized *.js and *.css files by optimization framework you shoud add to web.config of your .Web project follow strings:
-<location path="bootstrap_css/css.aspx">
-	<system.web>
-		<authorization>
-			<allow users="?"/>
-		</authorization>
-    </system.web>
-</location>
-<location path="bootstrap_js/js.aspx">
-    <system.web>
-		<authorization>
-			<allow users="?"/>
-		</authorization>
-    </system.web>
-</location> 
+<pre>
+&lt;location path=&quot;bootstrap_css/css.aspx&quot;&gt;<br/> &lt;system.web&gt;<br/> &lt;authorization&gt;<br/> &lt;allow users=&quot;?&quot;/&gt;<br/> &lt;/authorization&gt;<br/> &lt;/system.web&gt;<br/>&lt;/location&gt;<br/>&lt;location path=&quot;bootstrap_js/js.aspx&quot;&gt;<br/> &lt;system.web&gt;<br/> &lt;authorization&gt;<br/> &lt;allow users=&quot;?&quot;/&gt;<br/> &lt;/authorization&gt;<br/> &lt;/system.web&gt;<br/>&lt;/location&gt;
+</pre>
