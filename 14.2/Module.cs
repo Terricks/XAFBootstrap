@@ -78,11 +78,11 @@ namespace XAF_Bootstrap
         {
             base.Setup(application);
 
-            if (application is WebApplication) {                                
-                PrepareBundles();
-
+            if (application is WebApplication) {
                 if (System.Diagnostics.Debugger.IsAttached)
                     XAF_Bootstrap.DatabaseUpdate.Updater.CheckResources();
+
+                PrepareBundles();                
 
                 ProcessTemplateFile("LogonTemplate.ascx");                  
                 (application as WebApplication).Settings.LogonTemplateContentPath =
