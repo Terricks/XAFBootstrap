@@ -4,8 +4,9 @@ XAF Bootstrap addon for eXpressApp Framework (WebForms)
 # Installation
 1. Download project
 2. Create new or open existing XAF project
-3. Add XAF Bootstrap module to Module.cs in .Module.Web
-4. Install Microsoft Web Optimization Framework to your .Web project
+3. Add XAF Bootstrap project to solution.
+4. Add XAF Bootstrap module to Module.cs in .Module.Web
+5. Install Microsoft Web Optimization Framework to your .Web project
 
 You can see video: https://www.youtube.com/watch?v=mIZcLswlswM
 
