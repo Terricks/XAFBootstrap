@@ -78,7 +78,7 @@ namespace XAF_Bootstrap.Editors.XafBootstrapPropertyEditors
                     var editItem = Edit.Items.Add();
                     editItem.Text = item.Name;
                     editItem.Value = item.Name;
-                    if (File.Exists(item.FullName + "\\preview.png"))
+                    if (File.Exists(item.FullName + "\\preview.jpg"))
                         editItem.ImageUrl = "bootstrap_themes\\" + item.Name + "\\preview.jpg";
                 }
             }            
