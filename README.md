@@ -1,5 +1,5 @@
 # XAFBootstrap
-XAF Bootstrap addon for eXpressApp Framework
+XAF Bootstrap addon for eXpressApp Framework (WebForms)
 
 # Installation
 1. Download project
