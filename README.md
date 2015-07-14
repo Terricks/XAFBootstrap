@@ -18,7 +18,7 @@ Microsoft Web Optimization Framework
 - Twitter Bootstrap implementation for eXpressApp Framework (over standard XAF controllers, templates and editors functionality)
 - Detecting unsaved data when closing browser tab or navigating in application
 - Custom popup managing functionality (all over main window)
-- Default 16 bootstrap themes and importing functionality
+- Default 16 bootstrap themes and theme importing functionality
 
 # License
 Apache 2.0
