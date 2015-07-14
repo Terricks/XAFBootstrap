@@ -54,7 +54,7 @@ namespace XAF_Bootstrap
             if (!BundlesPrepared)
             {
                 System.Web.Optimization.BundleTable.Bundles.Add(new System.Web.
-                    Optimization.ScriptBundle("~/bootstrap_js/js.js")
+                    Optimization.ScriptBundle("~/bootstrap_js/js.aspx")
                     .Include("~/bootstrap_js/jquery-1.11.2.min.js")
                     .Include("~/bootstrap_js/bootstrap.min.js")
                     .Include("~/bootstrap_js/moment-with-locales.min.js")
@@ -63,7 +63,7 @@ namespace XAF_Bootstrap
                     );
 
                 System.Web.Optimization.BundleTable.Bundles.Add(new System.Web.
-                    Optimization.StyleBundle("~/bootstrap_css/css.css")
+                    Optimization.StyleBundle("~/bootstrap_css/css.aspx")
                     .Include("~/bootstrap_css/bootstrap.min.css")
                     .Include("~/bootstrap_css/bootstrap-datetimepicker.css")
                     .Include("~/bootstrap_css/bootstrap-select.min.css")
@@ -78,9 +78,11 @@ namespace XAF_Bootstrap
         {
             base.Setup(application);
 
-            if (application is WebApplication) {
-                XAF_Bootstrap.DatabaseUpdate.Updater.CheckResources();
+            if (application is WebApplication) {                                
                 PrepareBundles();
+
+                if (System.Diagnostics.Debugger.IsAttached)
+                    XAF_Bootstrap.DatabaseUpdate.Updater.CheckResources();
 
                 ProcessTemplateFile("LogonTemplate.ascx");                  
                 (application as WebApplication).Settings.LogonTemplateContentPath =
@@ -144,9 +146,9 @@ namespace XAF_Bootstrap
 
         public static void ApplyBootstrapCSS(XAFBootstrapConfiguration config)
         {
-            if (config == null)
+            if (config == null || HttpContext.Current == null || HttpContext.Current.Server == null)
                 return;
-
+            
             if (config != null && config.Theme != "Default")
             {
                 var info = new DirectoryInfo(HttpContext.Current.Server.MapPath("bootstrap_themes/" + config.Theme));

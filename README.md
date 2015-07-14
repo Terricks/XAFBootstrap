@@ -22,3 +22,20 @@ Microsoft Web Optimization Framework
 
 # License
 Apache 2.0
+
+# Releasing
+For correct access to optimized *.js and *.css files by optimization framework you shoud add to web.config of your .Web project follow strings:
+<location path="bootstrap_css/css.aspx">
+	<system.web>
+		<authorization>
+			<allow users="?"/>
+		</authorization>
+    </system.web>
+</location>
+<location path="bootstrap_js/js.aspx">
+    <system.web>
+		<authorization>
+			<allow users="?"/>
+		</authorization>
+    </system.web>
+</location>

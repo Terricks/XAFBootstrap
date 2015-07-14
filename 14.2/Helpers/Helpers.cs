@@ -406,8 +406,8 @@ namespace XAF_Bootstrap.Templates
 
             if (page.Header.Controls.OfType<HTMLText>().Count() == 0)
             {
-                page.Header.Controls.Add(new HTMLText(System.Web.Optimization.Styles.Render("~/bootstrap_css/css.css").ToString()));
-                page.Header.Controls.Add(new HTMLText(System.Web.Optimization.Scripts.Render("~/bootstrap_js/js.js").ToString()));
+                page.Header.Controls.Add(new HTMLText(System.Web.Optimization.Styles.Render("~/bootstrap_css/css.aspx").ToString()));
+                page.Header.Controls.Add(new HTMLText(System.Web.Optimization.Scripts.Render("~/bootstrap_js/js.aspx").ToString()));
             }
         }
 

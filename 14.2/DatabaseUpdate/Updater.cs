@@ -40,8 +40,6 @@ namespace XAF_Bootstrap.DatabaseUpdate
             {
                 configuration = ObjectSpace.CreateObject<XAFBootstrapConfiguration>();
                 configuration.Theme = "Paper";
-
-                XAF_BootstrapModule.ApplyBootstrapCSS(configuration);
             }
             return configuration;
         }
@@ -67,10 +65,17 @@ namespace XAF_Bootstrap.DatabaseUpdate
 
         private static void CheckResource(string location, string resourceName, Boolean copyOnlyIfNotExists = true)
         {
-            if (HttpContext.Current != null && HttpContext.Current.Server != null)
+            CopyResource(String.Format("XAF_Bootstrap.Content.{0}.{1}", location, resourceName), AssemblyDirectory + location.Replace(".", "\\") + "\\" + resourceName, copyOnlyIfNotExists);
+        }
+
+        public static string AssemblyDirectory
+        {
+            get
             {
-                var path = HttpContext.Current.Server.MapPath("/");
-                CopyResource(String.Format("XAF_Bootstrap.Content.{0}.{1}", location, resourceName), path + location.Replace(".", "\\") + "\\" + resourceName, copyOnlyIfNotExists);
+                string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+                UriBuilder uri = new UriBuilder(codeBase);
+                var path = Path.GetDirectoryName(Uri.UnescapeDataString(uri.Path)).Split(new String[] { "\\" }, StringSplitOptions.RemoveEmptyEntries);
+                return String.Join("\\", path.Take(path.Length - 1)) + "\\";
             }
         }
 
@@ -132,8 +137,9 @@ namespace XAF_Bootstrap.DatabaseUpdate
             base(objectSpace, currentDBVersion)
         {
             Configuration(ObjectSpace);
-
-            CheckResources();
+            
+            if (HttpContext.Current == null || HttpContext.Current.Server == null)
+                CheckResources();
         }
         public override void UpdateDatabaseAfterUpdateSchema()
         {
