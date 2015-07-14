@@ -38,4 +38,4 @@ For correct access to optimized *.js and *.css files by optimization framework y
 			<allow users="?"/>
 		</authorization>
     </system.web>
-</location>
+</location> 
