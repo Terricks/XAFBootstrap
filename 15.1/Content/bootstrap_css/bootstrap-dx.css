@@ -1,0 +1,130 @@
+﻿.EditModeActions {
+    padding: 0px;
+}
+
+.nopaddings {
+    padding: 0px;
+}
+
+.nomargins {
+	margin: 0px;
+}
+
+.no-margin {
+    margin-left: 0px;
+    margin-right: 0px;    
+}
+
+.no-padding {
+    padding-left: 0px;
+    padding-right: 0px;    
+}
+
+.modal-dialog {
+    z-index: 1040;
+}
+
+.content {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.Layout {
+    padding-left: 0px;
+}
+
+.Layout div.Item {
+    padding: 0px 0px 0px 0px;
+}
+
+.panel .panel-group, .panel .panel {
+    margin-bottom: 0px;
+}
+
+.glyphicon-sm {
+    font-size: 0.6em;
+    padding-top: 0.5em;
+    padding-bottom: 0.7em;
+    padding-right: 2em;
+}
+
+.label {
+    margin-left: 1px;
+}
+
+table.floatThead-table {
+    border-top: none;
+    border-bottom: none;
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+table.xaf-bootstrap {
+    margin-bottom: 0px;
+    font-size: 12px;    
+}
+
+table.xaf-bootstrap thead {
+    background-color: rgba(0, 0, 0, 0.04);        
+}
+
+table.xaf-bootstrap thead th {
+    border-right: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+table.xaf-bootstrap tbody td, table.xaf-bootstrap tbody th {
+    border-right: 1px solid rgba(0, 0, 0, 0.04);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.01);    
+}
+
+
+
+
+.DialogContent .ContentCell {
+    padding: 30px 0px 30px 0px;
+}
+
+.view-action {
+    padding-right: 15px;    
+}
+
+.view-actions {
+    padding-top: 5px;
+}
+
+.link-actions {
+    padding-top: 3px;
+}
+
+.view-header-image {    
+    padding-right: 10px;
+}
+
+.view-header-text {
+    padding-right: 20px;    
+}
+
+.view-record-actions {
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+
+.thumbnail {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.actions button {
+    margin-right: 2px;
+}
+
+.alert-sm {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 5px;
+}
+
+.Layout .WebEditorCell a {
+    text-decoration: none;
+}
+
+.settings-button {
+    font-size: 15px;
+}
