@@ -12,9 +12,9 @@ You can see video: https://www.youtube.com/watch?v=mIZcLswlswM
 
 #Requirements
 
-Microsoft Web Optimization Framework
-.NET 4.5
-Supporing only XPO for now (EF not supported)
+- Microsoft Web Optimization Framework
+- .NET 4.5
+- Supporing only XPO for now (EF not supported)
 
 
 # Functionality
