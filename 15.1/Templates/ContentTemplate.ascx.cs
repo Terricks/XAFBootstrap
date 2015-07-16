@@ -311,7 +311,7 @@ namespace XAF_Bootstrap.Templates
                           @"<li class='dropdown'>
                             <a href='javascript:;' class='dropdown-toggle' data-toggle='dropdown'>{2} <span>{0}</span> <span class='caret'></span>
                             </a>
-                            <ul class='dropdown-menu' role='menu'>{1}</ul></li>
+                            <ul class='dropdown-menu' role='menu'>{1}<li class=""divider""></li></ul></li>
                            "
                             , RootItem.Caption
                             , GenerateSubMenu(RootItem, true)
