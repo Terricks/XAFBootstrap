@@ -225,7 +225,19 @@ namespace XAF_Bootstrap.Controls
                         if (columnModel != null)
                             if (String.Concat(columnModel.DisplayFormat) != "")                                
                                 displayFormat = columnModel.DisplayFormat;
-                        Value = String.Format(displayFormat, objValue);
+                            else
+                                if (memberInfo.MemberTypeInfo != null)
+                                {
+                                    var attr = memberInfo.MemberTypeInfo.FindAttribute<ObjectCaptionFormatAttribute>();
+                                    if (attr != null)
+                                    {
+                                        displayFormat = attr.FormatString;
+                                        Value = String.Format(new ObjectFormatter(), displayFormat, objValue);
+                                    }
+                                };
+                            
+                        if (Value == "")
+                            Value = String.Format(displayFormat, objValue);
 
                         if (objValue is XPBaseObject && columnModel != null)
                             Value = String.Format(@"<a href=""javascript:;"" onclick=""event = event || window.event; event.stopPropagation(); {0}"">{1}</a>", Handler.GetScript(String.Format("'BrowseObject|{0}|{1}'", RowNumber, columnModel.PropertyName)), Value);
