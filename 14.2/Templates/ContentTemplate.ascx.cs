@@ -180,8 +180,8 @@ namespace XAF_Bootstrap.Templates
             if (Parent != null)
                 Parent = Parent.ParentItem;
             if (Parent != null)
-                return GetNodeID(Parent) + "->" + Node.Id;
-            return Node.Id;
+                return GetNodeID(Parent) + "->" + FormatNodeId(Node.Id);
+            return FormatNodeId(Node.Id);
         }
 
         public String GetMenuItem(ChoiceActionItem Node)
@@ -221,7 +221,7 @@ namespace XAF_Bootstrap.Templates
                         , Helpers.ContentHelper.Manager.GetScript("MenuItemClickControllerCallback", String.Format("'{0}'", NodeID))
                         , Node.Model is IModelGlyphicon && String.Concat((Node.Model as IModelGlyphicon).Glyphicon) != ""
                                      ? String.Format("<span class='glyphicon glyphicon-{0}'></span> ", (Node.Model as IModelGlyphicon).Glyphicon) : ""
-                        , Node.ParentItem.Id.ToString()
+                        , FormatNodeId(Node.ParentItem.Id)
 
                     );
                 }
@@ -230,10 +230,15 @@ namespace XAF_Bootstrap.Templates
                         , Node.Caption
                         , Node.Model is IModelGlyphicon && String.Concat((Node.Model as IModelGlyphicon).Glyphicon) != ""
                                      ? String.Format("<span class='glyphicon glyphicon-{0}'></span> ", (Node.Model as IModelGlyphicon).Glyphicon) : ""
-                        , Node.ParentItem.Id.ToString()
+                        , FormatNodeId(Node.ParentItem.Id)
 
                     );
             }
+        }
+		
+		private String FormatNodeId(string id)
+        {
+            return String.Concat(id).Replace("@", "at_");
         }
 
         public String GenerateSubMenu(ChoiceActionItem NavNode, Boolean IsRoot = false)
@@ -253,7 +258,7 @@ namespace XAF_Bootstrap.Templates
                                                         <li class='dropdown-header' onclick=""$('.collapse.{1}').collapse('toggle'); event.stopPropagation();"">{0}</li>
                                                   </a>
                                                   <li class='divider collapse {1}'></li>
-                                                  ", NavNode.Caption, NavNode.Id.ToString(), NavNode.ParentItem.Id.ToString());
+                                                  ", NavNode.Caption, FormatNodeId(NavNode.Id), FormatNodeId(NavNode.ParentItem.Id));
                         for (int i = 0; i < NavNode.Items.Count; i++)
                         {
                             var subNode = NavNode.Items[i];
