@@ -180,8 +180,8 @@ namespace XAF_Bootstrap.Templates
             if (Parent != null)
                 Parent = Parent.ParentItem;
             if (Parent != null)
-                return GetNodeID(Parent) + "->" + FormatNodeId(Node.Id);
-            return FormatNodeId(Node.Id);
+                return GetNodeID(Parent) + "->" + Node.Id;
+            return Node.Id;
         }
 
         public String GetMenuItem(ChoiceActionItem Node)
@@ -236,7 +236,7 @@ namespace XAF_Bootstrap.Templates
             }
         }
 
-        private String FormatNodeId(string id)
+        public static String FormatNodeId(string id)
         {
             return String.Concat(id).Replace("@", "at_");
         }
