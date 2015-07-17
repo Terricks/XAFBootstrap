@@ -60,6 +60,7 @@ namespace XAF_Bootstrap
                     .Include("~/bootstrap_js/moment-with-locales.min.js")
                     .Include("~/bootstrap_js/bootstrap-datetimepicker.min.js")
                     .Include("~/bootstrap_js/bootstrap-select.min.js")
+                    .Include("~/bootstrap_js/bootstrap-dx.js")
                     );
 
                 System.Web.Optimization.BundleTable.Bundles.Add(new System.Web.

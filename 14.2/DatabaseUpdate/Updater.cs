@@ -86,6 +86,7 @@ namespace XAF_Bootstrap.DatabaseUpdate
             CheckResource("bootstrap_js", "bootstrap-datetimepicker.min.js");
             CheckResource("bootstrap_js", "bootstrap-select.min.js");
             CheckResource("bootstrap_js", "moment-with-locales.min.js");
+            CheckResource("bootstrap_js", "bootstrap-dx.js", false);                        
 
             CheckResource("bootstrap_css", "bootstrap.min.css");
             CheckResource("bootstrap_css", "bootstrap-datetimepicker.css", false);
@@ -136,7 +137,10 @@ namespace XAF_Bootstrap.DatabaseUpdate
         public Updater(IObjectSpace objectSpace, Version currentDBVersion) :
             base(objectSpace, currentDBVersion)
         {
-            Configuration(ObjectSpace);
+            if (ObjectSpace.CanInstantiate(typeof(XAFBootstrapConfiguration)))
+            {
+                Configuration(ObjectSpace);
+            }
             
             if (HttpContext.Current == null || HttpContext.Current.Server == null)
                 CheckResources();

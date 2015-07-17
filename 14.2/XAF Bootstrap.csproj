@@ -333,6 +333,7 @@
     <EmbeddedResource Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <EmbeddedResource Include="Content\bootstrap_css\bootstrap-dx.css" />
     <EmbeddedResource Include="Content\bootstrap_themes\Paper\bootstrap_css\bootstrap-custom.css" />
+	<EmbeddedResource Include="Content\bootstrap_js\bootstrap-dx.js" />
     <Content Include="Templates\ContentTemplate.ascx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>ASPXCodeBehind</SubType>

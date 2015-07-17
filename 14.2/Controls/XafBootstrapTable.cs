@@ -336,7 +336,7 @@ namespace XAF_Bootstrap.Controls
                     }
                     #endregion
 
-                    if (column.Index > -1 && columnIsVisible)
+                    if ((column.Index == null || column.Index > -1) && columnIsVisible)
                     {
                         var align = "left";
                         if (ObjectTypeInfo != null) {

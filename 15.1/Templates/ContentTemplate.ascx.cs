@@ -176,12 +176,34 @@ namespace XAF_Bootstrap.Templates
 
         public String GetNodeID(ChoiceActionItem Node)
         {
-            ChoiceActionItem Parent = Node.ParentItem;
-            if (Parent != null)
-                Parent = Parent.ParentItem;
+            var Parent = Node.ParentItem;
+            
             if (Parent != null)
                 return GetNodeID(Parent) + "->" + Node.Id;
             return Node.Id;
+        }
+
+        public String GetNodeClasses(ChoiceActionItem Node, Boolean AsSelector = false)
+        {
+            if (Node != null)
+                return (Node.ParentItem != null ? GetNodeClasses(Node.ParentItem, AsSelector) : "") + (AsSelector ? "." : " ") + FormatNodeId(Node.Id);
+            return "";
+        }
+
+        public String GetNodeLevel(ChoiceActionItem Node)
+        {
+            String ret = "";
+            var Parent = Node.ParentItem;
+
+            if (Parent != null)            
+                Parent = Parent.ParentItem;
+
+            if (Parent != null)
+            {
+                ret = "&nbsp ";
+                ret += GetNodeLevel(Parent);
+            }
+            return ret;
         }
 
         public String GetMenuItem(ChoiceActionItem Node)
@@ -219,18 +241,20 @@ namespace XAF_Bootstrap.Templates
                     return String.Format("<li class='collapse {3}'><a href=\"javascript:;\" onclick=\"if ($('#menuCollapseButton').is(':visible')) $('#menuCollapseButton').click();{1}\">{2}{0}</a></li>"
                         , Node.Caption
                         , Helpers.ContentHelper.Manager.GetScript("MenuItemClickControllerCallback", String.Format("'{0}'", NodeID))
-                        , Node.Model is IModelGlyphicon && String.Concat((Node.Model as IModelGlyphicon).Glyphicon) != ""
-                                     ? String.Format("<span class='glyphicon glyphicon-{0}'></span> ", (Node.Model as IModelGlyphicon).Glyphicon) : ""
-                        , FormatNodeId(Node.ParentItem.Id)
+                        , GetNodeLevel(Node) + "&nbsp " + String.Format("<span class='glyphicon glyphicon-{0}'></span> ",
+                            Node.Model is IModelGlyphicon && String.Concat((Node.Model as IModelGlyphicon).Glyphicon) != ""
+                                     ? (Node.Model as IModelGlyphicon).Glyphicon : "")
+                        , GetNodeClasses(Node.ParentItem, false)
 
                     );
                 }
                 else
                     return String.Format("<li class='collapse {2}'><a>{1}{0}</a></li>"
                         , Node.Caption
-                        , Node.Model is IModelGlyphicon && String.Concat((Node.Model as IModelGlyphicon).Glyphicon) != ""
-                                     ? String.Format("<span class='glyphicon glyphicon-{0}'></span> ", (Node.Model as IModelGlyphicon).Glyphicon) : ""
-                        , FormatNodeId(Node.ParentItem.Id)
+                        , GetNodeLevel(Node) + "&nbsp " + String.Format("<span class='glyphicon glyphicon-{0}'></span> ",
+                            Node.Model is IModelGlyphicon && String.Concat((Node.Model as IModelGlyphicon).Glyphicon) != ""
+                                     ? (Node.Model as IModelGlyphicon).Glyphicon : "")
+                        , GetNodeClasses(Node.ParentItem, false)
 
                     );
             }
@@ -251,14 +275,13 @@ namespace XAF_Bootstrap.Templates
                         return GetMenuItem(NavNode);
                     else
                     {
-                        String aRet = "";
+                        String aRet = "";                        
                         if (NavNode.ParentItem != null && (NavNode.ParentItem.Items.Count > 1 && !IsRoot))
-                            aRet = String.Format(@"<li class='divider'></li>
-                                                   <a href='javascript:;'>
-                                                        <li class='dropdown-header' onclick=""$('.collapse.{1}').collapse('toggle'); event.stopPropagation();"">{0}</li>
-                                                  </a>
-                                                  <li class='divider collapse {1}'></li>
-                                                  ", NavNode.Caption, FormatNodeId(NavNode.Id), FormatNodeId(NavNode.ParentItem.Id));
+                            aRet = String.Format(@"<li class=""{2}"" onclick="" event.stopPropagation();"" ><a href=""javascript:;"" onclick=""toggleMenuItem(this, '.collapse{1}');"">{3}<span class=""glyphicon glyphicon-chevron-right""></span> {0}</a></li>"
+                                , NavNode.Caption
+                                , GetNodeClasses(NavNode, true)
+                                , NavNode.ParentItem.ParentItem != null ? "collapse " + GetNodeClasses(NavNode.ParentItem, false) : ""
+                                , GetNodeLevel(NavNode));
                         for (int i = 0; i < NavNode.Items.Count; i++)
                         {
                             var subNode = NavNode.Items[i];
@@ -266,6 +289,7 @@ namespace XAF_Bootstrap.Templates
                                 continue;
                             aRet += GenerateSubMenu(subNode);
                         }
+                        
                         return aRet;
                     }
                 }
@@ -311,7 +335,7 @@ namespace XAF_Bootstrap.Templates
                           @"<li class='dropdown'>
                             <a href='javascript:;' class='dropdown-toggle' data-toggle='dropdown'>{2} <span>{0}</span> <span class='caret'></span>
                             </a>
-                            <ul class='dropdown-menu' role='menu'>{1}<li class=""divider""></li></ul></li>
+                            <ul class='dropdown-menu' role='menu'>{1}</ul></li>
                            "
                             , RootItem.Caption
                             , GenerateSubMenu(RootItem, true)

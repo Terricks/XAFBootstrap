@@ -21,15 +21,10 @@
 #endregion
 
 using DevExpress.Web;
-using XAF_Bootstrap.Editors;
-using XAF_Bootstrap.Templates;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.UI;
 
 namespace XAF_Bootstrap.Controls
@@ -164,9 +159,9 @@ namespace XAF_Bootstrap.Controls
                                         </div>
                                         <div class=""modal-body"">  
                                             <table class=""table table-hover"">
-                    ", Value == null ? EmptyText : SelectedItem == null ? EmptyText : SelectedItem.Text, EmptyText);                    
+                    ", Value == null ? EmptyText : SelectedItem == null ? EmptyText : SelectedItem.Text, EmptyText);
 
-                    foreach (XafBootstrapDropdownItem item in Items)
+                    foreach (XafBootstrapDropdownItem item in Items.List.OrderBy(f => f.Text))
                     {
                         String changeEvent = String.Format(@"onclick=""$(this).parents('.modal').modal('hide'); window.DataChanged=true; {0};""", Handler.GetScript(String.Format("'NewValue={0}'", item.Index)));
                         Content.Text += String.Format(@"
