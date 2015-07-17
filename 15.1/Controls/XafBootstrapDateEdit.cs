@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI;
+using System.Globalization;
 
 namespace XAF_Bootstrap.Controls
 {
@@ -60,15 +61,20 @@ namespace XAF_Bootstrap.Controls
             ClientSideEvents.Init = String.Format(@"function(s,e) {{                
                 $(s.GetMainElement()).find(""#{0}"").each(function() {{   
                     var item = $(this);                 
-                    item.datetimepicker({{
-                        language: ""ru""
+                    item.datetimepicker({{                        
+                        format: ""{2}"",
+                        language: ""{3}""
                     }});
                     item.on(""dp.hide"",function (e) {{                        
                         {1}
                     }});
                 }});
                 
-            }}", PropertyName, GetCallbackScript("'NewValue=' + item.val()"));
+            }}"
+                , PropertyName
+                , GetCallbackScript("'NewValue=' + item.val()")
+                , CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern.Replace("y","Y").Replace("d", "D")
+                , CultureInfo.CurrentCulture.IetfLanguageTag);
             ClientSideEvents.EndCallback = ClientSideEvents.Init;
 
             InnerRender();
@@ -82,9 +88,7 @@ namespace XAF_Bootstrap.Controls
 
         public void InnerRender()
         {
-            
-
-            Content.Text = "";
+            Content.Text = "";            
 
             if (AddonLeft != "")
                 Content.Text += String.Format(@"<span class=""input-group-addon"">{0}</span>", AddonLeft);
@@ -96,7 +100,7 @@ namespace XAF_Bootstrap.Controls
             else
             {
                 String changeEvent = String.Format(@" onchange=""window.DataChanged=true; {0} """, GetCallbackScript("'NewValue=' + this.value"));
-                Content.Text += String.Format(@"<input  type=""text"" class=""form-control input-sm"" id=""{0}"" value=""{2}"">", PropertyName, Placeholder, (Value == new DateTime()) ? "" : String.Format(String.Format("{{0:{0}}}", DisplayFormat), Value), changeEvent);
+                Content.Text += String.Format(@"<input  type=""text"" class=""form-control input-sm"" id=""{0}"" value=""{2}"">", PropertyName, Placeholder, (Value == new DateTime()) ? "" : String.Format(String.Format("{{0:{0}}}", CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern), Value), changeEvent);
             }
             if (AddonRight != "")
                 Content.Text += String.Format(@"<span class=""input-group-addon"">{0}</span>", AddonRight);
