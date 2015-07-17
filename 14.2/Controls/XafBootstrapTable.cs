@@ -187,7 +187,7 @@ namespace XAF_Bootstrap.Controls
         public String FormatValue(IMemberInfo memberInfo, object objValue, IModelColumn columnModel, int RowNumber)
         {
             String Value = "";
-            if (memberInfo != null)
+            if (memberInfo != null && objValue != null)
             {
                 if (objValue is System.Drawing.Bitmap)
                 {
