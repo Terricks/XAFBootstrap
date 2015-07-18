@@ -33,3 +33,6 @@ For correct access to optimized *.js and *.css files by optimization framework y
 <pre>
 &lt;location path=&quot;bootstrap_css&quot;&gt;<br/> &lt;system.web&gt;<br/> &lt;authorization&gt;<br/> &lt;allow users=&quot;?&quot;/&gt;<br/> &lt;/authorization&gt;<br/> &lt;/system.web&gt;<br/>&lt;/location&gt;<br/>&lt;location path=&quot;bootstrap_js&quot;&gt;<br/> &lt;system.web&gt;<br/> &lt;authorization&gt;<br/> &lt;allow users=&quot;?&quot;/&gt;<br/> &lt;/authorization&gt;<br/> &lt;/system.web&gt;<br/>&lt;/location&gt;
 </pre>
+
+# Localization
+You can translate library-specific texts thru Localization in Module.Web model, section XAF Bootstrap.
