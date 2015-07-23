@@ -58,7 +58,7 @@ namespace XAF_Bootstrap.DatabaseUpdate
                     Directory.CreateDirectory(dir);
                 
                 if (!copyOnlyIfNotExists || (copyOnlyIfNotExists && !File.Exists(file)))
-                    using (Stream output = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                    using (Stream output = new FileStream(file, FileMode.Create, FileAccess.ReadWrite))
                         resource.CopyTo(output);
             }
         }

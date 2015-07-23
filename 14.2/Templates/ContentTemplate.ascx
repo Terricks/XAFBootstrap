@@ -195,9 +195,11 @@
 
 <script type="text/javascript">
     function ShowXafMessage(caption, confirmationMessage, callback, buttonOKCaption, isCancelButtonNeeded) {
-        if (buttonOKCaption == '') buttonOKCaption = '<%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"DialogButtons", "Apply") %>';
+        if (buttonOKCaption == '')
+            buttonOKCaption = '<%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"DialogButtons", "OK") %>';
         var cancelButton = '';
-        if (isCancelButtonNeeded != 'false') cancelButton = '<button type="button" class="btn btn-default" data-dismiss="modal"><%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"DialogButtons", "Cancel") %></button>';
+        if (isCancelButtonNeeded && (isCancelButtonNeeded + "" != 'false'))
+            cancelButton = '<button type="button" class="btn btn-default" data-dismiss="modal"><%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"DialogButtons", "Cancel") %></button>';
         var modal = $(
             '<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">' +
                 '<div class="modal-dialog">' +
@@ -524,6 +526,13 @@
         });
         $('.modal.in:visible:last').focus().next('.modal-backdrop.in').removeClass('hidden');
     }
+	
+	$(document).ready(function () {
+        globalCallbackControl.RaiseCallbackError = function (message) {
+            ShowXafMessage("<%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"XAF Bootstrap\Dialogs", "ConfirmAction") %>", message, "", "");  
+            return { isHandled: false };
+        };
+    });
 </script>
 
 <div id="LPcell" style="display: none"></div>
