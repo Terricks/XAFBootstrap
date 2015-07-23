@@ -76,7 +76,7 @@ namespace XafBootstrap.Web
                 {
                     IModelListView ModelListView = (view as IModelListView);
                     Type type = (ModelListView.ModelClass.TypeInfo).Type;
-                    CollectionSource cs = new CollectionSource(App.CreateObjectSpace(), type);
+                    CollectionSource cs = new CollectionSource(App.CreateObjectSpace(type), type);
                     if (ModelListView.Criteria != null)
                         cs.Criteria["Criteria"] = DevExpress.Data.Filtering.CriteriaOperator.Parse(ModelListView.Criteria);
                     ResultView = App.CreateListView(ModelListView, cs, true);
@@ -85,7 +85,7 @@ namespace XafBootstrap.Web
                 {
                     IModelDetailView DetailView = (view as IModelDetailView);
                     Type type = (DetailView.ModelClass.TypeInfo).Type;
-                    IObjectSpace os = App.CreateObjectSpace();
+                    IObjectSpace os = App.CreateObjectSpace(type);
                     CollectionSource cs = new CollectionSource(os, type);
                     object obj = null;
                     if (cs.List.Count > 0)

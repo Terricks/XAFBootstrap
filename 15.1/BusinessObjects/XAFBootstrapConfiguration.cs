@@ -33,14 +33,14 @@ using System.Linq;
 
 namespace XAF_Bootstrap.BusinessObjects
 {
-    [DefaultClassOptions, ObjectCaptionFormat("{0:Theme}"), DefaultProperty("Theme"), XafDisplayName("XAF Bootstrap Configuration"), ImageName("BO_List"), CreatableItem(false)]
+    [DefaultClassOptions, ObjectCaptionFormat("{0:Theme}"), DefaultProperty("Theme"), XafDisplayName("XAF Bootstrap Configuration"), ImageName("BO_List"), CreatableItem(false), NavigationItem(false)]
     public class XAFBootstrapConfiguration : BaseObject
     {
         public static XAFBootstrapConfiguration Instance
         {
             get
             {
-                return XAF_Bootstrap.DatabaseUpdate.Updater.Configuration((WebApplication.Instance as XafApplication).CreateObjectSpace());
+                return XAF_Bootstrap.DatabaseUpdate.Updater.Configuration((WebApplication.Instance as XafApplication).CreateObjectSpace(typeof(XAFBootstrapConfiguration)));
             }
         }
 

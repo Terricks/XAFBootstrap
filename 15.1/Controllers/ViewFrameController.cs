@@ -38,9 +38,18 @@ namespace XAF_Bootstrap.Controllers
             RegisterActions(components);            
         }
 
+        protected override void OnActivated()
+        {
+            base.OnActivated();
+            var focusController = Frame.GetController<DevExpress.ExpressApp.Web.SystemModule.FocusController>();
+            if (focusController != null)
+                focusController.Active["XafBootstrapActive"] = false;
+        }
+
         protected override void OnViewControlsCreated()
         {
-            base.OnViewControlsCreated();            
+            base.OnViewControlsCreated();                        
+
             if (View is ListView)
             {
                 var ListView = (View as ListView);
@@ -61,6 +70,14 @@ namespace XAF_Bootstrap.Controllers
                 Helpers.Session[View.Id + "_" + ((Frame as NestedFrame).ViewItem.Control as System.Web.UI.Control).ClientID + "_Frame"] = Frame; 
             else
                 Helpers.Session[View.Id + "_Frame"] = Frame; 
+        }
+
+        protected override void OnDeactivated()
+        {
+            var focusController = Frame.GetController<DevExpress.ExpressApp.Web.SystemModule.FocusController>();
+            if (focusController != null)
+                focusController.Active.RemoveItem("XafBootstrapActive");
+            base.OnDeactivated();
         }
     }
 }

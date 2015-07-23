@@ -54,7 +54,7 @@ namespace XAF_Bootstrap.Controls
 
     public delegate void OnGenerateRowEventHandler(ref String Result, int RowNumber, object Row);
     public delegate void OnGenerateRowFinishedHandler(ref String Result, ref Control ResultControl, int RowNumber, object Row);
-    public delegate void OnGenerateCellHandler(ref String Format, String FieldName, ref String value, object data);
+    public delegate void OnGenerateCellHandler(ref String Format, String FieldName, ref String value, int RowNumber, object data);
     public delegate void OnGenerateHeaderHandler(ref String Format, String FieldName, ref String value, object data);
 
     public class XafBootstrapTable : XafBootstrapBaseControl
@@ -223,7 +223,18 @@ namespace XAF_Bootstrap.Controls
                     {
                         String displayFormat = "{0}";
                         if (columnModel != null)
-                            if (String.Concat(columnModel.DisplayFormat) != "")                                
+                        {
+                            var valuePath = columnModel.GetValue<String>("FieldName").Split('.');
+                            if (!(objValue is XPBaseObject) && !(objValue is String) && !objValue.GetType().IsPrimitive)
+                                if (valuePath.Length > 1)
+                                {
+                                    IMemberInfo mInfo;
+                                    var val = ObjectFormatValues.GetValueRecursive(String.Join(".", valuePath.Skip(1).Take(valuePath.Length -1)), objValue, out mInfo);
+                                    if (val != new object())
+                                        objValue = String.Concat(val);
+                                }
+
+                            if (String.Concat(columnModel.DisplayFormat) != "")
                                 displayFormat = columnModel.DisplayFormat;
                             else
                                 if (memberInfo.MemberTypeInfo != null)
@@ -234,18 +245,19 @@ namespace XAF_Bootstrap.Controls
                                         displayFormat = attr.FormatString;
                                         Value = String.Format(new ObjectFormatter(), displayFormat, objValue);
                                     }
-                                };
+                                };                            
+                        }
                             
-                        if (Value == "")
+                        if (Value == "")                            
                             Value = String.Format(displayFormat, objValue);
 
-                        if (objValue is XPBaseObject && columnModel != null)
+                        if (memberInfo.MemberTypeInfo != null && memberInfo.MemberTypeInfo.IsDomainComponent && columnModel != null)
                             Value = String.Format(@"<a href=""javascript:;"" onclick=""event = event || window.event; event.stopPropagation(); {0}"">{1}</a>", Handler.GetScript(String.Format("'BrowseObject|{0}|{1}'", RowNumber, columnModel.PropertyName)), Value);
                     }
                 }
             }
             return Value;
-        }
+        }        
 
         public Boolean TableHover = true;
         public Boolean TableStriped = true;
@@ -261,8 +273,6 @@ namespace XAF_Bootstrap.Controls
 
             Content.Controls.Clear();
             InnerLoadControlState();            
-
-            //StringBuilder result = new StringBuilder();            
 
             AddStringContent("<div class='table-responsive panel panel-default'>");
             AddStringContent(String.Format(@"<table class='table {1} {2} xaf-bootstrap' id = '{0}_Table'>"
@@ -406,8 +416,7 @@ namespace XAF_Bootstrap.Controls
                         PageIndex = Math.Max(PagesCount - 1, 0);
 
                     foreach (var item in objects.Skip(PageIndex * PageItemsCount).Take(PageItemsCount))
-                    {
-                        RowCounter++;
+                    {                        
                         StringBuilder row = new StringBuilder();
                         switch (SelectionType)
                         {
@@ -449,7 +458,7 @@ namespace XAF_Bootstrap.Controls
                             String DataFormat = "<td style=\"text-align: {1}\">{0}</td>";
 
                             if (OnGenerateCell != null)
-                                OnGenerateCell(ref DataFormat, column.ID, ref Value, item);                            
+                                OnGenerateCell(ref DataFormat, column.ID, ref Value, RowCounter, item);                            
 
                             row.AppendFormat(String.Format(DataFormat, String.Concat(Value).Replace("{","{{").Replace("}","}}"), column.Align));                            
                         }
@@ -464,6 +473,8 @@ namespace XAF_Bootstrap.Controls
                         AddStringContent(RowString);
                         if (Control != null)
                             AddContent(Control);
+
+                        RowCounter++;
                     }
                 }
 

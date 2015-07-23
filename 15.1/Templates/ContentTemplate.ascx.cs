@@ -435,7 +435,7 @@ namespace XAF_Bootstrap.Templates
                     </div>
                   </div>
                     
-                  <div class=""progress"" style=""margin: 0;height: 5px; display: none"" id=""loadingProgress"">
+                  <div class=""progress loading-progress"" style=""display: none"" id=""loadingProgress"">
                     <div class=""progress-bar progress-bar-info progress-bar-striped active"" role=""progressbar"" aria-valuenow=""100"" aria-valuemin=""0"" aria-valuemax=""100"" style=""width: 100%""></div>
                   </div>
 

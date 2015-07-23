@@ -427,10 +427,7 @@ namespace XAF_Bootstrap.Controls
 
         private void RegisterContainerActions(IActionContainer container)
         {
-            bool isFirstMenuItem = true;
-            if (container.ContainerId == "PAC")
-            {
-            }
+            bool isFirstMenuItem = true;            
             foreach (ActionBase action in container.Actions)
             {
                 action.Changed -= new EventHandler<ActionChangedEventArgs>(Action_Changed);

@@ -82,18 +82,16 @@
                                 Tag="button" ItemClass="btn btn-primary btn-sm view-action" LeftDirection="False" />
                         </cc3:XafUpdatePanel>                        
                     </span>
+                    
+                    <div class="col-md-12">
+                        <!-- Object Actions -->
 
-                    <div class="row">
-                        <div class="col-md-12">
-                            <!-- Object Actions -->
-
-                            <span class="pull-right">
-                                <cc3:XafUpdatePanel ID="UPTB" runat="server" EnableTheming="False" UpdateAlways="True">                                
-                                    <cc1:XbActionContainerHolder runat="server" ID="TB" Categories="Export;Reports;Filters;" EnableViewState="False"
-                                        Tag="button" ItemClass="btn btn-primary btn-sm" LeftDirection="False" />                                
-                                </cc3:XafUpdatePanel>
-                            </span>
-                        </div>
+                        <span class="pull-right">
+                            <cc3:XafUpdatePanel ID="UPTB" runat="server" EnableTheming="False" UpdateAlways="True">                                
+                                <cc1:XbActionContainerHolder runat="server" ID="TB" Categories="Export;Reports;Filters;" EnableViewState="False"
+                                    Tag="button" ItemClass="btn btn-primary btn-sm" LeftDirection="False" />                                
+                            </cc3:XafUpdatePanel>
+                        </span>
                     </div>
                 </span>
             </div>            
@@ -199,9 +197,11 @@
 
 <script type="text/javascript">
     function ShowXafMessage(caption, confirmationMessage, callback, buttonOKCaption, isCancelButtonNeeded) {
-        if (buttonOKCaption == '') buttonOKCaption = '<%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"DialogButtons", "Apply") %>';
+        if (buttonOKCaption == '')
+            buttonOKCaption = '<%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"DialogButtons", "OK") %>';
         var cancelButton = '';
-        if (isCancelButtonNeeded != 'false') cancelButton = '<button type="button" class="btn btn-default" data-dismiss="modal"><%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"DialogButtons", "Cancel") %></button>';
+        if (isCancelButtonNeeded + "" != 'false')
+            cancelButton = '<button type="button" class="btn btn-default" data-dismiss="modal"><%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"DialogButtons", "Cancel") %></button>';
         var modal = $(
             '<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">' +
                 '<div class="modal-dialog">' +
@@ -530,6 +530,14 @@
         });
         $('.modal.in:visible:last').focus().next('.modal-backdrop.in').removeClass('hidden');
     }
+
+    $(document).ready(function () {
+        globalCallbackControl.RaiseCallbackError = function (message) {
+            stopProgress();
+            ShowXafMessage("<%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"XAF Bootstrap\Dialogs", "ConfirmAction") %>", message, "", "", "");  
+            return { isHandled: false };
+        };
+    });
 </script>
 
 <div id="LPcell" style="display: none"></div>

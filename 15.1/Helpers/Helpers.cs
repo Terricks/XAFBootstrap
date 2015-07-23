@@ -152,20 +152,14 @@ namespace XAF_Bootstrap.Templates
                     var closePopup = false;
                     var dialogController = action.Controller.Frame.GetController<DialogController>();
                     if (dialogController != null) {
-                        dialogController.ViewClosing += new EventHandler(delegate{
+                        dialogController.ViewClosed += new EventHandler(delegate{
                             closePopup = true;
                         });       
                     }
                     if ((action as SimpleAction).DoExecute())
                     {                        
-                        switch (action.ActionMeaning)
-                        {
-                            case ActionMeaning.Accept:
-                            case ActionMeaning.Cancel:
-                                if (closePopup)
-                                    WebWindow.CurrentRequestWindow.RegisterStartupScript("actionClosePopup", "window.DataChanged=false; if(window.closeThisModal) window.closeThisModal();");
-                                break;
-                        }
+                        if (closePopup)
+                            WebWindow.CurrentRequestWindow.RegisterStartupScript("actionClosePopup", "window.DataChanged=false; if(window.closeThisModal) window.closeThisModal();");
                     }
                     return true;
                 }

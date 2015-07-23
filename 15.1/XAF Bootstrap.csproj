@@ -127,6 +127,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessObjects\XAFBootstrapConfiguration.cs" />
+    <Compile Include="Controllers\XafBootstrapConfiguration\XafBootstrapConfigurationAction.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controllers\XafBootstrapConfiguration\XafBootstrapConfigurationAction.Designer.cs">
+      <DependentUpon>XafBootstrapConfigurationAction.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controllers\XafBootstrapConfiguration\XafBootstrapConfigurationViewController.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -239,6 +245,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controllers\XafBootstrapConfiguration\XafBootstrapConfigurationAction.resx">
+      <DependentUpon>XafBootstrapConfigurationAction.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controllers\XafBootstrapConfiguration\XafBootstrapConfigurationViewController.resx">
       <DependentUpon>XafBootstrapConfigurationViewController.cs</DependentUpon>
     </EmbeddedResource>

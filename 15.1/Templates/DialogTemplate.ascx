@@ -28,20 +28,12 @@
         
     <div class="modal-body">
         <cc3:XafUpdatePanel ID="UPSAC" runat="server">
-            <div style="display: none">                                                
-                <cc2:ActionContainerHolder ID="OCC" runat="server" ContainerStyle="Buttons"
-                    Orientation="Horizontal" Categories="ObjectsCreation" style="float: left" />
-                                                
-                <cc2:ActionContainerHolder ID="SAC" runat="server" Categories="Search;FullTextSearch"
-                    CssClass="HContainer" Orientation="Horizontal" ContainerStyle="Buttons" />
-            </div>                                                
-
             <div class="row">
                 <div class="col-sm-6">
-                    <dx:ASPxLabel ID="LeftActions" runat="server"></dx:ASPxLabel>
+                    <cc1:XbActionContainerHolder ID="OCC" runat="server" Categories="ObjectsCreation" />
                 </div>
                 <div class="col-sm-6">
-                    <dx:ASPxLabel ID="RightActions" runat="server"></dx:ASPxLabel>
+                    <cc1:XbActionContainerHolder ID="SAC" runat="server" Categories="Search;FullTextSearch" LeftDirection="false" />
                 </div>
             </div>
         </cc3:XafUpdatePanel>                
@@ -58,16 +50,11 @@
     </div>
 
     <div class="modal-footer" id="DialogFooter">    
-        <cc3:XafUpdatePanel ID="UPPAC" runat="server">
-            <span style="display: none">
-                <cc2:ActionContainerHolder runat="server" ID="PAC" ContainerStyle="Buttons"
-                    Orientation="Horizontal" Categories="PopupActions;Diagnostic">
-                    <menu width="100%" itemautowidth="False" horizontalalign="Right" />
-                </cc2:ActionContainerHolder>
-            </span>
-            <dx:ASPxLabel ID="Actions" runat="server"></dx:ASPxLabel>
+        <cc3:XafUpdatePanel ID="UPPAC" runat="server">            
+            <cc1:XbActionContainerHolder runat="server" ID="PAC" Categories="PopupActions;Diagnostic" LeftDirection="false">                    
+            </cc1:XbActionContainerHolder>            
         </cc3:XafUpdatePanel>    
-    </div>
+    </div>    
 
 <script>
     
