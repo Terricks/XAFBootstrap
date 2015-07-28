@@ -111,12 +111,12 @@ namespace XAF_Bootstrap.Editors.XafBootstrapPropertyEditors
         
         protected override void ReadEditModeValueCore()
         {
-            Edit.Value = (int)PropertyValue;
+            Edit.Value = (PropertyValue == null ? 0 : (int)PropertyValue);
         }
         
         protected override void ReadViewModeValueCore()
         {
-            Edit.Value = (int)PropertyValue;
+            Edit.Value = (PropertyValue == null ? 0 : (int)PropertyValue);
         }
 
         public string GetImmediatePostDataScript()

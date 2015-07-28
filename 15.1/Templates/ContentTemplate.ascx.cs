@@ -56,10 +56,10 @@ namespace XAF_Bootstrap.Templates
                 if (Helpers.ContentHelper.Manager == null)
                     Helpers.ContentHelper.Manager = (Page as BaseXafPage).CallbackManager;
 
-                var hndler = new XAF_Bootstrap.Controls.CallbackHandler();
-                hndler.Register("MenuItemClickControllerCallback");
+                var menuHandler = new XAF_Bootstrap.Controls.CallbackHandler();
+                menuHandler.Register("MenuItemClickControllerCallback");
 
-                hndler.OnCallback += hndler_OnCallback;
+                menuHandler.OnCallback += menuHandler_OnCallback;
 
                 var app = (WebApplication.Instance as XafApplication);
                 if (app.MainWindow != null)
@@ -446,16 +446,20 @@ namespace XAF_Bootstrap.Templates
                     , XAFBootstrapConfiguration.Instance != null && XAFBootstrapConfiguration.Instance.InverseNavBar ? "navbar-inverse" : "");
         }
 
-        public ChoiceActionItem FindNode(String param)
+        public ChoiceActionItem FindNode(ChoiceActionItemCollection items, String param)
+        {
+            var paramValues = param.Split(new String[] { "->" }, StringSplitOptions.RemoveEmptyEntries);            
+            var item = items.Find(paramValues[0], ChoiceActionItemFindType.NonRecursive, ChoiceActionItemFindTarget.Any);
+            if (paramValues.Length > 1)
+                return FindNode(item.Items, String.Join("->", paramValues.Skip(1).Take(paramValues.Length - 1)));            
+            return item;
+        }
+
+        void menuHandler_OnCallback(object source, CallbackEventArgs e)
         {
             var app = (WebApplication.Instance as XafApplication);
             var items = app.MainWindow.GetController<ShowNavigationItemController>().ShowNavigationItemAction.Items;
-            return items.Find(param, ChoiceActionItemFindType.Recursive, ChoiceActionItemFindTarget.Any);            
-        }
-
-        void hndler_OnCallback(object source, DevExpress.Web.CallbackEventArgs e)
-        {
-            ChoiceActionItem Node = FindNode(String.Concat(e.Parameter).Split(new String[] {"->"}, StringSplitOptions.RemoveEmptyEntries).LastOrDefault());
+            ChoiceActionItem Node = FindNode(items, String.Concat(e.Parameter));
             (WebApplication.Instance as XafApplication).MainWindow.GetController<ShowNavigationItemController>().ShowNavigationItemAction.DoExecute(Node);            
         }
 

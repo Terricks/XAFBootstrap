@@ -125,7 +125,10 @@ namespace XAF_Bootstrap.Templates
                 var processor = menuItem.ActionProcessor as ActionBaseItem;
                 if (processor.Action != null && String.Concat(processor.Action.ConfirmationMessage) != "")
                 {
-                    ClickScript = String.Format(@"var func = function(){{{1}}}; ShowXafMessage(""Подтверждение операции"", ""{0}"", func, """", """");", processor.Action.ConfirmationMessage, Callback);
+                    ClickScript = String.Format(@"var func = function(){{{1}}}; ShowXafMessage(""{2}"", ""{0}"", func, """", """");"
+                        , String.Concat(processor.Action.ConfirmationMessage).Replace("\r\n", "<br>").Replace("\n","<br>")
+                        , Callback
+                        , XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"XAF Bootstrap\Dialogs", "ConfirmAction")).Replace("\"","&quot;");
                 }
             }
             var action = (menuItem.ActionProcessor as MenuActionItemBase).Action as ActionBase;
@@ -261,9 +264,9 @@ namespace XAF_Bootstrap.Templates
             else
                 style += " pull-left";
 
-            var actions = actionHolder.actionObjects.Where(f => f.Key.Active && f.Value.IsVisible && f.Value.Action.Active).Select(f => f.Value.MenuItem).ToList();
+            var actions = actionHolder.actionObjects.Where(f => f.Key.Active && f.Value.IsVisible && f.Value.Action.Active && f.Value.Action.Enabled).Select(f => f.Value.MenuItem).OrderBy(f => f.VisibleIndex).ToList();
             if (actions.Count > 0)
-            {   
+            {                   
                 result.AppendFormat("<div class='{0}'>", ClassName);
 
                 Helpers.ContentHelper.ObjectActions = new List<MenuAction>();                
@@ -407,7 +410,7 @@ namespace XAF_Bootstrap.Templates
 
         public static String GetLocalizedText(string groupPath, string itemName)
         {
-            return CaptionHelper.GetLocalizedText(groupPath, itemName);            
+            return String.Concat(CaptionHelper.GetLocalizedText(groupPath, itemName)).Replace("\r\n","<br>").Replace("\n", "<br>");
         }
     }
 

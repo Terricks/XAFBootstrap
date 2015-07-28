@@ -33,6 +33,10 @@ using System.IO;
 using System.Reflection;
 using XAF_Bootstrap.BusinessObjects;
 using System.Web;
+using DevExpress.ExpressApp.Editors;
+using XAF_Bootstrap.Editors.XafBootstrapPropertyEditors;
+using XAF_Bootstrap.Editors.XafBootstrapTableEditor;
+using System.Collections;
 
 namespace XAF_Bootstrap
 {    
@@ -103,6 +107,13 @@ namespace XAF_Bootstrap
 
                 ProcessTemplateFile("XafBootstrapView.ascx");
             }            
+        }
+
+        protected override void RegisterEditorDescriptors(List<DevExpress.ExpressApp.Editors.EditorDescriptor> editorDescriptors)
+        {
+            base.RegisterEditorDescriptors(editorDescriptors);
+            editorDescriptors.Add(new PropertyEditorDescriptor(new EditorTypeRegistration(EditorAliases.LookupPropertyEditor, typeof(object), typeof(XafBootstrapLookupPropertyEditor), true)));
+            editorDescriptors.Add(new ListEditorDescriptor(new EditorTypeRegistration(EditorAliases.GridListEditor, typeof(object), typeof(XafBootstrapTableEditor), true)));
         }
 
         public string AssemblyDirectory

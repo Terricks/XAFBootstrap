@@ -87,8 +87,9 @@ namespace XAF_Bootstrap.Templates
         }
 
         public static ContentHelperClass ContentHelper
-        {            
-            get {
+        {
+            get
+            {
                 var session = System.Web.HttpContext.Current.Session;
                 if (session["ContentHelper"] == null)
                     session["ContentHelper"] = new ContentHelperClass();
@@ -96,20 +97,24 @@ namespace XAF_Bootstrap.Templates
             }
         }
         public static IList<XafMenuItem> GetMenuActions(XbActionContainerHolder holder)
-        {   
+        {
             return holder.actionObjects.Where(f => f.Key.Active && f.Key.Enabled).Select(f => f.Value.MenuItem).ToList();
         }
 
-        public static IList<XafMenuItem> GetMenuActions(ASPxMenu menu) {
+        public static IList<XafMenuItem> GetMenuActions(ASPxMenu menu)
+        {
             IList<XafMenuItem> List = new List<XafMenuItem>();
-            if (menu != null) {
-                foreach(var item in menu.Items.OfType<XafMenuItem>()) {
-                    if (item.ActionProcessor != null && item.ActionProcessor is DevExpress.ExpressApp.Templates.ActionBaseItem) {
+            if (menu != null)
+            {
+                foreach (var item in menu.Items.OfType<XafMenuItem>())
+                {
+                    if (item.ActionProcessor != null && item.ActionProcessor is DevExpress.ExpressApp.Templates.ActionBaseItem)
+                    {
                         var action = (item.ActionProcessor as DevExpress.ExpressApp.Templates.ActionBaseItem);
                         if (action.Action != null && action.IsVisible && action.Action.Enabled && action.Action.Active)
                             List.Add(item);
                     }
-                }                
+                }
             }
             return List;
         }
@@ -125,7 +130,10 @@ namespace XAF_Bootstrap.Templates
                 var processor = menuItem.ActionProcessor as ActionBaseItem;
                 if (processor.Action != null && String.Concat(processor.Action.ConfirmationMessage) != "")
                 {
-                    ClickScript = String.Format(@"var func = function(){{{1}}}; ShowXafMessage(""Подтверждение операции"", ""{0}"", func, """", """");", processor.Action.ConfirmationMessage, Callback);
+                    ClickScript = String.Format(@"var func = function(){{{1}}}; ShowXafMessage(""{2}"", ""{0}"", func, """", """");"
+                        , String.Concat(processor.Action.ConfirmationMessage).Replace("\r\n", "<br>").Replace("\n", "<br>")
+                        , Callback
+                        , XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"XAF Bootstrap\Dialogs", "ConfirmAction")).Replace("\"", "&quot;");
                 }
             }
             var action = (menuItem.ActionProcessor as MenuActionItemBase).Action as ActionBase;
@@ -151,21 +159,17 @@ namespace XAF_Bootstrap.Templates
                 {
                     var closePopup = false;
                     var dialogController = action.Controller.Frame.GetController<DialogController>();
-                    if (dialogController != null) {
-                        dialogController.ViewClosing += new EventHandler(delegate{
+                    if (dialogController != null)
+                    {
+                        dialogController.ViewClosed += new EventHandler(delegate
+                        {
                             closePopup = true;
-                        });       
+                        });
                     }
                     if ((action as SimpleAction).DoExecute())
-                    {                        
-                        switch (action.ActionMeaning)
-                        {
-                            case ActionMeaning.Accept:
-                            case ActionMeaning.Cancel:
-                                if (closePopup)
-                                    WebWindow.CurrentRequestWindow.RegisterStartupScript("actionClosePopup", "window.DataChanged=false; if(window.closeThisModal) window.closeThisModal();");
-                                break;
-                        }
+                    {
+                        if (closePopup)
+                            WebWindow.CurrentRequestWindow.RegisterStartupScript("actionClosePopup", "window.DataChanged=false; if(window.closeThisModal) window.closeThisModal();");
                     }
                     return true;
                 }
@@ -186,7 +190,7 @@ namespace XAF_Bootstrap.Templates
                     var args = (action as PopupWindowShowAction).GetPopupWindowParams();
 
                     ShowViewParameters svp = new ShowViewParameters();
-                    svp.CreatedView = args.View;             
+                    svp.CreatedView = args.View;
                     svp.Controllers.Add(args.DialogController);
 
                     svp.Context = TemplateContext.PopupWindow;
@@ -197,11 +201,11 @@ namespace XAF_Bootstrap.Templates
                 }
             }
             return false;
-        }        
+        }
 
         public static Boolean GenerateParametrizedAction(ref StringBuilder result, XafMenuItem menuItem, Boolean IsLeft, String style, String Callback, String ControlType = "button", String Click = "")
         {
-            if (!(menuItem.ActionProcessor is MenuActionItemBase)                
+            if (!(menuItem.ActionProcessor is MenuActionItemBase)
                 || !((menuItem.ActionProcessor as MenuActionItemBase).Action is ParametrizedAction))
                 return false;
             var parAction = (menuItem.ActionProcessor as MenuActionItemBase).Action as ParametrizedAction;
@@ -224,11 +228,11 @@ namespace XAF_Bootstrap.Templates
 
         public static Boolean GenerateSingleChoiceAction(ref StringBuilder result, XafMenuItem menuItem, Boolean IsLeft, String style, String Callback, String ControlType = "button", String Click = "")
         {
-            if (!(menuItem.ActionProcessor is MenuActionItemBase) 
+            if (!(menuItem.ActionProcessor is MenuActionItemBase)
                 || !((menuItem.ActionProcessor as MenuActionItemBase).Action is SingleChoiceAction))
                 return GenerateParametrizedAction(ref result, menuItem, IsLeft, style, Callback, ControlType, Click);
 
-            var choiceAction = (menuItem.ActionProcessor as MenuActionItemBase).Action as SingleChoiceAction;            
+            var choiceAction = (menuItem.ActionProcessor as MenuActionItemBase).Action as SingleChoiceAction;
 
             if (choiceAction.Items.Count <= 1)
                 return false;
@@ -267,12 +271,12 @@ namespace XAF_Bootstrap.Templates
             else
                 style += " pull-left";
 
-            var actions = actionHolder.actionObjects.Where(f => f.Key.Active && f.Value.IsVisible && f.Value.Action.Active).Select(f => f.Value.MenuItem).ToList();
+            var actions = actionHolder.actionObjects.Where(f => f.Key.Active && f.Value.IsVisible && f.Value.Action.Active && f.Value.Action.Enabled).Select(f => f.Value.MenuItem).OrderBy(f => f.VisibleIndex).ToList();
             if (actions.Count > 0)
-            {   
+            {
                 result.AppendFormat("<div class='{0}'>", ClassName);
 
-                Helpers.ContentHelper.ObjectActions = new List<MenuAction>();                
+                Helpers.ContentHelper.ObjectActions = new List<MenuAction>();
 
                 /// Reversing for pull-right correct visibility
                 if (!IsLeft)
@@ -308,7 +312,7 @@ namespace XAF_Bootstrap.Templates
                 /// Reversing for pull-right correct visibility
                 if (!IsLeft)
                     menuItems = menuItems.Reverse().ToList();
-                
+
                 foreach (XafMenuItem menuItem in menuItems)
                 {
                     var action = (menuItem.ActionProcessor as MenuActionItemBase).Action as ActionBase;
@@ -329,15 +333,15 @@ namespace XAF_Bootstrap.Templates
 
             if (param.Length > 7 && param.Substring(0, 7) == "Action=")
             {
-                param = param.Substring(7, param.Length - 7);                
+                param = param.Substring(7, param.Length - 7);
                 if (param.IndexOf(",") > -1)
                 {
                     data = param.Substring(param.IndexOf(",") + 1, param.Length - param.IndexOf(",") - 1);
                     param = param.Substring(0, param.IndexOf(","));
-                }   
-                    
+                }
+
                 foreach (var controller in frame.Controllers.Where<Controller>(f => f.Actions.Where(a => a.Id == param).Count() > 0))
-                {   
+                {
                     ActionBase action = (ActionBase)controller.Actions.Where(a => a.Id == param).FirstOrDefault();
                     if (action is SingleChoiceAction && data != "")
                     {
@@ -351,15 +355,16 @@ namespace XAF_Bootstrap.Templates
                     }
                     else
                     {
-                        Helpers.ProcessAction(action);                            
-                    }                    
+                        Helpers.ProcessAction(action);
+                    }
                 }
             }
         }
 
         public static DefaultHttpRequestManager RequestManager
-        {        
-            get {
+        {
+            get
+            {
                 return ((DefaultHttpRequestManager)(WebApplication.Instance.RequestManager));
             }
         }
@@ -394,12 +399,13 @@ namespace XAF_Bootstrap.Templates
             return "";
         }
 
-        public static void AddMeta(Page page) {
+        public static void AddMeta(Page page)
+        {
             var meta = page.Header.Controls.OfType<HtmlMeta>().Where(f => f.Name == "viewport").FirstOrDefault();
             if (meta == null)
             {
                 meta = new HtmlMeta();
-                page.Header.Controls.Add(meta);                
+                page.Header.Controls.Add(meta);
             }
             meta.Name = "viewport";
             meta.Content = "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no";
@@ -413,7 +419,7 @@ namespace XAF_Bootstrap.Templates
 
         public static String GetLocalizedText(string groupPath, string itemName)
         {
-            return CaptionHelper.GetLocalizedText(groupPath, itemName);            
+            return String.Concat(CaptionHelper.GetLocalizedText(groupPath, itemName)).Replace("\r\n", "<br>").Replace("\n", "<br>");
         }
     }
 
@@ -611,8 +617,8 @@ namespace XAF_Bootstrap.Templates
     }
 
     public class ContentHelperClass
-    {       
-        #region Menu        
+    {
+        #region Menu
         public IDictionary<Guid, ChoiceActionItem> MenuItems
         {
             get
@@ -622,7 +628,7 @@ namespace XAF_Bootstrap.Templates
                     if (WebWindow.CurrentRequestPage.Session["XafBootstrapMenuItems"] == null)
                         WebWindow.CurrentRequestPage.Session["XafBootstrapMenuItems"] = new Dictionary<Guid, ChoiceActionItem>();
                     return WebWindow.CurrentRequestPage.Session["XafBootstrapMenuItems"] as IDictionary<Guid, ChoiceActionItem>;
-                }                
+                }
                 return new Dictionary<Guid, ChoiceActionItem>();
             }
         }
@@ -671,5 +677,5 @@ namespace XAF_Bootstrap.Templates
         }
 
         public IDictionary<String, IDictionary<String, object>> DynamicControlStates = new Dictionary<String, IDictionary<String, object>>();
-    }    
+    }
 }

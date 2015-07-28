@@ -21,52 +21,52 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using DevExpress.ExpressApp;
-using System.Collections.Generic;
-using DevExpress.ExpressApp.SystemModule;
-using DevExpress.ExpressApp.Web.Templates;
-using System.Web.UI;
-using DevExpress.ExpressApp.Web.Layout;
+using DevExpress.ExpressApp.Actions;
+using XAF_Bootstrap.Templates;
+using DevExpress.ExpressApp.DC;
 
-namespace XafBootstrap.Web
-{   
-    public partial class CustomDashboardViewRootController : ViewController
+namespace XAF_Bootstrap.Controllers.XafBootstrapConfiguration
+{    
+    public partial class XafBootstrapConfigurationAction : ViewController
     {
-        public CustomDashboardViewRootController()
+        public XafBootstrapConfigurationAction()
         {
-            InitializeComponent();
-            RegisterActions(components);
+            InitializeComponent();            
         }
-        
         protected override void OnViewControlsCreated()
         {
             base.OnViewControlsCreated();
-
-            Frame.GetController<DashboardCustomizationController>().OrganizeDashboardAction.Active["CustomDashboardViewRootController"] = false;
-
-            DashboardView DetailView = (View as DashboardView);
-            XafBootstrapView view = (XafBootstrapView)(Frame.Template as BaseXafPage).LoadControl("~/XafBootstrapView.ascx");
-            view.IsRootView = true;
-            CustomPanel cp = new CustomPanel();
-            IList<Control> ctrls = new List<Control>();
-
-            foreach (Control control in (DetailView.Control as Control).Controls)
-                ctrls.Add(control);                
-
-            foreach(var control in ctrls)
-                cp.Controls.Add(control);
-
-            view.View = DetailView;
-            view.ControlToRender = cp;            
-            (View.Control as Control).Controls.Add(view);
+            var actionVisible = SecuritySystem.CurrentUser == null;
+            if (!actionVisible) {
+                IMemberInfo memberInfo;
+                var roles = ObjectFormatValues.GetValueRecursive("Roles", SecuritySystem.CurrentUser, out memberInfo) as IEnumerable<object>;
+                foreach (var role in roles)
+                {
+                    Boolean isAdministrative;
+                    if (Boolean.TryParse(String.Concat(ObjectFormatValues.GetValueRecursive("IsAdministrative", role, out memberInfo)), out isAdministrative))
+                    {
+                        if (isAdministrative)
+                        {
+                            actionVisible = true;
+                            break;
+                        }
+                    }
+                }
+            }
         }
-
         protected override void OnDeactivated()
         {
-            Frame.GetController<DashboardCustomizationController>().OrganizeDashboardAction.Active.RemoveItem("CustomDashboardViewRootController");
+            XafBootstrapConfigurationActionItem.Active.RemoveItem("IsActionActive");
             base.OnDeactivated();
         }
-
+        private void XafBootstrapConfigurationActionItem_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            var os = Application.CreateObjectSpace();            
+            var view = Application.CreateDetailView(os, XAF_Bootstrap.DatabaseUpdate.Updater.Configuration(os));
+            Application.MainWindow.SetView(view);
+        }
     }
 }

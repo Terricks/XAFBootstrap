@@ -108,8 +108,10 @@ namespace XAF_Bootstrap.Controls
                 return null;
             }
             set
-            {                
-                SelectedItem = Items.List.Where(f => String.Concat(f.Value) == String.Concat(value)).FirstOrDefault();                
+            {
+                SelectedItem = Items.List.Where(f => f.Value.Equals(value)).FirstOrDefault();
+                if (SelectedItem == null)
+                    SelectedItem = Items.List.Where(f => String.Concat(f.Value) == String.Concat(value)).FirstOrDefault();
                 if (IsInitialized)
                     InnerRender();
             }
@@ -135,9 +137,6 @@ namespace XAF_Bootstrap.Controls
         private CallbackHandler Handler;
         public void InnerRender()
         {
-            Handler = new CallbackHandler(ClientID);
-            Handler.OnCallback += Handler_OnCallback;
-
             Content.Text = "";
             
             if (TextOnly)
@@ -212,6 +211,8 @@ namespace XAF_Bootstrap.Controls
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
+            Handler = new CallbackHandler(ClientID);
+            Handler.OnCallback += Handler_OnCallback;
             Content = new HTMLText();
             Controls.Add(Content);
             IsInitialized = true;     

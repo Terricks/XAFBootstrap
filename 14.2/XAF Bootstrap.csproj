@@ -57,11 +57,11 @@
       <HintPath>packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
-    <Reference Include="DevExpress.ExpressApp.ConditionalAppearance.v14.2, Version=14.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.ExpressApp.Security.v14.2, Version=14.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.ExpressApp.TreeListEditors.Web.v14.2, Version=14.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.ExpressApp.Validation.v14.2, Version=14.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.ExpressApp.Web.v14.2, Version=14.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.ExpressApp.ConditionalAppearance.v14.2, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.ExpressApp.Security.v14.2, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.ExpressApp.TreeListEditors.Web.v14.2, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.ExpressApp.Validation.v14.2, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.ExpressApp.Web.v14.2, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.ExpressApp.Xpo.v14.2">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
@@ -78,11 +78,12 @@
     <Reference Include="DevExpress.Persistent.BaseImpl.v14.2">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="DevExpress.Printing.v14.2.Core, Version=14.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.RichEdit.v14.2.Core, Version=14.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Utils.v14.2, Version=14.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Web.ASPxThemes.v14.2, Version=14.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Web.v14.2, Version=14.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Printing.v14.2.Core, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Office.v14.2.Core, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.RichEdit.v14.2.Core, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Utils.v14.2, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Web.ASPxThemes.v14.2, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Web.v14.2, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Xpo.v14.2">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -126,6 +127,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessObjects\XAFBootstrapConfiguration.cs" />
+    <Compile Include="Controllers\XafBootstrapConfiguration\XafBootstrapConfigurationAction.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controllers\XafBootstrapConfiguration\XafBootstrapConfigurationAction.Designer.cs">
+      <DependentUpon>XafBootstrapConfigurationAction.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controllers\XafBootstrapConfiguration\XafBootstrapConfigurationViewController.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -149,12 +156,6 @@
     </Compile>
     <Compile Include="Controllers\XafBootstrapDetailViewRootController.Designer.cs">
       <DependentUpon>XafBootstrapDetailViewRootController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controllers\XafBootstrapMenuItemClickController.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controllers\XafBootstrapMenuItemClickController.Designer.cs">
-      <DependentUpon>XafBootstrapMenuItemClickController.cs</DependentUpon>
     </Compile>
     <Compile Include="Controllers\XafBootstrapObjectChangedController.cs">
       <SubType>Component</SubType>
@@ -238,6 +239,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controllers\XafBootstrapConfiguration\XafBootstrapConfigurationAction.resx">
+      <DependentUpon>XafBootstrapConfigurationAction.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controllers\XafBootstrapConfiguration\XafBootstrapConfigurationViewController.resx">
       <DependentUpon>XafBootstrapConfigurationViewController.cs</DependentUpon>
     </EmbeddedResource>
@@ -269,6 +273,7 @@
     <EmbeddedResource Include="Content\fonts\glyphicons-halflings-regular.eot" />
     <EmbeddedResource Include="Content\fonts\glyphicons-halflings-regular.ttf" />
     <EmbeddedResource Include="Content\fonts\glyphicons-halflings-regular.woff" />
+    <EmbeddedResource Include="Content\fonts\glyphicons-halflings-regular.woff2" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -333,7 +338,7 @@
     <EmbeddedResource Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <EmbeddedResource Include="Content\bootstrap_css\bootstrap-dx.css" />
     <EmbeddedResource Include="Content\bootstrap_themes\Paper\bootstrap_css\bootstrap-custom.css" />
-	<EmbeddedResource Include="Content\bootstrap_js\bootstrap-dx.js" />
+    <EmbeddedResource Include="Content\bootstrap_js\bootstrap-dx.js" />
     <Content Include="Templates\ContentTemplate.ascx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>ASPXCodeBehind</SubType>

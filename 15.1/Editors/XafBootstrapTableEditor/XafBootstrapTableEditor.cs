@@ -37,7 +37,7 @@ using System.Linq;
 
 namespace XAF_Bootstrap.Editors.XafBootstrapTableEditor
 {
-    [ListEditor(typeof(Object), true)]
+    [ListEditor(typeof(object), true)]
     public class XafBootstrapTableEditor : ListEditor, IComplexListEditor, IXafBootstrapListEditor, IXafCallbackHandler, IProcessCallbackComplete
     {
         protected XafBootstrapTable control;

@@ -196,14 +196,16 @@
 </div>
 
 <script type="text/javascript">
+    window.modalsStartZIndex = 1050;
     function ShowXafMessage(caption, confirmationMessage, callback, buttonOKCaption, isCancelButtonNeeded) {
+        var modals = $('.modal.in');
         if (buttonOKCaption == '')
             buttonOKCaption = '<%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"DialogButtons", "OK") %>';
         var cancelButton = '';
         if (isCancelButtonNeeded + "" != 'false')
             cancelButton = '<button type="button" class="btn btn-default" data-dismiss="modal"><%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"DialogButtons", "Cancel") %></button>';
         var modal = $(
-            '<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">' +
+            '<div class="modal fade is-temporary" tabindex="-1" role="dialog" aria-hidden="true"  style="z-index:' + (window.modalsStartZIndex + modals.length) + '">' +
                 '<div class="modal-dialog">' +
                     '<div class="modal-content">' +
                         '<div class="modal-header">' +
@@ -231,7 +233,17 @@
     }
 </script>
 
-<script>
+<script>    
+    function checkWindowScrolls(modalsCount) {
+        var modals = $('.modal.in:visible');
+        if (modals.length > modalsCount) {
+            $('body').css({ overflow: 'hidden' });
+        }
+        else {
+            $('body').css({ overflow: 'auto' });
+        };
+    };
+
     $(document).ready(function () {
         $("#content").css('margin-top', $('#navbar').height());
         
@@ -259,7 +271,8 @@
             if (!(sender))
                 sender = window;
 
-            var modal = $("<div class='modal fade'><div class='modal-dialog modal-lg'><div class='modal-content'>"
+            var modals = $('.modal.in');
+            var modal = $("<div class='modal fade is-temporary' style='z-index:" + (window.modalsStartZIndex + modals.length) + "'><div class='modal-dialog modal-lg'><div class='modal-content'>"
                     + "<div class='modal-body' style='height: 200px'><div class='progress' style='margin: 0;height: 14px; position: absolute; width: 20%; top: 50%; left: 40%'>"
                         + "<div class='progress-bar progress-bar-info progress-bar-striped active' role='progressbar' aria-valuenow='100' aria-valuemin='0' aria-valuemax='100' style='width: 100%'></div>"
                     + "</div></div>"
@@ -279,6 +292,7 @@
 
                 iframeDoc.startProgress = startProgress;
                 iframeDoc.stopProgress = stopProgress;
+                iframeDoc.checkWindowScrolls = window.checkWindowScrolls;
 
                 iframeDoc.closeThisModal = function () {
                     modal.modal('hide');
@@ -388,6 +402,8 @@
                 raiseFunc();
             };
 
+            sender.checkWindowScrolls(0);
+
             return isRaised;
         }        
     });
@@ -434,8 +450,10 @@
             sender = window;
         if (sender.DataChanged == true)
         {
+            var modals = $('.modal.in');            
+
             var dialog =
-           $('<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">'
+            $('<div class="modal fade is-temporary" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:' + (window.modalsStartZIndex + modals.length) + '">'
                 + '<div class="modal-dialog">'
                     + '<div class="modal-content">'
                         + '<div class="modal-header"><%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"XAF Bootstrap\Dialogs", "DiscardChangesCaption") %>'
@@ -512,22 +530,46 @@
 </script>
 
 <script>
-    $(document)        
+    $(document)                
         .on('shown.bs.modal', '.modal.in', function (event) {
             setModalsAndBackdropsOrder();
+            $('body').css({ overflow: 'hidden' });            
+        })
+        .on('hide.bs.modal', '.modal.in', function (event) {
+            window.checkWindowScrolls(1);
         })
         .on('hidden.bs.modal', '.modal', function (event) {
-            setModalsAndBackdropsOrder();
+            if ($(this).hasClass('is-temporary')) {
+                $(this).remove();
+            };
         });
 
-    function setModalsAndBackdropsOrder() {        
-        var modalZIndex = 1040;
-        $('.modal.in').each(function (index) {
-            var $modal = $(this);            
+    function setModalsAndBackdropsOrder() {
+        var modalZIndex = modalsStartZIndex;
+        var modals = $('.modal.in');
+        modals.each(function (index) {
+            var $modal = $(this);
             modalZIndex++;
-            $modal.css('zIndex', modalZIndex);            
-            $modal.next('.modal-backdrop.in').addClass('hidden').css('zIndex', modalZIndex - 1);
-        });
+            $modal.css({ overflow: 'auto', zIndex: modalZIndex });
+            $backdrop = $modal.find('.modal-backdrop.in');
+            if ($backdrop.length > 0) {
+                $backdrop.css({ zIndex: modalZIndex, width: '100%', height: '100%', position: 'fixed' });
+                $backdrop.insertBefore($modal);                
+            }
+
+            if (!$modal.hasClass("managed")) {
+                var contentClicked = false;
+                $modal.find('.modal-content').click(function (e) {                    
+                    contentClicked = true;
+                });
+                $modal.click(function (e) {
+                    if (!contentClicked)
+                        $modal.modal('hide');
+                    contentClicked = false;
+                });
+                $modal.addClass("managed");
+            }
+        });        
         $('.modal.in:visible:last').focus().next('.modal-backdrop.in').removeClass('hidden');
     }
 

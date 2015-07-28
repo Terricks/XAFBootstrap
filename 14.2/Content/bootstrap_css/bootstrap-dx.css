@@ -84,6 +84,7 @@ table.xaf-bootstrap tbody td, table.xaf-bootstrap tbody th {
 
 .view-action {
     padding-right: 15px;    
+    padding-bottom: 4px;
 }
 
 .view-actions {
@@ -113,6 +114,7 @@ table.xaf-bootstrap tbody td, table.xaf-bootstrap tbody th {
 
 .actions button {
     margin-right: 2px;
+    margin-bottom: 2px;
 }
 
 .alert-sm {
@@ -127,4 +129,9 @@ table.xaf-bootstrap tbody td, table.xaf-bootstrap tbody th {
 
 .settings-button {
     font-size: 15px;
+}
+
+.loading-progress {
+    margin: 0;
+    height: 5px;
 }

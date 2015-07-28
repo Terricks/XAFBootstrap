@@ -256,7 +256,7 @@ namespace XafBootstrap.Web
                         {
                             if (layoutGroup.Model.ShowCaption == true)
                             {
-                                AddContent(new HTMLText()
+                                /*AddContent(new HTMLText()
                                 {
                                     Text =
                                         Start ?
@@ -264,7 +264,27 @@ namespace XafBootstrap.Web
                                         :
                                         ""
                                         
+                                }, Container);*/
+
+
+                                AddContent(new HTMLText()
+                                {
+                                    Text =
+                                        Start ?
+                                        String.Format(@"
+                                            <div class=""panel panel-default"">
+                                              <div class=""panel-heading"">{0}</div>
+                                              <div class=""panel-body"">
+                                        ", layoutGroup.Model.Caption)
+                                        :
+                                        @"
+                                            </div>
+                                        </div>"
+                                        
                                 }, Container);
+
+                                
+
                             }
                             AddContent(new HTMLText()
                             {

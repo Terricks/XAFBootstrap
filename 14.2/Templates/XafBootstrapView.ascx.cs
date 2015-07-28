@@ -61,7 +61,7 @@ namespace XafBootstrap.Web
             base.OnInit(e);
             if (ViewItem != null)
             {
-                ViewItem newViewItem = null;
+                ViewItem newViewItem = ViewItem;
                 String ModelID = "";
                 if (ViewItem is PropertyEditor) {
                     newViewItem = Helpers.EditorsFactory.CreatePropertyEditorByType(ViewItem.GetType(), (ViewItem as PropertyEditor).Model, (ViewItem as PropertyEditor).ObjectType, Application, ObjectSpace);
@@ -210,11 +210,18 @@ namespace XafBootstrap.Web
                 {
                     var manager = Helpers.RequestManager;
                     String activeTabId = String.Concat(manager.Request.Form[(Parent as TabbedGroupTemplateContainer).Model.Id + "_state"]);
+                    Boolean isActive = ((activeTabId != "" && layoutGroup.Model.Id == activeTabId) || (activeTabId == "" && type == ElemType.FirstObject));
                     AddContent(new HTMLText()
                     {
                         Text =
                             Start ?
-                            String.Format("<li role=\"presentation\"{2}><a href=\"#{0}\" role=\"tab\" data-toggle=\"tab\" onclick=\"$(&quot;#{3}_state&quot;).val(&quot;{0}&quot;)\">{1}</a>", layoutGroup.Model.Id, layoutGroup.Caption, ((activeTabId != "" && layoutGroup.Model.Id == activeTabId) || (activeTabId == "" && type == ElemType.FirstObject)) ? " class='active'" : "", (Parent as TabbedGroupTemplateContainer).Model.Id)
+                            String.Format("<li role=\"presentation\"{2}><a href=\"#{0}\" role=\"tab\" data-toggle=\"tab\" onclick=\"$('#{3}_state').val('{0}'); {4} \">{1}</a>".Replace("'","&quot;")
+                                , layoutGroup.Model.Id
+                                , layoutGroup.Caption
+                                , isActive ? " class='active'" : ""
+                                , (Parent as TabbedGroupTemplateContainer).Model.Id
+                                , Request.Form[layoutGroup.Model.Id + "_activated"] != "1" && !isActive ? String.Format("$('#{0}_activated').val(1); refreshView();".Replace("'", "&quot;"), layoutGroup.Model.Id) : ""
+                                )
                             :
                             "</li>"
                     }, Container);
@@ -247,6 +254,38 @@ namespace XafBootstrap.Web
                         if (layoutGroup.Model.Direction == DevExpress.ExpressApp.Layout.FlowDirection.Horizontal &&
                             layoutGroup.Items.Count > 0)
                         {
+                            if (layoutGroup.Model.ShowCaption == true)
+                            {
+                                /*AddContent(new HTMLText()
+                                {
+                                    Text =
+                                        Start ?
+                                        String.Format(@"<h4>{0}</h4>", layoutGroup.Model.Caption)
+                                        :
+                                        ""
+                                        
+                                }, Container);*/
+
+
+                                AddContent(new HTMLText()
+                                {
+                                    Text =
+                                        Start ?
+                                        String.Format(@"
+                                            <div class=""panel panel-default"">
+                                              <div class=""panel-heading"">{0}</div>
+                                              <div class=""panel-body"">
+                                        ", layoutGroup.Model.Caption)
+                                        :
+                                        @"
+                                            </div>
+                                        </div>"
+                                        
+                                }, Container);
+
+                                
+
+                            }
                             AddContent(new HTMLText()
                             {
                                 Text =
@@ -337,7 +376,7 @@ namespace XafBootstrap.Web
                                     {
                                         Text = String.Format(@"
                                             <div class='form-group'>
-                                                <label>{0}</label>                                                
+                                                <label><b>{0}</b></label>                                                
                                         ", editor.Caption)
                                     }, Container);
                                 else
@@ -605,8 +644,24 @@ namespace XafBootstrap.Web
                             classActive = (item.Value.Model.Id == activeTabId) ? " active" : "";
                         }
 
-                        AddContent(new HTMLText() { Text = String.Format("<div role='tabpanel' class='tab-pane fade in{1}' id='{0}'>", item.Value.Model.Id, classActive) }, checkTab);
-                        BuildRecursiveElement(item.Value, null, (i == minVisibleIndex) ? ElemType.FirstObject : (i == maxVisibleIndex) ? ElemType.LastObject : ElemType.SingleObject, checkTab);
+                        AddContent(new HTMLText() { Text = String.Format("<div role='tabpanel' class='tab-pane fade in{1}' id='{0}'><input type='hidden' id='{0}_activated' value='{2}' name = '{0}_activated'/>", item.Value.Model.Id, classActive, Request.Form[item.Value.Model.Id + "_activated"] == "1" || (i == 0) ? "1" : "0") }, checkTab);
+
+                        var checkTabCounter = new List<Control>();
+                        BuildRecursiveElement(item.Value, null, (i == 0) ? ElemType.FirstObject : (i == 0) ? ElemType.LastObject : ElemType.SingleObject, checkTabCounter);
+                        if (Request.Form[item.Value.Model.Id + "_activated"] == "1" || (i == 0))
+                            checkTab.AddRange(checkTabCounter);
+                        else
+                            if (checkTabCounter.Count > 2)
+                            {
+                                AddContent(new HTMLText() { Text = "" }, checkTab);
+                                AddContent(new HTMLText() { Text = @"<div class=""progress loading-progress"">
+  <div class=""progress-bar progress-bar-info progress-bar-striped active"" role=""progressbar"" aria-valuenow=""100"" aria-valuemin=""0"" aria-valuemax=""100"" style=""width: 100%"">
+    <span class=""sr-only"">40% Complete (success)</span>
+  </div>
+</div>" }, checkTab);
+                                AddContent(new HTMLText() { Text = "" }, checkTab);
+                            }
+                            
                         AddContent(new HTMLText() { Text = "</div>" }, checkTab);
                         
                         checkTabs.Add(i, checkTab);

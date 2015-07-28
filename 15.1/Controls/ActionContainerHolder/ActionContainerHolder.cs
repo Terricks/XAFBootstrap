@@ -384,6 +384,7 @@ namespace XAF_Bootstrap.Controls
                 }
 
             }
+            EnsureChildControls();
         }
 
         public Boolean IsMenuItemsCreated = false;

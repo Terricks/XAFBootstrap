@@ -82,7 +82,7 @@ namespace XAF_Bootstrap.DatabaseUpdate
         public static void CheckResources()
         {
             CheckResource("bootstrap_js", "jquery-1.11.2.min.js");
-            CheckResource("bootstrap_js", "bootstrap.min.js");                        
+            CheckResource("bootstrap_js", "bootstrap.min.js", false);                        
             CheckResource("bootstrap_js", "bootstrap-datetimepicker.min.js");
             CheckResource("bootstrap_js", "bootstrap-select.min.js");
             CheckResource("bootstrap_js", "moment-with-locales.min.js");
@@ -94,10 +94,11 @@ namespace XAF_Bootstrap.DatabaseUpdate
             CheckResource("bootstrap_css", "bootstrap-dx.css", false);
             CheckResource("bootstrap_css", "bootstrap-custom.css");
 
-            CheckResource("fonts", "glyphicons-halflings-regular.eot");
-            CheckResource("fonts", "glyphicons-halflings-regular.svg");
-            CheckResource("fonts", "glyphicons-halflings-regular.ttf");
-            CheckResource("fonts", "glyphicons-halflings-regular.woff");
+            CheckResource("fonts", "glyphicons-halflings-regular.eot", false);
+            CheckResource("fonts", "glyphicons-halflings-regular.svg", false);
+            CheckResource("fonts", "glyphicons-halflings-regular.ttf", false);
+            CheckResource("fonts", "glyphicons-halflings-regular.woff", false);
+            CheckResource("fonts", "glyphicons-halflings-regular.woff2", false);
 
             CheckResource("bootstrap_themes.Cerulean.bootstrap_css", "bootstrap.min.css", false);
             CheckResource("bootstrap_themes.Cerulean", "preview.jpg");

@@ -49,10 +49,10 @@
                                     <cc4:ViewImageControl ID="viewImageControl" runat="server" />
                                 </td>
                                 <td class="ViewCaption">
-                                    <h1>
+                                    <h3>
                                         <cc4:ViewCaptionControl ID="viewCaptionControl" DetailViewCaptionMode="ViewCaption"
                                             runat="server" />
-                                    </h1>
+                                    </h3>
                                 </td>
                             </tr>
                         </table>

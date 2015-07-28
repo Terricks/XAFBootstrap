@@ -23,21 +23,20 @@
 using System;
 using System.Collections.Generic;
 using DevExpress.ExpressApp.Editors;
-using DevExpress.ExpressApp.Web;
 using DevExpress.ExpressApp.Templates;
 using DevExpress.ExpressApp.Web.Templates;
 using System.Linq;
-using DevExpress.ExpressApp;
 using XAF_Bootstrap.Controls;
+using DevExpress.ExpressApp.Web.SystemModule;
+using DevExpress.ExpressApp.Web;
 
 namespace XAF_Bootstrap.Templates
 {
     public partial class DialogTemplate : TemplateContent, ILookupPopupFrameTemplate, IXafPopupWindowControlContainer
-    {        
+    {
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-
             Helpers.AddMeta(Page);
             Page.Header.Controls.Add(new HTMLText(@"<style> body { background: none; } </style>"));
         }        

@@ -43,7 +43,7 @@ namespace XafBootstrap.Web
             base.OnViewControlsCreated();           
 
             DetailView DetailView = (View as DetailView);
-            XafBootstrapView view = (XafBootstrapView)(Frame.Template as BaseXafPage).LoadControl("~/Templates/XafBootstrapView.ascx");
+            XafBootstrapView view = (XafBootstrapView)(Frame.Template as BaseXafPage).LoadControl("~/XafBootstrapView.ascx");
             view.IsRootView = true;
             CustomPanel cp = new CustomPanel();
             IList<Control> ctrls = new List<Control>();

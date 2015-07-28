@@ -55,7 +55,7 @@ namespace XAF_Bootstrap.Templates {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::DevExpress.ExpressApp.Web.Templates.ActionContainers.ActionContainerHolder OCC;
+        protected global::XAF_Bootstrap.Controls.XbActionContainerHolder OCC;
         
         /// <summary>
         /// SAC control.
@@ -64,25 +64,7 @@ namespace XAF_Bootstrap.Templates {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::DevExpress.ExpressApp.Web.Templates.ActionContainers.ActionContainerHolder SAC;
-        
-        /// <summary>
-        /// LeftActions control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::DevExpress.Web.ASPxLabel LeftActions;
-        
-        /// <summary>
-        /// RightActions control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::DevExpress.Web.ASPxLabel RightActions;
+        protected global::XAF_Bootstrap.Controls.XbActionContainerHolder SAC;
         
         /// <summary>
         /// UPEI control.
@@ -136,15 +118,6 @@ namespace XAF_Bootstrap.Templates {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::DevExpress.ExpressApp.Web.Templates.ActionContainers.ActionContainerHolder PAC;
-        
-        /// <summary>
-        /// Actions control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::DevExpress.Web.ASPxLabel Actions;
+        protected global::XAF_Bootstrap.Controls.XbActionContainerHolder PAC;
     }
 }

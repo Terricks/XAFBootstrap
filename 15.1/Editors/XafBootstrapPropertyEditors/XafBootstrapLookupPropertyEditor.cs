@@ -35,7 +35,7 @@ using System.Linq;
 
 namespace XAF_Bootstrap.Editors.XafBootstrapPropertyEditors
 {
-    [PropertyEditor(typeof(XPBaseObject), "XafBootstrapLookupPropertyEditor", true)]
+    [PropertyEditor(typeof(Object), "XafBootstrapLookupPropertyEditor", true)]
     public class XafBootstrapLookupPropertyEditor : ASPxPropertyEditor, IXafBootstrapEditor, IComplexViewItem
     {
         #region IComplexViewItem Members
@@ -69,15 +69,14 @@ namespace XAF_Bootstrap.Editors.XafBootstrapPropertyEditors
             var attr = this.MemberInfo.FindAttribute<LookupEditorModeAttribute>();
             IsSelector = (attr == null || attr.Mode != LookupEditorMode.AllItems);
 
-            var Helper = new LookupEditorHelper(Application, ObjectSpace.CreateNestedObjectSpace(), MemberInfo.MemberTypeInfo, Model);
+            var Helper = new LookupEditorHelper(Application, ObjectSpace.CreateNestedObjectSpace(), MemberInfo.MemberTypeInfo, Model);            
             CollectionSourceBase cs = null;
 
-            if (!IsSelector || attr == null || attr.Mode == LookupEditorMode.Auto)
+            if (!IsSelector || Helper.EditorMode == LookupEditorMode.Auto)
             {
                 cs = Helper.CreateCollectionSource(Helper.ObjectSpace.GetObject(CurrentObject));
-                IsSelector = cs.List.Count > 20;
+                IsSelector = cs.List.Count > 20 || cs.List.Count == 0;
             }
-
 
             String displayFormat = String.Concat(DisplayFormat);
             if (displayFormat == "")
@@ -130,7 +129,7 @@ namespace XAF_Bootstrap.Editors.XafBootstrapPropertyEditors
                     } else {
                         item.Text = String.Format(new ObjectFormatter(), String.Concat(displayFormat) == "" ? "{0}" : displayFormat, obj);
                     }
-                    item.Value = obj;
+                    item.Value = ObjectSpace.GetObject(obj);
                 }
             }
         }
@@ -174,7 +173,7 @@ namespace XAF_Bootstrap.Editors.XafBootstrapPropertyEditors
         }        
 
         protected override object GetControlValueCore()
-        {            
+        {       
             return ObjectSpace.GetObject(IsSelector ? DataSelector.Value : DropDown.Value);
         }
         

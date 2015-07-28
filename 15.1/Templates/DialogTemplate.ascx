@@ -9,7 +9,6 @@
     TagPrefix="cc4" %>
 <%@ Register Assembly="DevExpress.ExpressApp.Web.v15.1" Namespace="DevExpress.ExpressApp.Web.Templates"
     TagPrefix="cc3" %>
-
     <cc3:XafUpdatePanel ID="UPPopupWindowControl" runat="server">
         <cc4:XafPopupWindowControl runat="server" ID="PopupWindowControl" />
     </cc3:XafUpdatePanel>    
@@ -83,19 +82,51 @@
     $(document)
         .on('shown.bs.modal', '.modal.in', function (event) {
             setModalsAndBackdropsOrder();
+            $('body').css({ overflow: 'hidden' });
+        })
+        .on('hide.bs.modal', '.modal.in', function (event) {
+            window.checkWindowScrolls(1);
         })
         .on('hidden.bs.modal', '.modal', function (event) {
-            setModalsAndBackdropsOrder();
+            if ($(this).hasClass('is-temporary')) {
+                $(this).remove();
+            };
         });
 
     function setModalsAndBackdropsOrder() {
-        var modalZIndex = 1040;
-        $('.modal.in').each(function (index) {
+        var modalZIndex = modalsStartZIndex;
+        var modals = $('.modal.in');
+        modals.each(function (index) {
             var $modal = $(this);
             modalZIndex++;
-            $modal.css('zIndex', modalZIndex);
-            $modal.next('.modal-backdrop.in').addClass('hidden').css('zIndex', modalZIndex - 1);
-        });
+            $modal.css({ overflow: 'auto', zIndex: modalZIndex });
+            $backdrop = $modal.find('.modal-backdrop.in');
+            if ($backdrop.length > 0) {
+                $backdrop.css({ zIndex: modalZIndex, width: '100%', height: '100%', position: 'fixed' });
+                $backdrop.insertBefore($modal);                
+            }
+
+            if (!$modal.hasClass("managed")) {
+                var contentClicked = false;
+                $modal.find('.modal-content').click(function (e) {                    
+                    contentClicked = true;
+                });
+                $modal.click(function (e) {
+                    if (!contentClicked)
+                        $modal.modal('hide');
+                    contentClicked = false;
+                });
+                $modal.addClass("managed");
+            }
+        });        
         $('.modal.in:visible:last').focus().next('.modal-backdrop.in').removeClass('hidden');
     }
+
+    $(document).ready(function () {
+        globalCallbackControl.RaiseCallbackError = function (message) {
+            stopProgress();
+            ShowXafMessage("<%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"XAF Bootstrap\Dialogs", "ConfirmAction") %>", message, "", "", "");
+            return { isHandled: false };
+        };
+    });
 </script>

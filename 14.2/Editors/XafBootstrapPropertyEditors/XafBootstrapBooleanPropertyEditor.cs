@@ -74,12 +74,12 @@ namespace XAF_Bootstrap.Editors.XafBootstrapPropertyEditors
         
         protected override void ReadEditModeValueCore()
         {
-            Edit.Value = Boolean.Parse(String.Concat(PropertyValue));
+            Edit.Value = (PropertyValue == null ? false : Boolean.Parse(String.Concat(PropertyValue)));
         }
         
         protected override void ReadViewModeValueCore()
         {
-            Edit.Value = Boolean.Parse(String.Concat(PropertyValue));
+            Edit.Value = (PropertyValue == null ? false : Boolean.Parse(String.Concat(PropertyValue)));
         }
     }
 }

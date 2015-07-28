@@ -157,12 +157,6 @@
     <Compile Include="Controllers\XafBootstrapDetailViewRootController.Designer.cs">
       <DependentUpon>XafBootstrapDetailViewRootController.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controllers\XafBootstrapMenuItemClickController.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controllers\XafBootstrapMenuItemClickController.Designer.cs">
-      <DependentUpon>XafBootstrapMenuItemClickController.cs</DependentUpon>
-    </Compile>
     <Compile Include="Controllers\XafBootstrapObjectChangedController.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -275,10 +269,13 @@
     <EmbeddedResource Include="Model.DesignedDiffs.xafml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <EmbeddedResource Include="Content\fonts\glyphicons-halflings-regular.eot" />
     <EmbeddedResource Include="Content\fonts\glyphicons-halflings-regular.ttf" />
     <EmbeddedResource Include="Content\fonts\glyphicons-halflings-regular.woff" />
+    <EmbeddedResource Include="Content\fonts\glyphicons-halflings-regular.woff2" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

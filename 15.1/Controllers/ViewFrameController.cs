@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using DevExpress.ExpressApp.Editors;
 using XAF_Bootstrap.Templates;
 using XAF_Bootstrap.Editors.XafBootstrapTableEditor;
+using DevExpress.ExpressApp.Web;
 
 namespace XAF_Bootstrap.Controllers
 {    
@@ -40,7 +41,8 @@ namespace XAF_Bootstrap.Controllers
 
         protected override void OnActivated()
         {
-            base.OnActivated();
+            base.OnActivated();           
+
             var focusController = Frame.GetController<DevExpress.ExpressApp.Web.SystemModule.FocusController>();
             if (focusController != null)
                 focusController.Active["XafBootstrapActive"] = false;
@@ -48,7 +50,9 @@ namespace XAF_Bootstrap.Controllers
 
         protected override void OnViewControlsCreated()
         {
-            base.OnViewControlsCreated();                        
+            base.OnViewControlsCreated();
+
+            Helpers.AddMeta(WebWindow.CurrentRequestPage);
 
             if (View is ListView)
             {

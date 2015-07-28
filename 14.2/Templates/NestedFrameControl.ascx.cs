@@ -130,6 +130,6 @@ namespace XAF_Bootstrap.Templates
             if (!ToolBar.IsMenuItemsCreated)
                 ToolBar.CreateMenuItems();
             return ToolBar != null && ToolBar.actionObjects.Count > 0;
-        }
+        }        
     }
 }

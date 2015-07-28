@@ -62,7 +62,7 @@ namespace XAF_Bootstrap.Editors.XafBootstrapTableEditor
                 var status = false;
                 if (collection.List.IndexOf(child) > -1)
                 {
-                    if (parentStatus == !MarkedObjects.Contains(String.Concat(GetMemberValue((child as Object), "Oid"))))
+                    if (parentStatus == !MarkedObjects.Contains(String.Concat(GetMemberValue((child as Object), collection.ObjectSpace.GetKeyPropertyName(child.GetType())))))
                     {
                         SelectedObjects.Add(child as Object);
                         status = true;
@@ -79,7 +79,7 @@ namespace XAF_Bootstrap.Editors.XafBootstrapTableEditor
             {
                 foreach (ITreeNode nestedObject in selectedObject.Children)
                 {
-                    var id = String.Concat(GetMemberValue((nestedObject as Object),"Oid"));
+                    var id = String.Concat(GetMemberValue((nestedObject as Object), collection.ObjectSpace.GetKeyPropertyName(nestedObject.GetType())));
                     if (MarkedObjects.Contains(id))
                         MarkedObjects.Remove(id);
                     DeleteSelectedObject(nestedObject);
@@ -119,7 +119,7 @@ namespace XAF_Bootstrap.Editors.XafBootstrapTableEditor
                         string[] marks = String.Concat(vals[1]).Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
                         foreach (var mark in marks)
-                            DeleteSelectedObject(collection.List.OfType<ITreeNode>().Where(f => String.Concat(GetMemberValue((f as Object), "Oid")) == mark).FirstOrDefault());
+                            DeleteSelectedObject(collection.List.OfType<ITreeNode>().Where(f => String.Concat(GetMemberValue((f as Object), collection.ObjectSpace.GetKeyPropertyName(f.GetType()))) == mark).FirstOrDefault());
 
                         CalcSelectedObjects();
                         break;
@@ -141,7 +141,7 @@ namespace XAF_Bootstrap.Editors.XafBootstrapTableEditor
             control = base.CreateControlsCore() as XafBootstrapTable;
             var FirstModelVisibleColumn = ListView.Columns.Where(f => f.Index >= 0).OrderBy(f => f.Index).FirstOrDefault();
             if (FirstModelVisibleColumn != null)
-                control.OnGenerateCell += new OnGenerateCellHandler(delegate(ref String Format, String FieldName, ref String Value, object data)
+                control.OnGenerateCell += new OnGenerateCellHandler(delegate(ref String Format, String FieldName, ref String Value, int RowNumber, object data)
                 {
                     if (data is ITreeNode)
                     {
@@ -149,12 +149,12 @@ namespace XAF_Bootstrap.Editors.XafBootstrapTableEditor
                         if (obj != null && FieldName == FirstModelVisibleColumn.Id)
                         {
 
-                            if ((DataSource as IList).OfType<Object>().Where(f => (f as ITreeNode).Parent != null && (String.Concat(GetMemberValue((f as ITreeNode).Parent as Object, "Oid")) == String.Concat(GetMemberValue((obj as Object), "Oid")))).Count() > 0)
+                            if ((DataSource as IList).OfType<Object>().Where(f => (f as ITreeNode).Parent != null && (String.Concat(GetMemberValue((f as ITreeNode).Parent as Object, collection.ObjectSpace.GetKeyPropertyName(f.GetType()))) == String.Concat(GetMemberValue((obj as Object), collection.ObjectSpace.GetKeyPropertyName(obj.GetType()))))).Count() > 0)
                             {
-                                if (ExpandedItems.IndexOf(String.Concat(GetMemberValue((obj as Object), "Oid"))) > -1)
-                                    Value = "</span><span class=\"glyphicon glyphicon-chevron-down glyphicon-sm\" onclick=\"" + XafCallbackManager.GetScript(control.ClientID, String.Format("'Expand={0}'", GetMemberValue((data as Object), "Oid"))) + "event.cancelBubble = true;\"> </span>" + Value;
+                                if (ExpandedItems.IndexOf(String.Concat(GetMemberValue((obj as Object), collection.ObjectSpace.GetKeyPropertyName(obj.GetType())))) > -1)
+                                    Value = "</span><span class=\"glyphicon glyphicon-chevron-down glyphicon-sm\" onclick=\"" + XafCallbackManager.GetScript(control.ClientID, String.Format("'Expand={0}'", GetMemberValue((data as Object), collection.ObjectSpace.GetKeyPropertyName(data.GetType())))) + "event.cancelBubble = true;\"> </span>" + Value;
                                 else
-                                    Value = "</span><span class=\"glyphicon glyphicon-chevron-right glyphicon-sm\" onclick=\"" + XafCallbackManager.GetScript(control.ClientID, String.Format("'Expand={0}'", GetMemberValue((data as Object), "Oid"))) + "event.cancelBubble = true;\"> </span>" + Value;
+                                    Value = "</span><span class=\"glyphicon glyphicon-chevron-right glyphicon-sm\" onclick=\"" + XafCallbackManager.GetScript(control.ClientID, String.Format("'Expand={0}'", GetMemberValue((data as Object), collection.ObjectSpace.GetKeyPropertyName(data.GetType())))) + "event.cancelBubble = true;\"> </span>" + Value;
                             }
                             else
                                 Value = "</span><span class=\"glyphicon glyphicon-sm\"> </span><span></span>" + Value;
@@ -187,7 +187,7 @@ namespace XAF_Bootstrap.Editors.XafBootstrapTableEditor
             foreach (var item in source.Where(f => ForceBuild || (f as ITreeNode).Parent == parent))
             {
                 List.Add(item);
-                if (ExpandedItems.IndexOf(String.Concat(GetMemberValue(item, "Oid"))) > -1)
+                if (ExpandedItems.IndexOf(String.Concat(GetMemberValue(item, collection.ObjectSpace.GetKeyPropertyName(item.GetType())))) > -1)
                     MakeSortedList(item, ref List, source);
             }
         }
@@ -197,7 +197,7 @@ namespace XAF_Bootstrap.Editors.XafBootstrapTableEditor
             foreach (var item in root)
             {
                 List.Add(item);
-                if (ExpandedItems.IndexOf(String.Concat(GetMemberValue(item, "Oid"))) > -1)
+                if (ExpandedItems.IndexOf(String.Concat(GetMemberValue(item, collection.ObjectSpace.GetKeyPropertyName(item.GetType())))) > -1)
                     MakeSortedList(item, ref List, source);
             }
         }
@@ -208,7 +208,7 @@ namespace XAF_Bootstrap.Editors.XafBootstrapTableEditor
             var rootList = List.OfType<ITreeNode>().Where(
                 f => f.Parent == null 
                     || (f.Parent != null && List.OfType<Object>().Where(
-                        w => String.Concat(GetMemberValue(w, "Oid")) == String.Concat(GetMemberValue((f.Parent as Object), "Oid"))
+                        w => String.Concat(GetMemberValue(w, collection.ObjectSpace.GetKeyPropertyName(w.GetType()))) == String.Concat(GetMemberValue((f.Parent as Object), collection.ObjectSpace.GetKeyPropertyName(f.Parent.GetType())))
                         ).Count() == 0)
                 ).OfType<Object>().ToList();
 

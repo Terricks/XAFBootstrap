@@ -37,7 +37,7 @@ using System.Linq;
 
 namespace XAF_Bootstrap.Editors.XafBootstrapTableEditor
 {
-    [ListEditor(typeof(Object), true)]
+    [ListEditor(typeof(object), true)]
     public class XafBootstrapTableEditor : ListEditor, IComplexListEditor, IXafBootstrapListEditor, IXafCallbackHandler, IProcessCallbackComplete
     {
         protected XafBootstrapTable control;
@@ -122,7 +122,12 @@ namespace XAF_Bootstrap.Editors.XafBootstrapTableEditor
 
         protected virtual void CalcSelectedObjects()
         {
-            SelectedObjects = collection.List.OfType<Object>().Where(f => (!AllItemsChecked && MarkedObjects.IndexOf(String.Concat(GetMemberValue(f, "Oid"))) > -1) || (AllItemsChecked && MarkedObjects.IndexOf(String.Concat(GetMemberValue(f, "Oid"))) == -1)).ToList();
+            if (collection.List != null)            
+                SelectedObjects = collection.List.OfType<Object>().Where(
+                    f => (
+                        !AllItemsChecked && MarkedObjects.IndexOf(String.Concat(GetMemberValue(f, collection.ObjectSpace.GetKeyPropertyName(f.GetType())))) > -1) ||
+                        (AllItemsChecked && MarkedObjects.IndexOf(String.Concat(GetMemberValue(f, collection.ObjectSpace.GetKeyPropertyName(f.GetType())))) == -1)
+                    ).ToList();                
         }
 
         public virtual void DoProcessAction(string parameter)
@@ -134,7 +139,7 @@ namespace XAF_Bootstrap.Editors.XafBootstrapTableEditor
 
         public object GetObjectByKey(String key)
         {
-            return collection.List.OfType<Object>().FirstOrDefault(f => String.Concat(GetMemberValue(f, "Oid")) == key);
+            return collection.List.OfType<Object>().FirstOrDefault(f => String.Concat(GetMemberValue(f, collection.ObjectSpace.GetKeyPropertyName(f.GetType()))) == key);
         }
 
         public virtual void DoProcessPairAction(String Action, String Param)
@@ -142,24 +147,28 @@ namespace XAF_Bootstrap.Editors.XafBootstrapTableEditor
             switch (Action)
             {
                 case "View":
-                    IObjectSpace os = null;                    
+                    IObjectSpace os = null;
+
+                    var obj = GetObjectByKey(Param);
+                    var svp = new ShowViewParameters();
+
                     if (collection is PropertyCollectionSource)
-                    {   
-                        os = collection.ObjectSpace.CreateNestedObjectSpace();                        
-                        var obj = os.GetObject(GetObjectByKey(Param));
-                        DetailView view = App.CreateDetailView(os, ListView.DetailView, true, obj);
-                        view.ViewEditMode = EditMode;
-                        var svp = new ShowViewParameters(view);
+                    {
+                        os = collection.ObjectSpace.CreateNestedObjectSpace();
                         svp.TargetWindow = TargetWindow.NewModalWindow;
-                        App.ShowViewStrategy.ShowView(svp, new ShowViewSource(null, null));
                     }
                     else
                     {
-                        os = App.CreateObjectSpace();
-                        var obj = os.GetObject(GetObjectByKey(Param));
-                        DetailView view = App.CreateDetailView(os, ListView.DetailView, !(collection is PropertyCollectionSource), obj);
-                        App.MainWindow.SetView(view);
+                        os = App.CreateObjectSpace(obj.GetType());
+                        svp.TargetWindow = TargetWindow.Default;
                     }
+                    
+                    obj = os.GetObject(obj);
+                    DetailView view = App.CreateDetailView(os, ListView.DetailView, true, obj);
+                    view.ViewEditMode = EditMode;
+                    svp.CreatedView = view;                    
+                    App.ShowViewStrategy.ShowView(svp, new ShowViewSource(null, null));
+
                     break;
                 case "Mark":
                     string[] marks = String.Concat(Param).Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
@@ -203,19 +212,21 @@ namespace XAF_Bootstrap.Editors.XafBootstrapTableEditor
             
             control.OnGenerateItemClick += new OnGenerateRowEventHandler(delegate(ref String Result, int RowNumber, object Row)
             {
+                var key = GetMemberValue((Row as Object), collection.ObjectSpace.GetKeyPropertyName(Row.GetType()));                
                 if (!IsLookup)
-                    Result = String.Format(Result, XafCallbackManager.GetScript(control.ClientID, String.Format("'View={0}'", GetMemberValue((Row as Object),"Oid"))));
+                    Result = String.Format(Result, XafCallbackManager.GetScript(control.ClientID, String.Format("'View={0}'", key)));
                 else
-                    Result = String.Format(Result, XafCallbackManager.GetScript(control.ClientID, String.Format("'Mark={0}'", GetMemberValue((Row as Object), "Oid"))));
+                    Result = String.Format(Result, XafCallbackManager.GetScript(control.ClientID, String.Format("'Mark={0}'", key)));
                      
             });
 
             control.CustomColumns.Add(new XafBootstrapTable.HeaderInfo() { ID = "Selector", Align = "left", FieldName = "Selector", FixedWidth = 20 });
-            control.OnGenerateCell += new OnGenerateCellHandler(delegate(ref String Format, String FieldName, ref String value, object data)
+            control.OnGenerateCell += new OnGenerateCellHandler(delegate(ref String Format, String FieldName, ref String value, int RowNumber, object data)
             {
                 if (FieldName == "Selector")
                 {
-                    Format = Format.Replace("<td ", String.Format("<td onclick=\"event.cancelBubble = true; {0}\" ", XafCallbackManager.GetScript(control.ClientID, String.Format("'Mark={0}'", GetMemberValue((data as Object), "Oid")))));
+                    var key = GetMemberValue((data as Object), collection.ObjectSpace.GetKeyPropertyName(data.GetType()));
+                    Format = Format.Replace("<td ", String.Format("<td onclick=\"event.cancelBubble = true; {0}\" ", XafCallbackManager.GetScript(control.ClientID, String.Format("'Mark={0}'", key))));
                     value = String.Format("<input type=\"checkbox\" {0}></label>", 
                         SelectedObjects.IndexOf((data as Object)) > -1 ? "checked" : ""
                     );
