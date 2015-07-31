@@ -14,7 +14,7 @@ You can watch video: https://www.youtube.com/watch?v=mIZcLswlswM
 
 - Microsoft Web Optimization Framework
 - .NET 4.5
-- Supporing XPO (EF partially supported from 15.1)
+- Supporing XPO, EF partially supported
 - EasyTest not supported for now
 
 
