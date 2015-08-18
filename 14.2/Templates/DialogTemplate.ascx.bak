@@ -1,0 +1,110 @@
+﻿<%@ Control Language="C#" CodeBehind="DialogTemplate.ascx.cs" ClassName="DialogTemplate" Inherits="SofIA_XAF_Bootstrap.Templates.DialogTemplate"%>
+<%@ Register Assembly="SofIA XAF Bootstrap" Namespace="SofIA_XAF_Bootstrap.Controls" TagPrefix="cc1" %>
+<%@ Register Assembly="DevExpress.Web.v14.2, Version=14.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.ExpressApp.Web.v14.2" Namespace="DevExpress.ExpressApp.Web.Templates.ActionContainers"
+    TagPrefix="cc2" %>
+<%@ Register Assembly="DevExpress.ExpressApp.Web.v14.2" Namespace="DevExpress.ExpressApp.Web.Templates.Controls"
+    TagPrefix="tc" %>
+<%@ Register Assembly="DevExpress.ExpressApp.Web.v14.2" Namespace="DevExpress.ExpressApp.Web.Controls"
+    TagPrefix="cc4" %>
+<%@ Register Assembly="DevExpress.ExpressApp.Web.v14.2" Namespace="DevExpress.ExpressApp.Web.Templates"
+    TagPrefix="cc3" %>
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">
+        <cc3:XafUpdatePanel ID="UPVH" runat="server">            
+            <div class="row no-margin">                
+                    <cc4:ViewImageControl ID="VIC" runat="server" Control-UseLargeImage="false"  />
+                    <cc4:ViewCaptionControl ID="VCC" runat="server" DetailViewCaptionMode="ViewAndObjectCaption" />
+            </div>
+        </cc3:XafUpdatePanel>
+    </h4>
+</div>
+        
+<div class="modal-body">
+    <cc3:XafUpdatePanel ID="UPSAC" runat="server">
+        <div style="display: none">                                                
+            <cc2:ActionContainerHolder ID="OCC" runat="server" ContainerStyle="Buttons"
+                Orientation="Horizontal" PaintStyle="CaptionAndImage" Categories="ObjectsCreation" style="float: left" />
+                                                
+            <cc2:ActionContainerHolder ID="SAC" runat="server" Categories="Search;FullTextSearch"
+                CssClass="HContainer" Orientation="Horizontal" ContainerStyle="Buttons" />
+        </div>                                                
+
+        <div class="row">
+            <div class="col-sm-6">
+                <dx:ASPxLabel ID="LeftActions" runat="server"></dx:ASPxLabel>
+            </div>
+            <div class="col-sm-6">
+                <dx:ASPxLabel ID="RightActions" runat="server"></dx:ASPxLabel>
+            </div>
+        </div>
+    </cc3:XafUpdatePanel>                
+    
+    <div class="Dialog" id="DialogContent">
+        <table Width="100%" height="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td valign="top" height="100%">
+                    
+                    <table class="DialogContent Content" border="0" cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                            <td class="">
+                                <cc3:XafUpdatePanel ID="UPEI" runat="server">
+                                    <tc:ErrorInfoControl ID="ErrorInfo" Style="margin: 10px 0px 10px 0px" runat="server" />
+                                </cc3:XafUpdatePanel>
+                                <asp:Table ID="Table1" runat="server" Width="100%" BorderWidth="0px" CellPadding="0" CellSpacing="0">
+                                    <asp:TableRow ID="TableRow5" runat="server">
+                                        <asp:TableCell runat="server" ID="TableCell1" HorizontalAlign="Center">
+                                            
+                                        </asp:TableCell>
+                                    </asp:TableRow>
+                                    <asp:TableRow ID="TableRow2" runat="server">
+                                        <asp:TableCell runat="server" ID="ViewSite">
+                                            <cc3:XafUpdatePanel ID="UPVSC" runat="server">
+                                                <cc1:XafBootstrapViewSiteControl ID="VSC" runat="server" />
+                                            </cc3:XafUpdatePanel>
+                                        </asp:TableCell>
+                                    </asp:TableRow>
+                                </asp:Table>
+                            </td>
+                        </tr>
+                    </table>
+                    <table class="DockBottom" border="0" cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                            <td>
+                                
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="modal-footer" id="DialogFooter">    
+    <cc3:XafUpdatePanel ID="UPPAC" runat="server">
+        <span style="display: none">
+            <cc2:ActionContainerHolder runat="server" ID="PAC" ContainerStyle="Buttons"
+                Orientation="Horizontal" PaintStyle="CaptionAndImage" Categories="PopupActions;Diagnostic">
+                <menu width="100%" itemautowidth="False" horizontalalign="Right" />
+            </cc2:ActionContainerHolder>
+        </span>
+        <dx:ASPxLabel ID="Actions" runat="server"></dx:ASPxLabel>
+    </cc3:XafUpdatePanel>    
+</div>        
+
+<script>
+    $(document).ready(function () {
+        $("#content").css('margin-top', $('#navbar').height());
+        $(window).resize(function () {
+            $("#content").css('margin-top', $('#navbar').height());
+        });
+
+        window.openXafPopupWindowCached = window.openXafPopupWindow;
+        window.openXafPopupWindow = function (popupWindowCallbackPanelId, targetControlId, url, isSizeable, forcePostBack, callBackFuncName) {
+            window.createXafBootstrapPopup(popupWindowCallbackPanelId, targetControlId, url, isSizeable, forcePostBack, callBackFuncName, window);
+        }        
+    });
+</script>

@@ -1,0 +1,21 @@
+﻿<%@ Control Language="C#" CodeBehind="NestedFrameControl.ascx.cs" ClassName="NestedFrameControl" Inherits="SofIA_XAF_Bootstrap.Templates.NestedFrameControl"%>
+<%@ Register Assembly="DevExpress.Web.v14.2, Version=14.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.ExpressApp.Web.v14.2" Namespace="DevExpress.ExpressApp.Web.Templates.ActionContainers"
+    TagPrefix="cc2" %>
+<%@ Register Assembly="DevExpress.ExpressApp.Web.v14.2" Namespace="DevExpress.ExpressApp.Web.Controls"
+    TagPrefix="cc4" %>
+<%@ Register Assembly="DevExpress.ExpressApp.Web.v14.2" Namespace="DevExpress.ExpressApp.Web.Templates"
+    TagPrefix="cc3" %>
+<div class="NestedFrame">    
+    <cc3:XafUpdatePanel ID="UPToolBar" CssClass="ToolBarUpdatePanel" runat="server">
+        <span style="display: none">
+            <cc2:ActionContainerHolder runat="server" ID="ToolBar" CssClass="ToolBar" ContainerStyle="ToolBar"
+                PaintStyle="CaptionAndImage" Orientation="Horizontal" Categories="ObjectsCreation;Link;Edit;RecordEdit;View;Reports;Export;Diagnostic;Filters"
+                Menu-Width="100%" Menu-ItemAutoWidth="False" />
+        </span>
+        <dx:ASPxLabel ID="NestedActions" runat="server" Text="" EncodeHtml="false"></dx:ASPxLabel>
+        
+    </cc3:XafUpdatePanel>
+    <cc4:ViewSiteControl ID="viewSiteControl" runat="server" Control-CssClass="NestedFrameViewSite"/>
+    <dx:ASPxLabel ID="NestedActionsFinish" runat="server" Text="" EncodeHtml="false"></dx:ASPxLabel> 
+</div>

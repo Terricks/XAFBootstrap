@@ -76,6 +76,11 @@ namespace XAF_Bootstrap.Templates
         {
             get { return null; }
         }
-        public void FocusFindEditor() { }        
+        public void FocusFindEditor() { }
+
+        public DevExpress.ExpressApp.Web.Controls.XafPopupWindowControl XafPopupWindowControl
+        {
+            get { return PopupWindowControl; }
+        }
     }
 }

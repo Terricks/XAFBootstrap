@@ -57,11 +57,11 @@
       <HintPath>packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
-    <Reference Include="DevExpress.ExpressApp.ConditionalAppearance.v14.2, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.ExpressApp.Security.v14.2, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.ExpressApp.TreeListEditors.Web.v14.2, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.ExpressApp.Validation.v14.2, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.ExpressApp.Web.v14.2, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.ExpressApp.ConditionalAppearance.v14.2, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.ExpressApp.Security.v14.2, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.ExpressApp.TreeListEditors.Web.v14.2, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.ExpressApp.Validation.v14.2, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.ExpressApp.Web.v14.2, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.ExpressApp.Xpo.v14.2">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
@@ -78,12 +78,12 @@
     <Reference Include="DevExpress.Persistent.BaseImpl.v14.2">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="DevExpress.Printing.v14.2.Core, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Office.v14.2.Core, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.RichEdit.v14.2.Core, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Utils.v14.2, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Web.ASPxThemes.v14.2, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Web.v14.2, Version=14.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Printing.v14.2.Core, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Office.v14.2.Core, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.RichEdit.v14.2.Core, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Utils.v14.2,Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Web.ASPxThemes.v14.2,Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Web.v14.2,Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Xpo.v14.2">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -170,6 +170,7 @@
       <DependentUpon>XafBootstrapTableEditorController.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\BaseControls.cs" />
+    <Compile Include="Controls\XafBootstrapTagSelector.cs" />
     <Compile Include="Controls\XafBootstrapCheckboxEdit.cs" />
     <Compile Include="Controls\XafBootstrapErrorInfoControl.cs" />
     <Compile Include="Controls\XafBootstrapNumericEdit.cs" />
@@ -181,6 +182,7 @@
     <Compile Include="Controls\XafBootstrapViewSiteControl.cs" />
     <Compile Include="Controls\ActionContainerHolder\ActionContainerHolder.cs" />
     <Compile Include="Editors\XafBootstrapConfiguration\XafBootstrapThemeConfigurationEditor.cs" />
+    <Compile Include="Editors\XafBootstrapPropertyEditors\XafBootstrapTagPropertyEditor.cs" />
     <Compile Include="Editors\XafBootstrapPropertyEditors\XafBootstrapBooleanPropertyEditor.cs" />
     <Compile Include="Editors\XafBootstrapPropertyEditors\XafBootstrapPopupCriteriaPropertyEditor.cs" />
     <Compile Include="Editors\XafBootstrapPropertyEditors\XafBootstrapImagePropertyEditor.cs" />
@@ -194,6 +196,8 @@
     <Compile Include="Editors\XafBootstrapTableEditor\XafBootstrapTreeEditor.cs" />
     <Compile Include="Editors\XafBootstrapTableEditor\XafBootstrapTableEditor.cs" />
     <Compile Include="ModelExtensions\Extensions.cs" />
+    <Compile Include="ModelExtensions\TagSelector\TagSourceAttribute.cs" />
+    <Compile Include="ModelExtensions\TagSelector\TagSourceKind.cs" />
     <Compile Include="Module.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -269,7 +273,9 @@
     <EmbeddedResource Include="Model.DesignedDiffs.xafml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <EmbeddedResource Include="Content\fonts\glyphicons-halflings-regular.eot" />
     <EmbeddedResource Include="Content\fonts\glyphicons-halflings-regular.ttf" />
     <EmbeddedResource Include="Content\fonts\glyphicons-halflings-regular.woff" />
@@ -339,6 +345,7 @@
     <EmbeddedResource Include="Content\bootstrap_css\bootstrap-dx.css" />
     <EmbeddedResource Include="Content\bootstrap_themes\Paper\bootstrap_css\bootstrap-custom.css" />
     <EmbeddedResource Include="Content\bootstrap_js\bootstrap-dx.js" />
+    <EmbeddedResource Include="Content\xaf_bootstrap_version.txt" />
     <Content Include="Templates\ContentTemplate.ascx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>ASPXCodeBehind</SubType>
@@ -349,6 +356,7 @@
     </Content>
     <Content Include="Templates\LogonTemplate.ascx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>ASPXCodeBehind</SubType>
     </Content>
     <Content Include="Templates\NestedFrameControl.ascx">
       <SubType>ASPXCodeBehind</SubType>

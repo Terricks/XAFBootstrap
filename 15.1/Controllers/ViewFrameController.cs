@@ -69,11 +69,6 @@ namespace XAF_Bootstrap.Controllers
                     }                    
                 }
             }
-
-            if (Frame is NestedFrame)
-                Helpers.Session[View.Id + "_" + ((Frame as NestedFrame).ViewItem.Control as System.Web.UI.Control).ClientID + "_Frame"] = Frame; 
-            else
-                Helpers.Session[View.Id + "_Frame"] = Frame; 
         }
 
         protected override void OnDeactivated()

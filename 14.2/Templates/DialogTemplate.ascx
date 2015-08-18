@@ -9,9 +9,13 @@
     TagPrefix="cc4" %>
 <%@ Register Assembly="DevExpress.ExpressApp.Web.v14.2" Namespace="DevExpress.ExpressApp.Web.Templates"
     TagPrefix="cc3" %>
-    
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" onclick="closeThisModal()" aria-label="Close"><span aria-hidden="true" style="color: #000">&times;</span></button>
+    <cc3:XafUpdatePanel ID="UPPopupWindowControl" runat="server">
+        <cc4:XafPopupWindowControl runat="server" ID="PopupWindowControl" />
+    </cc3:XafUpdatePanel>    
+
+    <div class="modal-header">        
+        <button type="button" class="close" data-dismiss="modal" onclick="closeThisModal()" aria-label="Close"><span aria-hidden="true" class="text-primary">&times;</span> </button>
+        <button type="button" class="close" data-dismiss="modal" onclick="fullscreenThisModal()" aria-label="Maximize"><span class="text-primary glyphicon glyphicon-fullscreen" style="font-size: 60%; margin-top: 5px; margin-right: 5px"></span> </button>
         <h4 class="modal-title">
             <cc3:XafUpdatePanel ID="UPVH" runat="server">            
                 <div class="row no-margin">                
@@ -50,7 +54,7 @@
             <cc1:XbActionContainerHolder runat="server" ID="PAC" Categories="PopupActions;Diagnostic" LeftDirection="false">                    
             </cc1:XbActionContainerHolder>            
         </cc3:XafUpdatePanel>    
-    </div> 
+    </div>    
 
 <script>
     
@@ -63,8 +67,18 @@
         window.openXafPopupWindowCached = window.openXafPopupWindow;
         window.openXafPopupWindow = function (popupWindowCallbackPanelId, targetControlId, url, isSizeable, forcePostBack, callBackFuncName) {
             window.createXafBootstrapPopup(popupWindowCallbackPanelId, targetControlId, url, isSizeable, forcePostBack, callBackFuncName, window);
-        }        
+        }
     });
+
+    function checkWindowScrolls(modalsCount) {
+        var modals = $('.modal.in:visible');
+        if (modals.length > modalsCount) {
+            $('body').css({ overflow: 'hidden' });
+        }
+        else {
+            $('body').css({ overflow: 'auto' });            
+        };
+    };
 </script>
 
 <script>
@@ -92,12 +106,12 @@
             $backdrop = $modal.find('.modal-backdrop.in');
             if ($backdrop.length > 0) {
                 $backdrop.css({ zIndex: modalZIndex, width: '100%', height: '100%', position: 'fixed' });
-                $backdrop.insertBefore($modal);
+                $backdrop.insertBefore($modal);                
             }
 
             if (!$modal.hasClass("managed")) {
                 var contentClicked = false;
-                $modal.find('.modal-content').click(function (e) {
+                $modal.find('.modal-content').click(function (e) {                    
                     contentClicked = true;
                 });
                 $modal.click(function (e) {
@@ -107,7 +121,7 @@
                 });
                 $modal.addClass("managed");
             }
-        });
+        });        
         $('.modal.in:visible:last').focus().next('.modal-backdrop.in').removeClass('hidden');
     }
 

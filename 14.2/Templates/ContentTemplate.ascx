@@ -19,6 +19,10 @@
     TagPrefix="tc" %>
 
 <div>
+    <cc3:XafUpdatePanel ID="UPPopupWindowControl" runat="server">
+        <cc4:XafPopupWindowControl runat="server" ID="PopupWindowControl" />
+    </cc3:XafUpdatePanel>
+
     <dx:ASPxGlobalEvents ID="GE" ClientInstanceName="GE" ClientSideEvents-EndCallback=""
         runat="server" />    
     
@@ -78,18 +82,16 @@
                                 Tag="button" ItemClass="btn btn-primary btn-sm view-action" LeftDirection="False" />
                         </cc3:XafUpdatePanel>                        
                     </span>
+                    
+                    <div class="col-md-12">
+                        <!-- Object Actions -->
 
-                    <div class="row">
-                        <div class="col-md-12">
-                            <!-- Object Actions -->
-
-                            <span class="pull-right">
-                                <cc3:XafUpdatePanel ID="UPTB" runat="server" EnableTheming="False" UpdateAlways="True">                                
-                                    <cc1:XbActionContainerHolder runat="server" ID="TB" Categories="Export;Reports;Filters;" EnableViewState="False"
-                                        Tag="button" ItemClass="btn btn-primary btn-sm" LeftDirection="False" />                                
-                                </cc3:XafUpdatePanel>
-                            </span>
-                        </div>
+                        <span class="pull-right">
+                            <cc3:XafUpdatePanel ID="UPTB" runat="server" EnableTheming="False" UpdateAlways="True">                                
+                                <cc1:XbActionContainerHolder runat="server" ID="TB" Categories="Export;Reports;Filters;" EnableViewState="False"
+                                    Tag="button" ItemClass="btn btn-primary btn-sm" LeftDirection="False" />                                
+                            </cc3:XafUpdatePanel>
+                        </span>
                     </div>
                 </span>
             </div>            
@@ -105,7 +107,7 @@
                                 Tag="button" ItemClass="btn btn-info btn-sm" LeftDirection="False" />                                                            
                         </cc3:XafUpdatePanel>
                     </span>
-                    <span class="">
+                    <span class="panel">
                         <!-- View -->
                         <cc3:XafUpdatePanel ID="UPEI" runat="server">
                             <cc1:XafBootstrapErrorInfoControl ID="ErrorInfo" Style="margin: 10px 0px 10px 0px" runat="server" />
@@ -163,32 +165,6 @@
     <dx:ASPxLabel ID="Scripts" runat="server"></dx:ASPxLabel>
 </cc3:XafUpdatePanel>
 
-<style type="text/css">    
-    @keyframes loader {
-        50%     { 
-            transform: rotateY(0deg) rotateX(0deg);
-            -webkit-transform: rotateY(0deg) rotateX(0deg);
-            -moz-transform: rotateY(0deg) rotateX(0deg);
-            -o-transform: rotateY(0deg) rotateX(0deg);
-            -ms-transform: rotateY(0deg) rotateX(0deg);
-        }
-        75%    { 
-            transform: rotateY(180deg) rotateX(0deg);
-            -webkit-transform: rotateY(180deg) rotateX(0deg);
-            -moz-transform: rotateY(180deg) rotateX(0deg);
-            -o-transform: rotateY(180deg) rotateX(0deg);
-            -ms-transform: rotateY(180deg) rotateX(0deg);
-        }
-        100%    { 
-            transform: rotateX(-180deg);
-            -webkit-transform: rotateX(-180deg);
-            -moz-transform: rotateX(-180deg);
-            -o-transform: rotateX(-180deg);
-            -ms-transform: rotateX(-180deg);
-        }
-    }
-</style>
-
 <div id="pleaseWaitDialog" class="hidden">
     <div class="modal-backdrop fade in" style="position: fixed; bottom: 0px; left: 0px; right: 0px; top: 0px; z-index: 2000; opacity:0"></div>    
 </div>
@@ -212,7 +188,7 @@
                         '</button>' +
                         '<h4 class="modal-title"></h4>' +
                         '</div>' +
-                        '<div class="modal-body">' +
+                        '<div class="modal-body">' +                
                         '</div>' +
                         '<div class="modal-footer">' +
                             '<button type="button" class="btn btn-primary" data-dismiss="modal" id="XafBootstrapConfirmButton">' + buttonOKCaption + '</button>' +
@@ -222,23 +198,26 @@
                 '</div>' +
             '</div>'
             );
-        modal.find('h4.modal-title').text(caption);
+        modal.find('h4.modal-title').text(caption);        
         modal.find('div.modal-body').append(confirmationMessage);
-        modal.find('#XafBootstrapConfirmButton').on('click', callback);
+        modal.find('#XafBootstrapConfirmButton').on('click', callback);        
+        modal.on('show.bs.modal', function (e) {
+            $('body').css({ overflow: 'hidden' });
+        });
         modal.modal();
 
         return modal;
     }
 </script>
 
-<script>
+<script>    
     function checkWindowScrolls(modalsCount) {
         var modals = $('.modal.in:visible');
         if (modals.length > modalsCount) {
             $('body').css({ overflow: 'hidden' });
         }
         else {
-            $('body').css({ overflow: 'auto' });
+            $('body').css({ overflow: 'auto' });            
         };
     };
 
@@ -250,8 +229,8 @@
         };
 
         $(window).resize(window.calcHeaderOffset);
-        setTimeout(window.calcHeaderOffset, 750);
-
+        setTimeout(window.calcHeaderOffset, 750);        
+        
         window.openXafPopupWindowCached = window.openXafPopupWindow;
         window.openXafPopupWindow = function (popupWindowCallbackPanelId, targetControlId, url, isSizeable, forcePostBack, callBackFuncName) {
             window.createXafBootstrapPopup(popupWindowCallbackPanelId, targetControlId, url, isSizeable, forcePostBack, callBackFuncName);
@@ -261,18 +240,17 @@
             if (!(sender))
                 sender = window;
 
-            var modals = $('.modal.in');
-            var modal = $("<div class='modal fade is-temporary' style='z-index:" + (window.modalsStartZIndex + modals.length) + "'><div class='modal-dialog modal-lg'><div class='modal-content'>"
+            var modal = $("<div class='modal fade'><div class='modal-dialog modal-lg'><div class='modal-content'>"
                     + "<div class='modal-body' style='height: 200px'><div class='progress' style='margin: 0;height: 14px; position: absolute; width: 20%; top: 50%; left: 40%'>"
                         + "<div class='progress-bar progress-bar-info progress-bar-striped active' role='progressbar' aria-valuenow='100' aria-valuemin='0' aria-valuemax='100' style='width: 100%'></div>"
                     + "</div></div>"
                 + "</div></div></div>")
             var iframe = $("<iframe scrolling='no' frameborder='0' src='" + url + "' style='width: 100%; height: 254px; overflow: auto; vertical-align: text-bottom;'></iframe>");
-                        
-            startProgress();            
-            
+
+            startProgress();
+
             iframe.on("load", function () {
-                var iframeDoc = iframe[0].contentWindow;                
+                var iframeDoc = iframe[0].contentWindow;
 
                 iframeDoc.createXafBootstrapPopup = window.createXafBootstrapPopup;
                 iframeDoc.ShowXafMessage = window.ShowXafMessage;
@@ -282,37 +260,44 @@
 
                 iframeDoc.startProgress = startProgress;
                 iframeDoc.stopProgress = stopProgress;
-                iframeDoc.checkWindowScrolls = window.checkWindowScrolls;
 
                 iframeDoc.closeThisModal = function () {
                     modal.modal('hide');
                 };
+
+                iframeDoc.fullscreenThisModal = function () {
+                    if (modal.find('.modal-dialog').attr("style"))
+                        $('.modal.in .modal-dialog').removeAttr('style');
+                    else
+                        $('.modal.in .modal-dialog').attr('style', 'width: 100%');
+                };
+
                 iframeDoc.isChildFrame = true;
                 if (sender.isChildFrame) {
                     iframeDoc.parentFrameWindow = sender;
                 }
                 iframeDoc.calculateWindowSize = function () {
-                    var frameWindow = iframe[0].contentWindow;                    
+                    var frameWindow = iframe[0].contentWindow;
                     if (frameWindow != null) {
                         var newHeight = frameWindow.document.body.offsetHeight;
                         if (iframe.height() != newHeight) {
-                            iframe.animate({                                
+                            iframe.animate({
                                 height: newHeight + "px"
                             }, 100, function () {
                                 $(window).trigger('resize.modal');
-                            });                                                        
+                            });
                         }
                         newHeight = iframe.height();
                     }
                 }
 
                 var calcFunc = function () {
-                    for(i = 250; i < 7750; i += 750)
+                    for (i = 250; i < 7750; i += 750)
                         setTimeout(iframeDoc.calculateWindowSize, i);
                 };
 
-                iframeDoc.globalCallbackControl.EndCallback.AddHandler(calcFunc);                
-                
+                iframeDoc.globalCallbackControl.EndCallback.AddHandler(calcFunc);
+
                 $(iframeDoc).click(function () {
                     calcFunc();
                 });
@@ -329,9 +314,9 @@
                     }
                     sender.RaiseXafCallback(sender.globalCallbackControl, "", "XafParentWindowRefresh", "", false);
                 });
-                
+
                 stopProgress();
-            });            
+            });
             modal.on('show.bs.modal', function (e) {
                 setTimeout(function () {
                     modal.find(".modal-content").html("");
@@ -349,12 +334,6 @@
             setTimeout(function () {
                 $('#loadingProgress .progress-bar').css('width', '100%');
             }, 1);
-            
-
-            if (window.StopProgressControlTimer) {
-                window.clearTimeout(window.StopProgressControlTimer);
-                window.StopProgressControlTimer = undefined;
-            }
 
             if (!isCancelProgress) {
                 window.ProgressControlTimer = window.setTimeout("$('#pleaseWaitDialog').removeClass('hidden');", 0);
@@ -378,10 +357,10 @@
         window.RaiseXafCallbackCached = window.RaiseXafCallback;
         window.RaiseXafCallback = function RaiseXafCallback(callbackControl, handlerId, parameters, confirmation, usePostBack, sender) {            
             if (!(sender))
-                sender = window;
-            startProgress();
+                sender = window;            
             var isRaised = false;
             var raiseFunc = function () {
+                startProgress();
                 var parameter = handlerId + ':' + parameters;
                 if (usePostBack) {
                     callbackControl.SendPostBack(parameter);
@@ -446,7 +425,7 @@
             sender = window;
         if (sender.DataChanged == true)
         {
-            var modals = $('.modal.in');
+            var modals = $('.modal.in');            
 
             var dialog =
             $('<div class="modal fade is-temporary" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:' + (window.modalsStartZIndex + modals.length) + '">'
@@ -463,6 +442,9 @@
                     + '</div>'
                 + '</div>'
             + '</div>');
+            dialog.on('show.bs.modal', function (e) {
+                $('body').css({ overflow: 'hidden' });
+            });
             dialog.modal({ show: true });
             if (callback)
             {
@@ -527,9 +509,12 @@
 
 <script>
     $(document)
+        .on('show.bs.modal', '.modal', function (event) {            
+            $('body').css({ overflow: 'hidden' });
+        })
         .on('shown.bs.modal', '.modal.in', function (event) {
             setModalsAndBackdropsOrder();
-            $('body').css({ overflow: 'hidden' });
+            $('body').css({ overflow: 'hidden' });            
         })
         .on('hide.bs.modal', '.modal.in', function (event) {
             window.checkWindowScrolls(1);
@@ -550,12 +535,12 @@
             $backdrop = $modal.find('.modal-backdrop.in');
             if ($backdrop.length > 0) {
                 $backdrop.css({ zIndex: modalZIndex, width: '100%', height: '100%', position: 'fixed' });
-                $backdrop.insertBefore($modal);
+                $backdrop.insertBefore($modal);                
             }
 
             if (!$modal.hasClass("managed")) {
                 var contentClicked = false;
-                $modal.find('.modal-content').click(function (e) {
+                $modal.find('.modal-content').click(function (e) {                    
                     contentClicked = true;
                 });
                 $modal.click(function (e) {
@@ -565,14 +550,14 @@
                 });
                 $modal.addClass("managed");
             }
-        });
+        });        
         $('.modal.in:visible:last').focus().next('.modal-backdrop.in').removeClass('hidden');
     }
 
     $(document).ready(function () {
         globalCallbackControl.RaiseCallbackError = function (message) {
             stopProgress();
-            ShowXafMessage("<%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"XAF Bootstrap\Dialogs", "ConfirmAction") %>", message, "", "", "");
+            ShowXafMessage("<%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"XAF Bootstrap\Dialogs", "ConfirmAction") %>", message, "", "", "");  
             return { isHandled: false };
         };
     });

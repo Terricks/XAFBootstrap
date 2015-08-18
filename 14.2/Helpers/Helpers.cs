@@ -25,11 +25,9 @@ using DevExpress.ExpressApp.Actions;
 using DevExpress.ExpressApp.DC;
 using DevExpress.ExpressApp.Editors;
 using DevExpress.ExpressApp.Localization;
-using DevExpress.ExpressApp.Model;
 using DevExpress.ExpressApp.Templates;
 using DevExpress.ExpressApp.Utils;
 using DevExpress.ExpressApp.Web;
-using DevExpress.ExpressApp.Web.SystemModule;
 using DevExpress.ExpressApp.Web.Templates;
 using DevExpress.ExpressApp.Web.Templates.ActionContainers;
 using DevExpress.ExpressApp.Web.Templates.ActionContainers.Menu;
@@ -87,9 +85,8 @@ namespace XAF_Bootstrap.Templates
         }
 
         public static ContentHelperClass ContentHelper
-        {
-            get
-            {
+        {            
+            get {
                 var session = System.Web.HttpContext.Current.Session;
                 if (session["ContentHelper"] == null)
                     session["ContentHelper"] = new ContentHelperClass();
@@ -97,29 +94,25 @@ namespace XAF_Bootstrap.Templates
             }
         }
         public static IList<XafMenuItem> GetMenuActions(XbActionContainerHolder holder)
-        {
+        {   
             return holder.actionObjects.Where(f => f.Key.Active && f.Key.Enabled).Select(f => f.Value.MenuItem).ToList();
         }
 
-        public static IList<XafMenuItem> GetMenuActions(ASPxMenu menu)
-        {
+        public static IList<XafMenuItem> GetMenuActions(ASPxMenu menu) {
             IList<XafMenuItem> List = new List<XafMenuItem>();
-            if (menu != null)
-            {
-                foreach (var item in menu.Items.OfType<XafMenuItem>())
-                {
-                    if (item.ActionProcessor != null && item.ActionProcessor is DevExpress.ExpressApp.Templates.ActionBaseItem)
-                    {
+            if (menu != null) {
+                foreach(var item in menu.Items.OfType<XafMenuItem>()) {
+                    if (item.ActionProcessor != null && item.ActionProcessor is DevExpress.ExpressApp.Templates.ActionBaseItem) {
                         var action = (item.ActionProcessor as DevExpress.ExpressApp.Templates.ActionBaseItem);
                         if (action.Action != null && action.IsVisible && action.Action.Enabled && action.Action.Active)
                             List.Add(item);
                     }
-                }
+                }                
             }
             return List;
         }
 
-        public static String GetFormattedActionString(XafMenuItem menuItem, String Callback, String style, String Type = "button")
+        public static String GetFormattedActionString(XafMenuItem menuItem, String Callback, String style, String Type = "button", String defaultIcon = "glyphicon-star")
         {
             if (menuItem == null)
                 return "";
@@ -131,9 +124,9 @@ namespace XAF_Bootstrap.Templates
                 if (processor.Action != null && String.Concat(processor.Action.ConfirmationMessage) != "")
                 {
                     ClickScript = String.Format(@"var func = function(){{{1}}}; ShowXafMessage(""{2}"", ""{0}"", func, """", """");"
-                        , String.Concat(processor.Action.ConfirmationMessage).Replace("\r\n", "<br>").Replace("\n", "<br>")
+                        , String.Concat(processor.Action.ConfirmationMessage).Replace("\r\n", "<br>").Replace("\n","<br>")
                         , Callback
-                        , XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"XAF Bootstrap\Dialogs", "ConfirmAction")).Replace("\"", "&quot;");
+                        , XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"XAF Bootstrap\Dialogs", "ConfirmAction")).Replace("\"","&quot;");
                 }
             }
             var action = (menuItem.ActionProcessor as MenuActionItemBase).Action as ActionBase;
@@ -144,11 +137,11 @@ namespace XAF_Bootstrap.Templates
                 else
                     if (singleChoiceAction.Items.Count == 1 && singleChoiceAction.ItemType == SingleChoiceActionItemType.ItemIsOperation)
                         menuItem.Text = action.Caption;
-            String FormatString = "<button type='button' class='{3}' onclick='{2}'><span class='glyphicon glyphicon-star'></span> {0}</button>";
+            String FormatString = "<button type='button' class='{3}' onclick='{2}'>{4}{0}</button>";
             if (Type == "a")
-                FormatString = "<a href='javascript:;' role='button' class='{3}' onclick='{2}'><span class='glyphicon glyphicon-star'></span> {0}</a>";
+                FormatString = "<a href='javascript:;' role='button' class='{3}' onclick='{2}'>{4}{0}</a>";
 
-            return String.Format(FormatString, menuItem.Text, menuItem.Name, ClickScript, style);
+            return String.Format(FormatString, menuItem.Text, menuItem.Name, ClickScript, style, (defaultIcon != "" ? String.Format(@"<span class='glyphicon {0}'></span> ", defaultIcon) : ""));
         }
 
         public static bool ProcessAction(ActionBase action)
@@ -159,15 +152,13 @@ namespace XAF_Bootstrap.Templates
                 {
                     var closePopup = false;
                     var dialogController = action.Controller.Frame.GetController<DialogController>();
-                    if (dialogController != null)
-                    {
-                        dialogController.ViewClosed += new EventHandler(delegate
-                        {
+                    if (dialogController != null) {
+                        dialogController.ViewClosed += new EventHandler(delegate{
                             closePopup = true;
-                        });
+                        });       
                     }
                     if ((action as SimpleAction).DoExecute())
-                    {
+                    {                        
                         if (closePopup)
                             WebWindow.CurrentRequestWindow.RegisterStartupScript("actionClosePopup", "window.DataChanged=false; if(window.closeThisModal) window.closeThisModal();");
                     }
@@ -190,7 +181,7 @@ namespace XAF_Bootstrap.Templates
                     var args = (action as PopupWindowShowAction).GetPopupWindowParams();
 
                     ShowViewParameters svp = new ShowViewParameters();
-                    svp.CreatedView = args.View;
+                    svp.CreatedView = args.View;             
                     svp.Controllers.Add(args.DialogController);
 
                     svp.Context = TemplateContext.PopupWindow;
@@ -201,11 +192,11 @@ namespace XAF_Bootstrap.Templates
                 }
             }
             return false;
-        }
+        }        
 
         public static Boolean GenerateParametrizedAction(ref StringBuilder result, XafMenuItem menuItem, Boolean IsLeft, String style, String Callback, String ControlType = "button", String Click = "")
         {
-            if (!(menuItem.ActionProcessor is MenuActionItemBase)
+            if (!(menuItem.ActionProcessor is MenuActionItemBase)                
                 || !((menuItem.ActionProcessor as MenuActionItemBase).Action is ParametrizedAction))
                 return false;
             var parAction = (menuItem.ActionProcessor as MenuActionItemBase).Action as ParametrizedAction;
@@ -218,7 +209,7 @@ namespace XAF_Bootstrap.Templates
                     </span>
                 </div>"
                 , parAction.NullValuePrompt
-                , Helpers.ContentHelper.Manager.GetScript(Callback, String.Format("\"Action={0},\" + $(this).parent().parent().find('input').val()", menuItem.Name), "", usePostBack).Replace("'", "\"")
+                , Helpers.ContentHelper.GetScript(Callback, String.Format("\"Action={0},\" + $(this).parent().parent().find('input').val()", menuItem.Name), "", usePostBack).Replace("'", "\"")
                 , parAction.ShortCaption
                 , parAction.Value
                 , style);
@@ -228,11 +219,11 @@ namespace XAF_Bootstrap.Templates
 
         public static Boolean GenerateSingleChoiceAction(ref StringBuilder result, XafMenuItem menuItem, Boolean IsLeft, String style, String Callback, String ControlType = "button", String Click = "")
         {
-            if (!(menuItem.ActionProcessor is MenuActionItemBase)
+            if (!(menuItem.ActionProcessor is MenuActionItemBase) 
                 || !((menuItem.ActionProcessor as MenuActionItemBase).Action is SingleChoiceAction))
                 return GenerateParametrizedAction(ref result, menuItem, IsLeft, style, Callback, ControlType, Click);
 
-            var choiceAction = (menuItem.ActionProcessor as MenuActionItemBase).Action as SingleChoiceAction;
+            var choiceAction = (menuItem.ActionProcessor as MenuActionItemBase).Action as SingleChoiceAction;            
 
             if (choiceAction.Items.Count <= 1)
                 return false;
@@ -251,7 +242,7 @@ namespace XAF_Bootstrap.Templates
                 , String.Join("", choiceAction.Items.Select(f =>
                     String.Format(@"<li role=""presentation""><a role=""menuitem"" tabindex=""-1"" href=""javascript:;"" onclick='{2}; {1}'>{0}</a></li>"
                         , f.Caption
-                        , Helpers.ContentHelper.Manager.GetScript(Callback, String.Format("\"Action={0},{1}\"", menuItem.Name, f.Id), "", usePostBack).Replace("'", "\"")
+                        , Helpers.ContentHelper.GetScript(Callback, String.Format("\"Action={0},{1}\"", menuItem.Name, f.Id), "", usePostBack).Replace("'", "\"")
                         , Click)
                 ))
                 , choiceAction.SelectedItem != null && choiceAction.ItemType == SingleChoiceActionItemType.ItemIsMode ? choiceAction.SelectedItem.Caption : choiceAction.Caption
@@ -262,7 +253,7 @@ namespace XAF_Bootstrap.Templates
             return true;
         }
 
-        public static String BuildActionsMenu(XbActionContainerHolder actionHolder, String callbackName, Boolean IsLeft = true, String style = "btn btn-primary btn-sm", String type = "button", String ClickScript = "", String ClassName = "actions")
+        public static String BuildActionsMenu(XbActionContainerHolder actionHolder, String callbackName, Boolean IsLeft = true, String style = "btn btn-primary btn-sm", String type = "button", String ClickScript = "", String ClassName = "actions", String Glyphicon = "glyphicon-star")
         {
             StringBuilder result = new StringBuilder();
 
@@ -273,10 +264,10 @@ namespace XAF_Bootstrap.Templates
 
             var actions = actionHolder.actionObjects.Where(f => f.Key.Active && f.Value.IsVisible && f.Value.Action.Active && f.Value.Action.Enabled).Select(f => f.Value.MenuItem).OrderBy(f => f.VisibleIndex).ToList();
             if (actions.Count > 0)
-            {
+            {                   
                 result.AppendFormat("<div class='{0}'>", ClassName);
 
-                Helpers.ContentHelper.ObjectActions = new List<MenuAction>();
+                Helpers.ContentHelper.ObjectActions = new List<MenuAction>();                
 
                 /// Reversing for pull-right correct visibility
                 if (!IsLeft)
@@ -287,7 +278,7 @@ namespace XAF_Bootstrap.Templates
                     var action = (menuItem.ActionProcessor as MenuActionItemBase).Action as ActionBase;
                     bool usePostBack = action.Model.GetValue<bool>("IsPostBackRequired");
                     if (!(Helpers.GenerateSingleChoiceAction(ref result, menuItem, IsLeft, style, callbackName, type, ClickScript)))
-                        result.Append(Helpers.GetFormattedActionString(menuItem, ClickScript + ";" + Helpers.ContentHelper.Manager.GetScript(callbackName, String.Format("\"Action={0}\"", menuItem.Name), "", usePostBack).Replace("'", "\""), style, type));
+                        result.Append(Helpers.GetFormattedActionString(menuItem, ClickScript + ";" + Helpers.ContentHelper.GetScript(callbackName, String.Format("\"Action={0}\"", menuItem.Name), "", usePostBack).Replace("'", "\""), style, type, Glyphicon));
                 }
                 result.Append("</div>");
             }
@@ -295,7 +286,7 @@ namespace XAF_Bootstrap.Templates
             return result.ToString();
         }
 
-        public static String BuildActionsMenu(ActionContainerHolder actions, String callbackName, Boolean IsLeft = true, String style = "btn btn-primary btn-sm", String type = "button", String ClickScript = "", String ClassName = "actions")
+        public static String BuildActionsMenu(ActionContainerHolder actions, String callbackName, Boolean IsLeft = true, String style = "btn btn-primary btn-sm", String type = "button", String ClickScript = "", String ClassName = "actions", String Glyphicon = "glyphicon-star")
         {
             StringBuilder result = new StringBuilder();
 
@@ -312,13 +303,13 @@ namespace XAF_Bootstrap.Templates
                 /// Reversing for pull-right correct visibility
                 if (!IsLeft)
                     menuItems = menuItems.Reverse().ToList();
-
+                
                 foreach (XafMenuItem menuItem in menuItems)
                 {
                     var action = (menuItem.ActionProcessor as MenuActionItemBase).Action as ActionBase;
                     bool usePostBack = action.Model.GetValue<bool>("IsPostBackRequired");
                     if (!(Helpers.GenerateSingleChoiceAction(ref result, menuItem, IsLeft, style, callbackName, type, ClickScript)))
-                        result.Append(Helpers.GetFormattedActionString(menuItem, ClickScript + ";" + Helpers.ContentHelper.GetScript(callbackName, String.Format("\"Action={0}\"", menuItem.Name), menuItem, usePostBack).Replace("'", "\""), style, type));
+                        result.Append(Helpers.GetFormattedActionString(menuItem, ClickScript + ";" + Helpers.ContentHelper.GetScript(callbackName, String.Format("\"Action={0}\"", menuItem.Name), menuItem, usePostBack).Replace("'", "\""), style, type, Glyphicon));
                 }
                 result.Append("</div>");
             }
@@ -333,15 +324,15 @@ namespace XAF_Bootstrap.Templates
 
             if (param.Length > 7 && param.Substring(0, 7) == "Action=")
             {
-                param = param.Substring(7, param.Length - 7);
+                param = param.Substring(7, param.Length - 7);                
                 if (param.IndexOf(",") > -1)
                 {
                     data = param.Substring(param.IndexOf(",") + 1, param.Length - param.IndexOf(",") - 1);
                     param = param.Substring(0, param.IndexOf(","));
-                }
-
+                }   
+                    
                 foreach (var controller in frame.Controllers.Where<Controller>(f => f.Actions.Where(a => a.Id == param).Count() > 0))
-                {
+                {   
                     ActionBase action = (ActionBase)controller.Actions.Where(a => a.Id == param).FirstOrDefault();
                     if (action is SingleChoiceAction && data != "")
                     {
@@ -355,16 +346,15 @@ namespace XAF_Bootstrap.Templates
                     }
                     else
                     {
-                        Helpers.ProcessAction(action);
-                    }
+                        Helpers.ProcessAction(action);                            
+                    }                    
                 }
             }
         }
 
         public static DefaultHttpRequestManager RequestManager
-        {
-            get
-            {
+        {        
+            get {
                 return ((DefaultHttpRequestManager)(WebApplication.Instance.RequestManager));
             }
         }
@@ -390,6 +380,21 @@ namespace XAF_Bootstrap.Templates
             return "";
         }
 
+        public static String GetXafImageName(this Enum enumVal)
+        {
+            var type = enumVal.GetType();
+            var memInfo = type.GetMember(enumVal.ToString());
+
+            if (memInfo.Length > 0)
+            {
+                var attributes = memInfo[0].GetCustomAttributes(typeof(ImageNameAttribute), false);
+
+                if (attributes.OfType<ImageNameAttribute>().Count() > 0)
+                    return ((ImageNameAttribute)attributes[0]).ImageName;
+            }
+            return "";
+        }    
+
         public static String GetImmediatePostDataScript(IMemberInfo memberInfo)
         {
             ImmediatePostDataAttribute immediatePostDataAttribute = memberInfo.FindAttribute<ImmediatePostDataAttribute>();
@@ -399,13 +404,12 @@ namespace XAF_Bootstrap.Templates
             return "";
         }
 
-        public static void AddMeta(Page page)
-        {
+        public static void AddMeta(Page page) {
             var meta = page.Header.Controls.OfType<HtmlMeta>().Where(f => f.Name == "viewport").FirstOrDefault();
             if (meta == null)
             {
                 meta = new HtmlMeta();
-                page.Header.Controls.Add(meta);
+                page.Header.Controls.Add(meta);                
             }
             meta.Name = "viewport";
             meta.Content = "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no";
@@ -419,7 +423,7 @@ namespace XAF_Bootstrap.Templates
 
         public static String GetLocalizedText(string groupPath, string itemName)
         {
-            return String.Concat(CaptionHelper.GetLocalizedText(groupPath, itemName)).Replace("\r\n", "<br>").Replace("\n", "<br>");
+            return String.Concat(CaptionHelper.GetLocalizedText(groupPath, itemName)).Replace("\r\n","<br>").Replace("\n", "<br>");
         }
     }
 
@@ -617,8 +621,8 @@ namespace XAF_Bootstrap.Templates
     }
 
     public class ContentHelperClass
-    {
-        #region Menu
+    {       
+        #region Menu        
         public IDictionary<Guid, ChoiceActionItem> MenuItems
         {
             get
@@ -628,7 +632,7 @@ namespace XAF_Bootstrap.Templates
                     if (WebWindow.CurrentRequestPage.Session["XafBootstrapMenuItems"] == null)
                         WebWindow.CurrentRequestPage.Session["XafBootstrapMenuItems"] = new Dictionary<Guid, ChoiceActionItem>();
                     return WebWindow.CurrentRequestPage.Session["XafBootstrapMenuItems"] as IDictionary<Guid, ChoiceActionItem>;
-                }
+                }                
                 return new Dictionary<Guid, ChoiceActionItem>();
             }
         }
@@ -665,10 +669,31 @@ namespace XAF_Bootstrap.Templates
         }
 
         public string GetScript(String callbackName, String parameter, XafMenuItem menuItem, Boolean usePostBack)
-        {
+        {            
             if (Manager == null)
                 Manager = new XafCallbackManager();
             return Manager.GetScript(callbackName, String.Format("\"Action={0}\"", menuItem.Name), "", usePostBack).Replace("'", "\"");
+        }
+
+        public string GetScript(String callbackName, String parameter, String confirmation, bool usePostBack)
+        {            
+            if (Manager == null)
+                Manager = new XafCallbackManager();
+            return Manager.GetScript(callbackName, parameter, confirmation, usePostBack);
+        }
+
+        public string GetScript(String callbackName, String parameter, String confirmation)
+        {
+            if (Manager == null)
+                Manager = new XafCallbackManager();
+            return Manager.GetScript(callbackName, parameter, confirmation);
+        }
+
+        public string GetScript(String callbackName, String parameter)
+        {
+            if (Manager == null)
+                Manager = new XafCallbackManager();
+            return Manager.GetScript(callbackName, parameter);
         }
 
         public string GetCallbackScript(String ClientID, String CallbackString)
@@ -677,5 +702,5 @@ namespace XAF_Bootstrap.Templates
         }
 
         public IDictionary<String, IDictionary<String, object>> DynamicControlStates = new Dictionary<String, IDictionary<String, object>>();
-    }
+    }    
 }

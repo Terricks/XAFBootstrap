@@ -13,6 +13,24 @@ namespace XAF_Bootstrap.Templates {
     public partial class ContentTemplate {
         
         /// <summary>
+        /// UPPopupWindowControl control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::DevExpress.ExpressApp.Web.Templates.XafUpdatePanel UPPopupWindowControl;
+        
+        /// <summary>
+        /// PopupWindowControl control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::DevExpress.ExpressApp.Web.Controls.XafPopupWindowControl PopupWindowControl;
+        
+        /// <summary>
         /// GE control.
         /// </summary>
         /// <remarks>

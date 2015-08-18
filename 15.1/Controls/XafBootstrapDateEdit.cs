@@ -38,11 +38,25 @@ namespace XAF_Bootstrap.Controls
         public String ID = "";
         public String Placeholder = "";
         public String AddonLeft = "";
-        public String AddonRight = "";
-        public DateTime Value;
+        public String AddonRight = "";        
         public Boolean TextOnly = false;
         public String DisplayFormat = "dd.MM.yyyy H:mm";
         public string OnClickScript;
+
+        private DateTime _Value;
+        public DateTime Value
+        {
+            get
+            {
+                return _Value;
+            }
+            set
+            {
+                _Value = value;
+                if (this.Initialized)
+                    InnerRender();
+            }
+        }
 
         public event EventHandler EditValueChanged;
 
@@ -128,7 +142,9 @@ namespace XAF_Bootstrap.Controls
                 switch (values[0])
                 {
                     case "NewValue":
-                        DateTime.TryParse(values[1], out Value);
+                        DateTime val;
+                        if (DateTime.TryParse(values[1], out val))
+                            Value = val;
                         break;
                 }
             }            

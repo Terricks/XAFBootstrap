@@ -27,20 +27,16 @@ using DevExpress.ExpressApp.DC;
 using DevExpress.ExpressApp.Editors;
 using DevExpress.ExpressApp.Model;
 using DevExpress.ExpressApp.Web;
-using DevExpress.ExpressApp.Web.Templates;
 using DevExpress.Persistent.Base;
 using DevExpress.Web;
 using DevExpress.Xpo;
-using XafBootstrap.Web;
 using XAF_Bootstrap.Templates;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web.UI;
-using System.Web.UI.WebControls;
 
 namespace XAF_Bootstrap.Controls
 {
@@ -244,6 +240,16 @@ namespace XAF_Bootstrap.Controls
                                     {
                                         displayFormat = attr.FormatString;
                                         Value = String.Format(new ObjectFormatter(), displayFormat, objValue);
+                                    }
+                                    else
+                                    {
+                                        var defPropAttr = memberInfo.MemberTypeInfo.FindAttribute<XafDefaultPropertyAttribute>();
+                                        if (defPropAttr != null)
+                                        {
+                                            displayFormat = attr.FormatString;
+                                            Value = "{0:" + defPropAttr.Name + "}";
+                                            Value = String.Format(new ObjectFormatter(), displayFormat, objValue);
+                                        }
                                     }
                                 };                            
                         }

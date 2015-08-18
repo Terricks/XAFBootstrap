@@ -84,6 +84,8 @@ namespace XAF_Bootstrap
             base.Setup(application);
 
             if (application is WebApplication) {
+                application.CreateCustomLogonWindowControllers += application_CreateCustomLogonWindowControllers;                
+
                 if (System.Diagnostics.Debugger.IsAttached)
                     XAF_Bootstrap.DatabaseUpdate.Updater.CheckResources();
 
@@ -107,6 +109,11 @@ namespace XAF_Bootstrap
 
                 ProcessTemplateFile("XafBootstrapView.ascx");
             }            
+        }
+
+        void application_CreateCustomLogonWindowControllers(object sender, CreateCustomLogonWindowControllersEventArgs e)
+        {   
+            e.Controllers.Add(new XAF_Bootstrap.Controllers.ViewFrameController());            
         }
 
         protected override void RegisterEditorDescriptors(List<DevExpress.ExpressApp.Editors.EditorDescriptor> editorDescriptors)

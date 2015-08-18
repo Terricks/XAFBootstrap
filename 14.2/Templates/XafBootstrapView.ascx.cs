@@ -27,12 +27,7 @@ using DevExpress.ExpressApp.Editors;
 using DevExpress.ExpressApp.Model;
 using DevExpress.ExpressApp.Web;
 using DevExpress.ExpressApp.Web.Editors;
-using DevExpress.ExpressApp.Web.Editors.ASPx;
 using DevExpress.ExpressApp.Web.Layout;
-using DevExpress.Persistent.BaseImpl;
-using DevExpress.Web;
-using DevExpress.Xpo;
-using XAF_Bootstrap;
 using XAF_Bootstrap.Controls;
 using XAF_Bootstrap.Templates;
 using System;
@@ -61,46 +56,89 @@ namespace XafBootstrap.Web
             base.OnInit(e);
             if (ViewItem != null)
             {
-                ViewItem newViewItem = ViewItem;
                 String ModelID = "";
-                if (ViewItem is PropertyEditor) {
-                    newViewItem = Helpers.EditorsFactory.CreatePropertyEditorByType(ViewItem.GetType(), (ViewItem as PropertyEditor).Model, (ViewItem as PropertyEditor).ObjectType, Application, ObjectSpace);
+                if (ViewItem is PropertyEditor)
+                {
                     ModelID = (ViewItem as PropertyEditor).Model.Id;
-                } else {                    
-                    if (ViewItem.GetType().GetProperty("Model") != null) {
+                }
+                else
+                {
+                    if (ViewItem.GetType().GetProperty("Model") != null)
+                    {
                         var Model = (IModelViewItem)ViewItem.GetType().GetProperty("Model").GetValue(ViewItem);
                         ModelID = Model.Id;
-                        newViewItem = Helpers.EditorsFactory.CreateDetailViewEditor(false, Model, ViewItem.ObjectType, Application, ObjectSpace);                    
                     }
                 }
-                newViewItem.View = ViewItem.View;
-                newViewItem.CurrentObject = ObjectSpace.GetObject(ViewItem.CurrentObject);
-                if (newViewItem is WebPropertyEditor)
-                    if (ModelID != "" && BootstrapView != null && BootstrapView.DisabledItems.IndexOf(ModelID) > -1)
-                        (newViewItem as WebPropertyEditor).ViewEditMode = ViewEditMode.View;
-                    else
-                        (newViewItem as WebPropertyEditor).ViewEditMode = (ViewItem as WebPropertyEditor).ViewEditMode;
-                    
-                if (ViewItem is IXafBootstrapEditor)
-                    ViewItem = newViewItem;
+
+                Func<String> controlsCreatedFunc = () =>
+                {
+                    var innerView = (ViewItem as DashboardViewItem).InnerView;
+                    if (innerView != null && innerView is DetailView && ViewItem.View is DetailView)
+                    {
+                        (innerView as DetailView).ViewEditMode = (ViewItem.View as DetailView).ViewEditMode;
+                        if (innerView.CurrentObject == null)
+                            innerView.CurrentObject = innerView.ObjectSpace.FindObject((innerView as DetailView).Model.ModelClass.TypeInfo.Type, CriteriaOperator.Parse((ViewItem as DashboardViewItem).Model.Criteria), true);
+
+                        ViewItem.View.ObjectSpace.Committed += new EventHandler(delegate
+                        {
+                            innerView.ObjectSpace.CommitChanges();
+                        });
+
+                        ViewItem.View.ObjectSpace.RollingBack += new EventHandler<System.ComponentModel.CancelEventArgs>(delegate
+                        {
+                            innerView.ObjectSpace.Rollback();
+                        });
+
+                        ViewItem.View.ObjectSpace.Refreshing += new EventHandler<System.ComponentModel.CancelEventArgs>(delegate
+                        {
+                            innerView.ObjectSpace.Refresh();
+                        });
+                    }
+                    return "";
+                };
+
+                if (ViewItem is WebPropertyEditor)
+                {
+                    (ViewItem as WebPropertyEditor).AllowEdit["XafBootstrapAllowEdit"] = !(ModelID != "" && BootstrapView != null && BootstrapView.DisabledItems.IndexOf(ModelID) > -1);
+                    if ((ViewItem as WebPropertyEditor).CurrentObject == null && ViewItem.View is DetailView)
+                    {                        
+                        ViewItem.CurrentObject = (ViewItem.View as DetailView).CurrentObject;
+                    }
+                }
+                else
+                    if (ViewItem is DashboardViewItem)
+                    {
+
+                        (ViewItem as DashboardViewItem).ControlCreated += new EventHandler<EventArgs>(delegate
+                        {
+                            controlsCreatedFunc();
+                        });
+                    }
+
                 if (ViewItem.Control == null)
                     ViewItem.CreateControl();
+                else
+                    if (ViewItem is DashboardViewItem)
+                        controlsCreatedFunc();
+
                 if (ViewItem.Control != null && ViewItem.Control is Control)
                 {
                     Controls.Clear();
-                    var Control = ViewItem.Control as Control;
-                    Control.ID = ViewItem.Id;
+                    var Control = ViewItem.Control as Control;                    
                     if (ViewItem is IXafBootstrapEditor
                        || (ViewItem is ListPropertyEditor && (ViewItem as ListPropertyEditor).ListView != null && (ViewItem as ListPropertyEditor).ListView.Editor is IXafBootstrapListEditor))
                     {
                         Controls.Add(Control);
                     }
-                    else
-                    {
-                        Controls.Add(new HTMLText() { Text = "<div class='table-responsive'>" });
-                        Controls.Add(Control);
-                        Controls.Add(new HTMLText() { Text = "</div>" });
-                    }                    
+                    else if (ViewItem is DashboardViewItem && (ViewItem as DashboardViewItem).View is DetailView) {
+                            Controls.Add(Control);
+                        }
+                        else
+                        {
+                            Controls.Add(new HTMLText() { Text = "<div class='table-responsive'>" });
+                            Controls.Add(Control);
+                            Controls.Add(new HTMLText() { Text = "</div>" });
+                        }                    
                 }                
             }   
         }
@@ -148,9 +186,29 @@ namespace XafBootstrap.Web
             }
         }
 
+        Boolean RebuildAfterBuilt;
+        Boolean IsBuildingContent;
         public void InnerRender()
-        {
-            BuildContent();
+        {            
+            if (!IsBuildingContent)
+            {
+                try
+                {
+                    IsBuildingContent = true;
+                    BuildContent();
+                    if (RebuildAfterBuilt)
+                        BuildContent();
+                    RebuildAfterBuilt = false;
+                }
+                finally
+                {
+                    IsBuildingContent = false;
+                }
+            }
+            else
+            {
+                RebuildAfterBuilt = true;
+            }
         }
 
         private void AddContent(Control control, object DataContainer = null)        
@@ -220,22 +278,22 @@ namespace XafBootstrap.Web
                                 , layoutGroup.Caption
                                 , isActive ? " class='active'" : ""
                                 , (Parent as TabbedGroupTemplateContainer).Model.Id
-                                , Request.Form[layoutGroup.Model.Id + "_activated"] != "1" && !isActive ? String.Format("$('#{0}_activated').val(1); refreshView();".Replace("'", "&quot;"), layoutGroup.Model.Id) : ""
+                                , manager.Request.Form[layoutGroup.Model.Id + "_activated"] != "1" && !isActive ? String.Format("$('#{0}_activated').val(1); refreshView();".Replace("'", "&quot;"), layoutGroup.Model.Id) : ""
                                 )
                             :
                             "</li>"
                     }, Container);
                 }
                 else
-                {                    
-                    if (Parent is LayoutGroupTemplateContainer && 
-                        (Parent as LayoutGroupTemplateContainer).Model.Direction == DevExpress.ExpressApp.Layout.FlowDirection.Horizontal && 
+                {
+                    if (Parent is LayoutGroupTemplateContainer &&
+                        (Parent as LayoutGroupTemplateContainer).Model.Direction == DevExpress.ExpressApp.Layout.FlowDirection.Horizontal &&
                         (Parent as LayoutGroupTemplateContainer).Items.Count > 0)
                     {
                         var ParentGroup = (Parent as LayoutGroupTemplateContainer);
                         int Col = 12;
                         if (ParentGroup.Model.Direction == DevExpress.ExpressApp.Layout.FlowDirection.Horizontal)
-                            Col = (int) (12 / ParentGroup.Items.Count);
+                            Col = (int)(12 / ParentGroup.Items.Count);
                         if (Col > 12)
                             Col = 12;
                         if (Col < 1)
@@ -249,43 +307,28 @@ namespace XafBootstrap.Web
                                 :
                                 "</div>"
                         }, Container);
-                        
-                    } else
-                        if (layoutGroup.Model.Direction == DevExpress.ExpressApp.Layout.FlowDirection.Horizontal &&
-                            layoutGroup.Items.Count > 0)
+
+                    }
+                    else
+                    {
+                        if (Parent != null && layoutGroup.Model.ShowCaption == true && Start)
                         {
-                            if (layoutGroup.Model.ShowCaption == true)
+                            AddContent(new HTMLText()
                             {
-                                /*AddContent(new HTMLText()
-                                {
-                                    Text =
-                                        Start ?
-                                        String.Format(@"<h4>{0}</h4>", layoutGroup.Model.Caption)
-                                        :
-                                        ""
-                                        
-                                }, Container);*/
-
-
-                                AddContent(new HTMLText()
-                                {
-                                    Text =
-                                        Start ?
-                                        String.Format(@"
+                                Text =                                    
+                                    String.Format(@"
                                             <div class=""panel panel-default"">
                                               <div class=""panel-heading"">{0}</div>
                                               <div class=""panel-body"">
                                         ", layoutGroup.Model.Caption)
-                                        :
-                                        @"
-                                            </div>
-                                        </div>"
-                                        
-                                }, Container);
 
-                                
+                            }, Container);
+                        }
 
-                            }
+                        if (layoutGroup.Model.Direction == DevExpress.ExpressApp.Layout.FlowDirection.Horizontal &&
+                            layoutGroup.Items.Count > 0)
+                        {
+
                             AddContent(new HTMLText()
                             {
                                 Text =
@@ -294,7 +337,9 @@ namespace XafBootstrap.Web
                                     :
                                     "</div>"
                             }, Container);
-                        } else
+                        }
+                        else
+                        {
                             AddContent(new HTMLText()
                             {
                                 Text =
@@ -303,6 +348,18 @@ namespace XafBootstrap.Web
                                     :
                                     "</div>"
                             }, Container);
+                        }
+
+                        if (Parent != null && layoutGroup.Model.ShowCaption == true && !Start)
+                        {
+                            AddContent(new HTMLText()
+                            {
+                                Text =
+                                           @"</div>
+                                        </div><br>"
+                            }, Container);
+                        }
+                    }
                 }
             }            
             else if (control is TabbedGroupTemplateContainer)
@@ -316,9 +373,9 @@ namespace XafBootstrap.Web
                 {                    
                     Text =
                         Start ?
-                        String.Format("<ul class='nav nav-tabs' role='tablist'><input type=\"hidden\" name = \"{0}_state\" runat=\"server\" id = \"{0}_state\" value=\"{1}\">", tabbedGroup.Model.Id, activeTabId)
+                        String.Format("<div style=\"padding:2px\"><ul class='nav nav-tabs' role='tablist'><input type=\"hidden\" name = \"{0}_state\" runat=\"server\" id = \"{0}_state\" value=\"{1}\">", tabbedGroup.Model.Id, activeTabId)
                         :
-                        "</ul>"
+                        "</ul></div>"
                 }, Container);
             }
             else if (control is LayoutItemTemplateContainer)
@@ -342,11 +399,8 @@ namespace XafBootstrap.Web
 
                     AddContent(new HTMLText()
                     {
-                        Text =
-                            Start ?
-                            String.Format(@"<div class=""col-sm-{0}"">", Col)
-                            :
-                            "</div>"
+                        Text =                            
+                            String.Format(@"<div class=""col-sm-{0}"">", Col)                            
                     }, Container);
                 }
 
@@ -357,7 +411,7 @@ namespace XafBootstrap.Web
                         if (View is DetailView)
                             (editor as WebPropertyEditor).ViewEditMode = (View as DetailView).ViewEditMode;
                         else if (View is DashboardView)
-                            (editor as WebPropertyEditor).ViewEditMode = ViewEditMode.Edit;
+                            (editor as WebPropertyEditor).ViewEditMode = ViewEditMode.Edit;                        
 
                     if (editor != null)
                     {
@@ -371,20 +425,36 @@ namespace XafBootstrap.Web
                                     ", editor.Caption)
                                 }, Container);
                             else
-                                if ((control as LayoutItemTemplateContainer).ShowCaption && !(editor is XafBootstrapBooleanPropertyEditor))
+                                if ((control as LayoutItemTemplateContainer).ShowCaption && !(editor is XafBootstrapBooleanPropertyEditor)) 
+                                {
+                                    var delimeter = "";
+                                    var location = "";
+                                    switch((control as LayoutItemTemplateContainer).Model.CaptionLocation) 
+                                    {
+                                        case DevExpress.Utils.Locations.Left: 
+                                        case DevExpress.Utils.Locations.Right:
+                                            location = "form-inline form-group";
+                                            delimeter = ":";
+                                            break;
+                                        default:
+                                            location = "";
+                                            break;
+                                    }
+                                    
                                     AddContent(new HTMLText()
                                     {
                                         Text = String.Format(@"
-                                            <div class='form-group'>
-                                                <label><b>{0}</b></label>                                                
-                                        ", editor.Caption)
-                                    }, Container);
-                                else
+                                            <div class='{1}'>
+                                                <label><b>{0}{2}</b></label>
+                                                <div class='form-group'>
+                                        ", editor.Caption
+                                            , location
+                                            , delimeter)
+                                    }, Container);                                    
+                                } else
                                     AddContent(new HTMLText()
                                     {
-                                        Text = @"
-                                            <div class='form-group'>                                                
-                                        "
+                                        Text = @"<div class='form-group'>"
                                     }, Container);
 
                             if (editor is ListPropertyEditor)
@@ -406,6 +476,13 @@ namespace XafBootstrap.Web
                                 AddContent(new HTMLText()
                                 {
                                     Text = @"</div>"
+                                }, Container);
+                            }
+                            else if ((control as LayoutItemTemplateContainer).ShowCaption && !(editor is XafBootstrapBooleanPropertyEditor))
+                            {
+                                AddContent(new HTMLText()
+                                {
+                                    Text = @"</div></div>"
                                 }, Container);
                             }
                             else
@@ -644,14 +721,15 @@ namespace XafBootstrap.Web
                             classActive = (item.Value.Model.Id == activeTabId) ? " active" : "";
                         }
 
-                        AddContent(new HTMLText() { Text = String.Format("<div role='tabpanel' class='tab-pane fade in{1}' id='{0}'><input type='hidden' id='{0}_activated' value='{2}' name = '{0}_activated'/>", item.Value.Model.Id, classActive, Request.Form[item.Value.Model.Id + "_activated"] == "1" || (i == 0) ? "1" : "0") }, checkTab);
+                        AddContent(new HTMLText() { Text = String.Format("<div role='tabpanel' class='tab-pane fade in{1}' id='{0}'><input type='hidden' id='{0}_activated' value='{2}' name = '{0}_activated'/>", item.Value.Model.Id, classActive, manager.Request.Form[item.Value.Model.Id + "_activated"] == "1" || (i == 0) ? "1" : "0") }, checkTab);
+                        AddContent(new HTMLText() { Text = String.Format(@"<div class=""row no-margin""><div class=""col-sm-12"">") }, checkTab);
 
                         var checkTabCounter = new List<Control>();
-                        BuildRecursiveElement(item.Value, null, (i == 0) ? ElemType.FirstObject : (i == 0) ? ElemType.LastObject : ElemType.SingleObject, checkTabCounter);
-                        if (Request.Form[item.Value.Model.Id + "_activated"] == "1" || (i == 0))
+                        BuildRecursiveElement(item.Value, null, (i == 0) ? ElemType.FirstObject : (i == 0) ? ElemType.LastObject : ElemType.SingleObject, checkTabCounter);                        
+                        if (manager.Request.Form[item.Value.Model.Id + "_activated"] == "1" || (i == 0))
                             checkTab.AddRange(checkTabCounter);
                         else
-                            if (checkTabCounter.Count > 2)
+                            if (checkTabCounter.Count > 4)
                             {
                                 AddContent(new HTMLText() { Text = "" }, checkTab);
                                 AddContent(new HTMLText() { Text = @"<div class=""progress loading-progress"">
@@ -661,12 +739,15 @@ namespace XafBootstrap.Web
 </div>" }, checkTab);
                                 AddContent(new HTMLText() { Text = "" }, checkTab);
                             }
-                            
+
+                        AddContent(new HTMLText() { Text = String.Format(@"</div></div>") }, checkTab);
                         AddContent(new HTMLText() { Text = "</div>" }, checkTab);
                         
                         checkTabs.Add(i, checkTab);
                         i++;
-                    }                    
+                    }
+
+                    AddContent(new HTMLText() { Text = "<div class='panel panel-default'>" }, Container);
 
                     //BUILD HEADERS
                     i = 0;
@@ -701,11 +782,14 @@ namespace XafBootstrap.Web
                         }
                     }
                     AddContent(new HTMLText() { Text = "</div>" }, Container);
+
+                    AddContent(new HTMLText() { Text = "</div><br>" }, Container);
                 }
             }
             else
             {
-                if (BuildRecursiveTag(control, Parent, true, type, Container))
+                var checkContainer = new List<Control>();
+                if (BuildRecursiveTag(control, Parent, true, type, checkContainer))
                 {
                     if (control is LayoutGroupTemplateContainer)
                     {
@@ -714,7 +798,7 @@ namespace XafBootstrap.Web
                         var i = 0;
                         foreach (KeyValuePair<string, LayoutItemTemplateContainerBase> item in container.Items)
                         {
-                            BuildRecursiveElement(item.Value, control, (i == 0) ? ElemType.FirstObject : (i == container.Items.Count) ? ElemType.LastObject : ElemType.SingleObject, Container);
+                            BuildRecursiveElement(item.Value, control, (i == 0) ? ElemType.FirstObject : (i == container.Items.Count) ? ElemType.LastObject : ElemType.SingleObject, checkContainer);
                             i++;
                         }
 
@@ -725,41 +809,41 @@ namespace XafBootstrap.Web
                             var i = 0;
                             foreach (Control item in control.Controls.OfType<Control>().ToList())
                             {
-                                BuildRecursiveElement(item, control, (i == 0) ? ElemType.FirstObject : (i == control.Controls.Count) ? ElemType.LastObject : ElemType.SingleObject, Container);
+                                BuildRecursiveElement(item, control, (i == 0) ? ElemType.FirstObject : (i == control.Controls.Count) ? ElemType.LastObject : ElemType.SingleObject, checkContainer);
                                 i++;
                             }
                         }                    
                 }
-                BuildRecursiveTag(control, Parent, false, type, Container);
+                BuildRecursiveTag(control, Parent, false, type, checkContainer);
+
+                if (checkContainer.OfType<HTMLText>().Count() < checkContainer.Count)
+                    foreach (Control c in checkContainer)
+                        AddContent(c, Container);
             }
             return true;
         }        
 
         #endregion
-
         
         private void BuildContent()
-        {
+        {   
+            Content.Controls.Clear();
             switch(ViewType) {
                 case Web.ViewType.DetailView:
                     if (View == null)
                         return;
 
-                    if (ControlToRender == null)
-                    {
+                    if (ControlToRender == null)                    
                         if (View is DetailView && !(View as DetailView).IsControlCreated)                            
-                            View.CreateControls();
-                        
-                    }                                       
+                            View.CreateControls();                        
+                    
 
-                    {
-                        AddContent(new HTMLText() { Text = @"<div>" }, Content);
-                        if (ControlToRender != null)
-                            BuildRecursiveElement(ControlToRender, null, ElemType.SingleObject, Content);
-                        else
-                            BuildRecursiveElement((Control)View.Control, null, ElemType.SingleObject, Content);
-                        AddContent(new HTMLText() { Text = @"</div>" }, Content);
-                    }                    
+                    AddContent(new HTMLText() { Text = @"<div>" }, Content);
+                    if (ControlToRender != null)
+                        BuildRecursiveElement(ControlToRender, null, ElemType.SingleObject, Content);
+                    else
+                        BuildRecursiveElement((Control)View.Control, null, ElemType.SingleObject, Content);
+                    AddContent(new HTMLText() { Text = @"</div>" }, Content);
 
                     break;
             
@@ -775,14 +859,23 @@ namespace XafBootstrap.Web
                     break;
             }
         }
-        
+
+        CallbackHandler handler;
         protected override void OnInit(EventArgs e)
         {
-            base.OnInit(e);                        
-
+            base.OnInit(e);
+            handler = new CallbackHandler(ClientID);
+            handler.OnCallback += handler_OnCallback;
             DetailViewContent = new Control();
-            Controls.Add(DetailViewContent);    
-            InnerRender();        
+            Controls.Add(DetailViewContent);
+            InnerRender();
+
+            WebWindow.CurrentRequestWindow.RegisterClientScript("viewRefresh", String.Format("$(document).ready(function() {{ window.refreshView = function() {{ {0} }}; }});", handler.GetScript("'refresh'")));
+        }
+
+        void handler_OnCallback(object source, DevExpress.Web.CallbackEventArgs e)
+        {            
+            InnerRender();
         }
         
         protected override void OnLoad(EventArgs e)

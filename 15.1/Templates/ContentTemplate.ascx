@@ -107,7 +107,7 @@
                                 Tag="button" ItemClass="btn btn-info btn-sm" LeftDirection="False" />                                                            
                         </cc3:XafUpdatePanel>
                     </span>
-                    <span class="">
+                    <span class="panel">
                         <!-- View -->
                         <cc3:XafUpdatePanel ID="UPEI" runat="server">
                             <cc1:XafBootstrapErrorInfoControl ID="ErrorInfo" Style="margin: 10px 0px 10px 0px" runat="server" />
@@ -165,32 +165,6 @@
     <dx:ASPxLabel ID="Scripts" runat="server"></dx:ASPxLabel>
 </cc3:XafUpdatePanel>
 
-<style type="text/css">    
-    @keyframes loader {
-        50%     { 
-            transform: rotateY(0deg) rotateX(0deg);
-            -webkit-transform: rotateY(0deg) rotateX(0deg);
-            -moz-transform: rotateY(0deg) rotateX(0deg);
-            -o-transform: rotateY(0deg) rotateX(0deg);
-            -ms-transform: rotateY(0deg) rotateX(0deg);
-        }
-        75%    { 
-            transform: rotateY(180deg) rotateX(0deg);
-            -webkit-transform: rotateY(180deg) rotateX(0deg);
-            -moz-transform: rotateY(180deg) rotateX(0deg);
-            -o-transform: rotateY(180deg) rotateX(0deg);
-            -ms-transform: rotateY(180deg) rotateX(0deg);
-        }
-        100%    { 
-            transform: rotateX(-180deg);
-            -webkit-transform: rotateX(-180deg);
-            -moz-transform: rotateX(-180deg);
-            -o-transform: rotateX(-180deg);
-            -ms-transform: rotateX(-180deg);
-        }
-    }
-</style>
-
 <div id="pleaseWaitDialog" class="hidden">
     <div class="modal-backdrop fade in" style="position: fixed; bottom: 0px; left: 0px; right: 0px; top: 0px; z-index: 2000; opacity:0"></div>    
 </div>
@@ -227,6 +201,9 @@
         modal.find('h4.modal-title').text(caption);        
         modal.find('div.modal-body').append(confirmationMessage);
         modal.find('#XafBootstrapConfirmButton').on('click', callback);        
+        modal.on('show.bs.modal', function (e) {
+            $('body').css({ overflow: 'hidden' });
+        });
         modal.modal();
 
         return modal;
@@ -240,7 +217,7 @@
             $('body').css({ overflow: 'hidden' });
         }
         else {
-            $('body').css({ overflow: 'auto' });
+            $('body').css({ overflow: 'auto' });            
         };
     };
 
@@ -291,12 +268,18 @@
                 };
 
                 iframeDoc.startProgress = startProgress;
-                iframeDoc.stopProgress = stopProgress;
-                iframeDoc.checkWindowScrolls = window.checkWindowScrolls;
+                iframeDoc.stopProgress = stopProgress;                
 
                 iframeDoc.closeThisModal = function () {
                     modal.modal('hide');
                 };
+                iframeDoc.fullscreenThisModal = function () {
+                    if (modal.find('.modal-dialog').attr("style"))
+                        $('.modal.in .modal-dialog').removeAttr('style');
+                    else
+                        $('.modal.in .modal-dialog').attr('style', 'width: 100%');
+                };
+
                 iframeDoc.isChildFrame = true;
                 if (sender.isChildFrame) {
                     iframeDoc.parentFrameWindow = sender;
@@ -342,7 +325,8 @@
                 
                 stopProgress();
             });            
-            modal.on('show.bs.modal', function (e) {
+            modal.on('show.bs.modal', function (e) {                
+                $('body').css({ overflow: 'hidden' });
                 setTimeout(function () {
                     modal.find(".modal-content").html("");
                     modal.find(".modal-content").append(iframe);
@@ -382,10 +366,10 @@
         window.RaiseXafCallbackCached = window.RaiseXafCallback;
         window.RaiseXafCallback = function RaiseXafCallback(callbackControl, handlerId, parameters, confirmation, usePostBack, sender) {            
             if (!(sender))
-                sender = window;
-            startProgress();
+                sender = window;            
             var isRaised = false;
             var raiseFunc = function () {
+                startProgress();
                 var parameter = handlerId + ':' + parameters;
                 if (usePostBack) {
                     callbackControl.SendPostBack(parameter);
@@ -467,6 +451,9 @@
                     + '</div>'
                 + '</div>'
             + '</div>');
+            dialog.on('show.bs.modal', function (e) {
+                $('body').css({ overflow: 'hidden' });
+            });
             dialog.modal({ show: true });
             if (callback)
             {
@@ -530,7 +517,10 @@
 </script>
 
 <script>
-    $(document)                
+    $(document)
+        .on('show.bs.modal', '.modal', function (event) {            
+            $('body').css({ overflow: 'hidden' });
+        })
         .on('shown.bs.modal', '.modal.in', function (event) {
             setModalsAndBackdropsOrder();
             $('body').css({ overflow: 'hidden' });            

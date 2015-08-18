@@ -32,6 +32,6 @@
     </Items>
   </NavigationItems>
   <SchemaModules>
-    <SchemaModule Name="SystemModule" Version="14.2.6.0" IsNewNode="True" />
+    <SchemaModule Name="SystemModule" Version="15.1.4.0" IsNewNode="True" />
   </SchemaModules>
 </Application>

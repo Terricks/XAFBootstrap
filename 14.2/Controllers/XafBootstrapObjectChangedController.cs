@@ -31,24 +31,23 @@ namespace XAF_Bootstrap.Controllers
 {
     public partial class XafBootstrapObjectChangedController : ViewController
     {
-        DetailView detailView;
         public XafBootstrapObjectChangedController()
         {
             InitializeComponent();            
         }
         protected override void OnActivated()
         {
-            base.OnActivated();
             XafBootstrapObjectChangedControllerHelper.Checker().ListClear();
+            View.ObjectSpace.ObjectChanged += ObjectChangedExecute;
+            View.ObjectSpace.Committed += ObjectSpaceRemoveChanges;
+            View.ObjectSpace.RollingBack += ObjectSpaceRemoveChanges;
+            View.ObjectSpace.Refreshing += ObjectSpaceRemoveChanges;
+            base.OnActivated();
         }
         protected override void OnViewControlsCreated()
         {
             base.OnViewControlsCreated();
-            detailView = View as DetailView;
-            View.ObjectSpace.ObjectChanged += new EventHandler<ObjectChangedEventArgs>(ObjectChangedExecute);
-            View.ObjectSpace.Committed += new EventHandler(ObjectSpaceRemoveChanges);
-            View.ObjectSpace.RollingBack += new EventHandler<System.ComponentModel.CancelEventArgs>(ObjectSpaceRemoveChanges);
-            View.ObjectSpace.Refreshing += new EventHandler<System.ComponentModel.CancelEventArgs>(ObjectSpaceRemoveChanges);
+            
             if (XafBootstrapObjectChangedControllerHelper.Checker().CheckModified(View.ObjectSpace))
                 WebWindow.CurrentRequestWindow.RegisterStartupScript("WindowDataChanged", "window.DataChanged = true;", true);
             else
@@ -56,6 +55,10 @@ namespace XAF_Bootstrap.Controllers
         }
         protected override void OnDeactivated()
         {
+            View.ObjectSpace.ObjectChanged -= ObjectChangedExecute;
+            View.ObjectSpace.Committed -= ObjectSpaceRemoveChanges;
+            View.ObjectSpace.RollingBack -= ObjectSpaceRemoveChanges;
+            View.ObjectSpace.Refreshing -= ObjectSpaceRemoveChanges;
             base.OnDeactivated();
         }
 

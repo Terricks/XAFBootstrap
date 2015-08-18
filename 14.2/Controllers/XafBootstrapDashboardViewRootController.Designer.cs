@@ -31,7 +31,6 @@ namespace XafBootstrap.Web
             // 
             // CustomDashboardViewRootController
             // 
-            this.TargetViewNesting = DevExpress.ExpressApp.Nesting.Root;
             this.TargetViewType = DevExpress.ExpressApp.ViewType.DashboardView;
             this.TypeOfView = typeof(DevExpress.ExpressApp.DashboardView);
 

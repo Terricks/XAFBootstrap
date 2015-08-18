@@ -29,9 +29,8 @@ namespace XafBootstrap.Web
         private void InitializeComponent()
         {
             // 
-            // ObjectActionController
+            // CustomDetailViewRootController
             // 
-            this.TargetViewNesting = DevExpress.ExpressApp.Nesting.Root;
             this.TargetViewType = DevExpress.ExpressApp.ViewType.DetailView;
             this.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
 

@@ -56,6 +56,7 @@ namespace XAF_Bootstrap.Controllers.XafBootstrapConfiguration
                     }
                 }
             }
+            XafBootstrapConfigurationActionItem.Active["IsActionActive"] = actionVisible;
         }
         protected override void OnDeactivated()
         {

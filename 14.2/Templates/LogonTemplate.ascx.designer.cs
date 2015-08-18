@@ -100,6 +100,24 @@ namespace XAF_Bootstrap.Templates {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::DevExpress.ExpressApp.Web.Templates.ActionContainers.ActionContainerHolder PopupActions;
+        protected global::XAF_Bootstrap.Controls.XbActionContainerHolder PopupActions;
+        
+        /// <summary>
+        /// UPO control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::DevExpress.ExpressApp.Web.Templates.XafUpdatePanel UPO;
+        
+        /// <summary>
+        /// OptionsActions control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::XAF_Bootstrap.Controls.XbActionContainerHolder OptionsActions;
     }
 }

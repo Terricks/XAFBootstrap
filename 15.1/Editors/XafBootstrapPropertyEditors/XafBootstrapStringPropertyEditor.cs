@@ -49,7 +49,7 @@ namespace XAF_Bootstrap.Editors.XafBootstrapPropertyEditors
         protected override System.Web.UI.WebControls.WebControl CreateEditModeControlCore()
         {
             InitEdit();
-            Edit.TextOnly = !Model.AllowEdit;
+            Edit.TextOnly = !AllowEdit;
             Edit.EditValueChanged += new EventHandler(EditValueChangedHandler);                
             return Edit;
         }

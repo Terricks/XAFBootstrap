@@ -20,13 +20,10 @@
 */
 #endregion
 
-using XAF_Bootstrap.Editors;
 using XAF_Bootstrap.Templates;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.UI;
 
@@ -37,8 +34,7 @@ namespace XAF_Bootstrap.Controls
         public String ID = "";
         public String Placeholder = "";
         public String AddonLeft = "";
-        public String AddonRight = "";
-        public String Value = "";
+        public String AddonRight = "";        
         public Boolean TextOnly = false;
         public Boolean IsPassword = false;
         public int RowCount = 1;       
@@ -47,6 +43,21 @@ namespace XAF_Bootstrap.Controls
         public event EventHandler EditValueChanged;
 
         private HTMLText Content;
+
+        private String _Value;
+        public String Value
+        {
+            get
+            {
+                return _Value;
+            }
+            set
+            {
+                _Value = value;
+                if (this.Initialized)
+                    InnerRender();
+            }
+        }
 
         public XafBootstrapStringEdit()
         {
@@ -67,18 +78,19 @@ namespace XAF_Bootstrap.Controls
                 Content.Text += String.Format(@"<span>{0}</span>", val);
             else
             {
-                String changeEvent = String.Format(@"onchange="" window.DataChanged=true; {0} """, GetCallbackScript("'NewValue=' + $(this).val()"));
+                String changeEvent = String.Format(@"window.DataChanged=true;  $('#{0}_changed').val('1');", ClientID);
                 if (RowCount <= 1)
                 {
-                    Content.Text += String.Format(@"<input type=""{3}"" class=""form-control input-sm"" placeholder=""{0}"" value =""{1}"" {2}>", Placeholder, val, changeEvent, IsPassword ? "password" : "text");
+                    Content.Text += String.Format(@"<input type=""{3}"" name=""{4}"" class=""form-control input-sm"" placeholder=""{0}"" value =""{1}"" onchange=""{2}"" onkeypress=""{2}"">", Placeholder, val, changeEvent, IsPassword ? "password" : "text", ClientID);
                 }
                 else
                 {
-                    Content.Text += String.Format(@"<textarea class=""form-control"" rows=""{0}"" {2} placeholder=""{3}"">{1}</textarea>", RowCount, val, changeEvent, Placeholder);
+                    Content.Text += String.Format(@"<textarea class=""form-control"" name=""{4}"" rows=""{0}""  onchange=""{2}"" onkeypress=""{2}"" placeholder=""{3}"">{1}</textarea>", RowCount, val, changeEvent, Placeholder, ClientID);
                 }
             }
             if (AddonRight != "")
                 Content.Text += String.Format(@"<span class=""input-group-addon"">{0}</span>", AddonRight);
+            Content.Text += String.Format(@"<input name=""{0}_changed"" id=""{0}_changed"" value=""0"" type=""hidden"">", ClientID);
         }
 
         protected override void OnInit(EventArgs e)
@@ -86,41 +98,16 @@ namespace XAF_Bootstrap.Controls
             base.OnInit(e);
             Content = new HTMLText();
             Controls.Add(Content);
+
+            if (Helpers.RequestManager.Request.Form[ClientID + "_changed"] == "1")
+            {
+                Value = Helpers.RequestManager.Request.Form[ClientID];
+                if (EditValueChanged != null)
+                    EditValueChanged(this, EventArgs.Empty);
+            }            
+            
             EncodeHtml = false;
             InnerRender();
-        }
-
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);            
-        }
-
-        protected override void Render(HtmlTextWriter writer)
-        {            
-            base.Render(writer);
-        }
-
-        protected override void RenderContents(HtmlTextWriter writer)
-        {
-            base.RenderContents(writer);
-        }
-
-        protected override void OnCallback(DevExpress.Web.CallbackEventArgsBase e)
-        {
-            base.OnCallback(e);
-            String[] values = String.Concat(e.Parameter).Split(new char[] { '=' }, StringSplitOptions.None);
-            if (values.Count() > 1)
-            {
-                switch (values[0])
-                {
-                    case "NewValue":
-                        Value = String.Join("=", values.ToList().Skip(1).Take(values.Length-1));
-                        break;
-                }
-            }            
-            if (EditValueChanged != null)
-                EditValueChanged(this, EventArgs.Empty);
-            InnerRender();
-        }
+        }        
     }
 }

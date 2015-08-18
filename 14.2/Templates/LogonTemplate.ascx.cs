@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using DevExpress.ExpressApp.Web.Templates;
 using DevExpress.ExpressApp.Templates;
+using DevExpress.ExpressApp.Web.Controls;
 
 namespace XAF_Bootstrap.Templates
 {
@@ -48,6 +49,10 @@ namespace XAF_Bootstrap.Templates
             {
                 return viewSiteControl;
             }
+        }
+        public XafPopupWindowControl XafPopupWindowControl
+        {
+            get { return PopupWindowControl; }
         }
 
     }

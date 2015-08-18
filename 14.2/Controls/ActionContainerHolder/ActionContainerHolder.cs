@@ -183,7 +183,7 @@ namespace XAF_Bootstrap.Controls
             {
                 Callback = new CallbackHandler(UniqueID + "_Callback");
                 Callback.OnCallback += Callback_OnCallback;
-            }
+            }            
         }
         protected override void OnUnload(EventArgs e)
         {
@@ -266,6 +266,7 @@ namespace XAF_Bootstrap.Controls
         public String CallbackName { get; set; }
         public String ClickScript { get; set; }
         public String ContainerClass { get; set; }
+        public String DefaultIcon { get; set; }
 
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never)]
         public List<IActionContainer> ActionContainers
@@ -304,6 +305,7 @@ namespace XAF_Bootstrap.Controls
             CallbackName = "ObjectActionControllerCallback";
             ClickScript = "";
             ContainerClass = "actions";
+            DefaultIcon = "glyphicon-star";
         }
 
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never)]
@@ -339,7 +341,7 @@ namespace XAF_Bootstrap.Controls
             if (Visible && actionObjects.Count > 0)
             {
                 Control.Text += ContentBefore;
-                Control.Text += Helpers.BuildActionsMenu(this, UniqueID + "_Callback", LeftDirection, ItemClass, Tag, ClickScript, ContainerClass);
+                Control.Text += Helpers.BuildActionsMenu(this, UniqueID + "_Callback", LeftDirection, ItemClass, Tag, ClickScript, ContainerClass, DefaultIcon);
                 Control.Text += ContentAfter;
             }
             else
@@ -383,7 +385,7 @@ namespace XAF_Bootstrap.Controls
                         Helpers.ProcessAction(action);
                 }
 
-            }
+            }            
             EnsureChildControls();
         }
 

@@ -20,14 +20,9 @@
 */
 #endregion
 
-using XAF_Bootstrap.Editors;
-using XAF_Bootstrap.Templates;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 using System.Web.UI;
 using DevExpress.Web;
 
@@ -35,9 +30,8 @@ namespace XAF_Bootstrap.Controls
 {
     public class XafBootstrapCheckboxEdit : XafBootstrapBaseControl
     {
-        public String ID = "";
+        public String ID = "";        
         
-        public Boolean Value;
         public Boolean TextOnly = false;
         public Boolean IsPassword = false;
         public String Text;
@@ -52,6 +46,21 @@ namespace XAF_Bootstrap.Controls
             EncodeHtml = true;
         }
 
+        private Boolean _Value;
+        public Boolean Value
+        {
+            get
+            {
+                return _Value;
+            }
+            set
+            {
+                _Value = value;
+                if (this.Initialized)
+                    InnerRender();
+            }
+        }
+
         public void InnerRender()
         {
             Content.Text = "";
@@ -59,10 +68,10 @@ namespace XAF_Bootstrap.Controls
             String changeEvent = String.Format(@"onchange="" window.DataChanged=true; {0} """, GetCallbackScript("'NewValue=' + $(this).is(':checked')"));
             Content.Text += String.Format(@"
                 <div class=""checkbox"">
-                    <label>
-                        <input type=""checkbox"" {1} {2} {3}> {0}
+                    <label {4}>
+                        <input type=""checkbox"" {4} {1} {2} {3}> {0}
                     </label>
-                </div>", Text, TextOnly ? "" : changeEvent, Value ? "checked" : "", TextOnly ? "disabled" : "");
+                </div>", Text, TextOnly ? "" : changeEvent, Value ? "checked" : "", TextOnly ? "disabled" : "", TextOnly ? "style='cursor:default'" : "");
         }
 
         protected override void OnInit(EventArgs e)

@@ -140,13 +140,13 @@ namespace XAF_Bootstrap.Editors.XafBootstrapPropertyEditors
 
             if (IsSelector)
             {
-                DataSelector.TextOnly = !Model.AllowEdit;
+                DataSelector.TextOnly = !AllowEdit;
                 DataSelector.EditValueChanged += new EventHandler(EditValueChangedHandler);
                 return DataSelector;
             }
             else
             {
-                DropDown.TextOnly = !Model.AllowEdit;
+                DropDown.TextOnly = !AllowEdit;
                 DropDown.EditValueChanged += new EventHandler(EditValueChangedHandler);
                 return DropDown;
             }            
@@ -184,7 +184,7 @@ namespace XAF_Bootstrap.Editors.XafBootstrapPropertyEditors
             else
                 DropDown.Value = PropertyValue;
         }
-        
+
         protected override void ReadViewModeValueCore()
         {
             if (IsSelector)

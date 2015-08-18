@@ -45,7 +45,7 @@ namespace XAF_Bootstrap.Editors.XafBootstrapPropertyEditors
         protected override System.Web.UI.WebControls.WebControl CreateEditModeControlCore()
         {
             InitEdit();
-            Edit.TextOnly = !Model.AllowEdit;
+            Edit.TextOnly = !AllowEdit;
             Edit.EditValueChanged += new EventHandler(EditValueChangedHandler);
             Edit.OnClickScript = GetImmediatePostDataScript();
             return Edit;
@@ -70,12 +70,16 @@ namespace XAF_Bootstrap.Editors.XafBootstrapPropertyEditors
         
         protected override void ReadEditModeValueCore()
         {
-            DateTime.TryParse(String.Concat(PropertyValue), out Edit.Value);
+            DateTime val;
+            if (DateTime.TryParse(String.Concat(PropertyValue), out val))
+                Edit.Value = val;
         }
         
         protected override void ReadViewModeValueCore()
         {
-            DateTime.TryParse(String.Concat(PropertyValue), out Edit.Value);
+            DateTime val;
+            if (DateTime.TryParse(String.Concat(PropertyValue), out val))
+                Edit.Value = val;            
         }
         public string GetImmediatePostDataScript()
         {   

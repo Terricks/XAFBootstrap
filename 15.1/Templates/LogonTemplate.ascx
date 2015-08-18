@@ -62,28 +62,23 @@
 
                 <div class="well">
                     <cc3:XafUpdatePanel ID="UPEI" runat="server">
-                        <cc1:XafBootstrapErrorInfoControl ID="ErrorInfo" Style="margin: 10px 0px 10px 0px" runat="server" />
+                        <cc1:XafBootstrapErrorInfoControl ID="ErrorInfo" Style="margin: 10px 0px 10px 0px" runat="server"/>
                     </cc3:XafUpdatePanel>
             
                     <cc3:XafUpdatePanel ID="UPVSC" runat="server">
                         <cc4:ViewSiteControl ID="viewSiteControl" runat="server" />
+                        <br />                    
+                        <cc1:XbActionContainerHolder ID="PopupActions" runat="server" Categories="PopupActions" LeftDirection ="false" DefaultIcon="">                            
+                        </cc1:XbActionContainerHolder>
+                        <br />
                     </cc3:XafUpdatePanel>
-                    
-                    <div style="display: none">
-                        <cc2:ActionContainerHolder ID="PopupActions" runat="server" Categories="PopupActions"
-                            Style="margin-left: 10px; display: inline" Orientation="Horizontal" ContainerStyle="Buttons">
-                            <menu width="100%" itemautowidth="False" horizontalalign="Right" />
-                        </cc2:ActionContainerHolder>
-                    </div>
-                    <br />
-                    <button id="logonAction" type="button" class="btn btn-default btn-sm pull-right" onclick="RaiseXafCallback(globalCallbackControl, 'Logon$PopupActions', 0, '', false)"></button>
-                    <br />
                 </div>
-    
-    
+                <cc3:XafUpdatePanel ID="UPO" runat="server">
+                    <cc1:XbActionContainerHolder ID="OptionsActions" runat="server" Categories="Options; Tools;" Tag="a" ItemClass="view-action" ContainerClass="h6" DefaultIcon="">                            
+                    </cc1:XbActionContainerHolder>
+                </cc3:XafUpdatePanel>    
             </div>
             <div class="col-sm-3"></div>
-
         </div>
     </div>
 </div>
@@ -123,4 +118,9 @@
         document.body.onscroll = null;
         document.body.onresize = null;
     };
+    $('body').keyup(function (e) {
+        if (e.which == 13) {
+            RaiseXafCallback(globalCallbackControl, "Logon$PopupActions_Callback", "Action=Logon", "", false);
+        }
+    });
 </script>

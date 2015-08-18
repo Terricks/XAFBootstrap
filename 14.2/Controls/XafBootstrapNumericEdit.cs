@@ -38,8 +38,7 @@ namespace XAF_Bootstrap.Controls
         public String ID = "";
         public String Placeholder = "";
         public String AddonLeft = "";
-        public String AddonRight = "";
-        public decimal Value = 0;
+        public String AddonRight = "";        
         public Boolean TextOnly = false;
         public Boolean IsPassword = false;
         public int RowCount = 1;       
@@ -48,6 +47,21 @@ namespace XAF_Bootstrap.Controls
         public string OnClickScript;
 
         public event EventHandler EditValueChanged;
+
+        private decimal _Value;
+        public decimal Value
+        {
+            get
+            {
+                return _Value;
+            }
+            set
+            {
+                _Value = value;
+                if (this.Initialized)
+                    InnerRender();
+            }
+        }
 
         private HTMLText Content;
 

@@ -24,23 +24,12 @@ using DevExpress.ExpressApp;
 using DevExpress.ExpressApp.Editors;
 using DevExpress.ExpressApp.Model;
 using DevExpress.ExpressApp.SystemModule;
-using DevExpress.ExpressApp.Utils;
-using DevExpress.ExpressApp.Web.Templates;
 using DevExpress.Persistent.Base;
 using DevExpress.Web;
-using DevExpress.Xpo;
-using XafBootstrap.Web;
-using XAF_Bootstrap.Editors;
 using XAF_Bootstrap.Editors.XafBootstrapPropertyEditors;
-using XAF_Bootstrap.Editors.XafBootstrapTableEditor;
-using XAF_Bootstrap.Templates;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.UI;
 using DevExpress.ExpressApp.Web.Editors.ASPx;
 
@@ -49,25 +38,6 @@ namespace XAF_Bootstrap.Controls
     public class XafBootstrapDataSelectorEdit : System.Web.UI.WebControls.WebControl
     {
         public string OnClickScript;
-        object _DataSource;
-        public object DataSource
-        {
-            get
-            {
-                return _DataSource;
-            }
-            set
-            {
-                _DataSource = value;                
-                List = new List<XPBaseObject>();
-                if (_DataSource != null)
-                    foreach (var item in ListHelper.GetList(DataSource))
-                    {
-                        if (item is XPBaseObject)
-                            List.Add(item as XPBaseObject);
-                    }
-            }
-        }
 
         public XafBootstrapDataSelectorEdit(ASPxPropertyEditor Editor, XafApplication Application, IObjectSpace ObjectSpace, LookupEditorHelper helper)
         {
@@ -90,20 +60,21 @@ namespace XAF_Bootstrap.Controls
         public String PropertyName;
         public ASPxPropertyEditor Editor;
 
+        private Boolean Initialized;
         private object _value;
         public object Value
-        {
-            set
-            {
-                _value = value;                
-            }
+        {            
             get
             {   
                 return _value;
             }
-        }
-
-        private IList<XPBaseObject> List;        
+            set
+            {
+                _value = value;
+                if (Initialized)
+                    InnerRender();
+            }
+        }               
 
         public event EventHandler EditValueChanged;
 
@@ -122,29 +93,20 @@ namespace XAF_Bootstrap.Controls
                     case "Show":
                         if (Helper != null)                            
                         {
-                            var cs = Helper.CreateCollectionSource(Helper.ObjectSpace.GetObject(Editor.CurrentObject));
-                            DataSource = cs.List;
-                                
-                            ListView view = Helper.Application.CreateListView(ListView, cs, false);
-
+                            var view = Helper.CreateListView(Helper.ObjectSpace.GetObject(Editor.CurrentObject));
                             var SVP = new ShowViewParameters(view);
                             SVP.TargetWindow = TargetWindow.NewModalWindow;
 
-                            DialogController dc = Helper.Application.CreateController<DialogController>();                                
-                            dc.Accepting += new EventHandler<DialogControllerAcceptingEventArgs>(delegate
-                            {                                    
-                                foreach (var item in view.SelectedObjects)
-                                {
-                                    Value = item;
-                                    if (EditValueChanged != null)
-                                        EditValueChanged(this, EventArgs.Empty);  
-                                }
-                            });
-                            dc.Cancelling += new EventHandler(delegate
+                            DialogController dc = Helper.Application.CreateController<DialogController>();
+                            dc.Accepting += new EventHandler<DialogControllerAcceptingEventArgs>(delegate(object sender, DialogControllerAcceptingEventArgs ev)
                             {
-                                
+                                var os = (Editor as XafBootstrapLookupPropertyEditor).ObjectSpace;
+                                foreach (var item in view.SelectedObjects)
+                                {   
+                                    Editor.PropertyValue = os.GetObject(item);
+                                }   
                             });
-                            SVP.Controllers.Add(dc);
+                            SVP.Controllers.Add(dc);                            
 
                             Helper.Application.ShowViewStrategy.ShowView(SVP, new ShowViewSource(null, null));
                         }
@@ -177,9 +139,6 @@ namespace XAF_Bootstrap.Controls
 
         public void InnerRender()
         {
-            Handler = new CallbackHandler(ClientID);
-            Handler.OnCallback += Handler_OnCallback;
-
             ContentStart.Text = "";
             ContentFinish.Text = "";            
 
@@ -209,8 +168,11 @@ namespace XAF_Bootstrap.Controls
 
         protected override void OnInit(EventArgs e)
         {
-            base.OnInit(e);            
+            base.OnInit(e);
+            Handler = new CallbackHandler(ClientID);
+            Handler.OnCallback += Handler_OnCallback;
             InnerRender();
+            Initialized = true;
         }
 
         protected override void OnLoad(EventArgs e)

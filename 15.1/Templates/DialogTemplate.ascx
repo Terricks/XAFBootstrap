@@ -13,8 +13,9 @@
         <cc4:XafPopupWindowControl runat="server" ID="PopupWindowControl" />
     </cc3:XafUpdatePanel>    
 
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" onclick="closeThisModal()" aria-label="Close"><span aria-hidden="true" style="color: #000">&times;</span></button>
+    <div class="modal-header">        
+        <button type="button" class="close" data-dismiss="modal" onclick="closeThisModal()" aria-label="Close"><span aria-hidden="true" class="text-primary">&times;</span> </button>
+        <button type="button" class="close" data-dismiss="modal" onclick="fullscreenThisModal()" aria-label="Maximize"><span class="text-primary glyphicon glyphicon-fullscreen" style="font-size: 60%; margin-top: 5px; margin-right: 5px"></span> </button>
         <h4 class="modal-title">
             <cc3:XafUpdatePanel ID="UPVH" runat="server">            
                 <div class="row no-margin">                
@@ -76,6 +77,16 @@
             window.createXafBootstrapPopup(contentUrl, window);
         }
     });
+
+    function checkWindowScrolls(modalsCount) {
+        var modals = $('.modal.in:visible');
+        if (modals.length > modalsCount) {
+            $('body').css({ overflow: 'hidden' });
+        }
+        else {
+            $('body').css({ overflow: 'auto' });            
+        };
+    };
 </script>
 
 <script>

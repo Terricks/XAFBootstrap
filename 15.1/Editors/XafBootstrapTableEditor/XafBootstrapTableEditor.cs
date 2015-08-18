@@ -223,7 +223,7 @@ namespace XAF_Bootstrap.Editors.XafBootstrapTableEditor
             control.CustomColumns.Add(new XafBootstrapTable.HeaderInfo() { ID = "Selector", Align = "left", FieldName = "Selector", FixedWidth = 20 });
             control.OnGenerateCell += new OnGenerateCellHandler(delegate(ref String Format, String FieldName, ref String value, int RowNumber, object data)
             {
-                if (FieldName == "Selector")
+                if (FieldName == "Selector" && control.ClientID != null)
                 {
                     var key = GetMemberValue((data as Object), collection.ObjectSpace.GetKeyPropertyName(data.GetType()));
                     Format = Format.Replace("<td ", String.Format("<td onclick=\"event.cancelBubble = true; {0}\" ", XafCallbackManager.GetScript(control.ClientID, String.Format("'Mark={0}'", key))));
@@ -235,7 +235,7 @@ namespace XAF_Bootstrap.Editors.XafBootstrapTableEditor
 
             control.OnGenerateHeader += new OnGenerateHeaderHandler(delegate(ref String Format, String FieldName, ref String value, object data)
             {                
-                if (FieldName == "Selector")
+                if (FieldName == "Selector" && control.ClientID != null)
                 {
                     AllItemsChecked = Helpers.RequestManager.Request.Form[control.ClientID + "_CheckAll"] == "on";
                     Format = Format.Replace("<th ", String.Format("<th onclick=\"event.cancelBubble = true; {0}\" ", XafCallbackManager.GetScript(control.ClientID, "'Mark=CheckAllChanged'")));

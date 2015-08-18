@@ -120,12 +120,10 @@ namespace XAF_Bootstrap.Templates
 
         public void UpdateActions(int Type = -1)
         {   
-            if (Type == -1 || Type == 3)
-            {
-                var app = (WebApplication.Instance as XafApplication);            
-                if (app.MainWindow != null)
-                    GenerateMenuItems(app.MainWindow.GetController<ShowNavigationItemController>().ShowNavigationItemAction.Items); 
-            }
+            
+            var app = (WebApplication.Instance as XafApplication);            
+            if (app.MainWindow != null)
+                GenerateMenuItems(app.MainWindow.GetController<ShowNavigationItemController>().ShowNavigationItemAction.Items); 
 
             if (Type == 5)
                 GenerateActionsLayoutScript();
@@ -218,7 +216,7 @@ namespace XAF_Bootstrap.Templates
                     String NodeID = GetNodeID(Node);
                     return String.Format("<li><a href=\"javascript:;\" onclick=\"if ($('#menuCollapseButton').is(':visible')) $('#menuCollapseButton').click();{1}\">{2}{0}</a></li>"
                         , Node.Caption
-                        , Helpers.ContentHelper.Manager.GetScript("MenuItemClickControllerCallback", String.Format("'{0}'", NodeID))
+                        , Helpers.ContentHelper.GetScript("MenuItemClickControllerCallback", String.Format("'{0}'", NodeID))
                         , Node.Model is IModelGlyphicon && String.Concat((Node.Model as IModelGlyphicon).Glyphicon) != ""
                                      ? String.Format("<span class='glyphicon glyphicon-{0}'></span> ", (Node.Model as IModelGlyphicon).Glyphicon) : ""
                     );
@@ -240,7 +238,7 @@ namespace XAF_Bootstrap.Templates
                     String NodeID = GetNodeID(Node);
                     return String.Format("<li class='collapse {3}'><a href=\"javascript:;\" onclick=\"if ($('#menuCollapseButton').is(':visible')) $('#menuCollapseButton').click();{1}\">{2}{0}</a></li>"
                         , Node.Caption
-                        , Helpers.ContentHelper.Manager.GetScript("MenuItemClickControllerCallback", String.Format("'{0}'", NodeID))
+                        , Helpers.ContentHelper.GetScript("MenuItemClickControllerCallback", String.Format("'{0}'", NodeID))
                         , GetNodeLevel(Node) + "&nbsp " + String.Format("<span class='glyphicon glyphicon-{0}'></span> ",
                             Node.Model is IModelGlyphicon && String.Concat((Node.Model as IModelGlyphicon).Glyphicon) != ""
                                      ? (Node.Model as IModelGlyphicon).Glyphicon : "")
@@ -362,7 +360,7 @@ namespace XAF_Bootstrap.Templates
                     SettingsLi += String.Format("<li><a href='javascript:;' onclick='if ($(\"#settingsCollapseButton\").is(\":visible\")) $(\"#settingsCollapseButton\").click();{2}'><span class='glyphicon glyphicon-star'></span> {0}</a></li>"
                         , menuItem.Text
                         , menuItem.Name
-                        , Helpers.ContentHelper.Manager.GetScript(SAC.UniqueID + "_Callback", String.Format("\"Action={0}\"", menuItem.Name)).Replace("'", "\""), "");
+                        , Helpers.ContentHelper.GetScript(SAC.UniqueID + "_Callback", String.Format("\"Action={0}\"", menuItem.Name)).Replace("'", "\""), "");
                 else
                 {
                     var choiceAction = (menuItem.ActionProcessor as MenuActionItemBase).Action as SingleChoiceAction;
@@ -370,7 +368,7 @@ namespace XAF_Bootstrap.Templates
                     SettingsLi += String.Join("", choiceAction.Items.Select(f =>
                         String.Format("<li><a href=\"javascript:;\" onclick='if ($(\"#settingsCollapseButton\").is(\":visible\")) $(\"#settingsCollapseButton\").click();{1}'><span class=\"glyphicon glyphicon-star\"></span> {0}</a></li>"
                             , f.Caption
-                            , Helpers.ContentHelper.Manager.GetScript(SAC.UniqueID + "_Callback", String.Format("\"Action={0},{1}\"", menuItem.Name, f.Id)).Replace("'", "\""))
+                            , Helpers.ContentHelper.GetScript(SAC.UniqueID + "_Callback", String.Format("\"Action={0},{1}\"", menuItem.Name, f.Id)).Replace("'", "\""))
                     ));
                 }
             }
