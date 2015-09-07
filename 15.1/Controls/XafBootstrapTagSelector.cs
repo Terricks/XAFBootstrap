@@ -164,7 +164,12 @@ namespace XAF_Bootstrap.Controls
             Content.Text = "";
 
             var values = String.Concat(Value).Split(new String[] { "," }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            var selectedItems = Items.List.Where(f => values.IndexOf(f.Value) > -1).ToList();
+            var selectedItems = new List<XafBootstrapTagSelectorItem>();
+            foreach(var value in values) {
+                var item = Items.List.FirstOrDefault(f => f.Value == value);
+                if (item != null && selectedItems.IndexOf(item) == -1)
+                    selectedItems.Add(item);
+            }   
             
             if (TextOnly)
                 Content.Text += String.Format(@"<span>{0}</span>", String.Join(", ", selectedItems.Select(f => String.Format(@"{0}", f.Text))));

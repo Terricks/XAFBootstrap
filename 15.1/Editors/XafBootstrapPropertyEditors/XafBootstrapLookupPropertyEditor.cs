@@ -26,7 +26,6 @@ using DevExpress.ExpressApp.Model;
 using DevExpress.ExpressApp.Web;
 using DevExpress.ExpressApp.Web.Editors.ASPx;
 using DevExpress.Persistent.Base;
-using DevExpress.Xpo;
 using XAF_Bootstrap.Controls;
 using XAF_Bootstrap.Templates;
 using System;
@@ -66,16 +65,16 @@ namespace XAF_Bootstrap.Editors.XafBootstrapPropertyEditors
 
         private void InitEdit()
         {
-            var attr = this.MemberInfo.FindAttribute<LookupEditorModeAttribute>();
-            IsSelector = (attr == null || attr.Mode != LookupEditorMode.AllItems);
-
-            var Helper = new LookupEditorHelper(Application, ObjectSpace.CreateNestedObjectSpace(), MemberInfo.MemberTypeInfo, Model);            
+            var Helper = new LookupEditorHelper(Application, ObjectSpace.CreateNestedObjectSpace(), MemberInfo.MemberTypeInfo, Model);  
+            IsSelector = Helper.EditorMode == LookupEditorMode.Search;
+            
             CollectionSourceBase cs = null;
 
-            if (!IsSelector || Helper.EditorMode == LookupEditorMode.Auto)
+            if (!IsSelector)
             {
                 cs = Helper.CreateCollectionSource(Helper.ObjectSpace.GetObject(CurrentObject));
-                IsSelector = cs.List.Count > 20 || cs.List.Count == 0;
+                if (Helper.EditorMode == LookupEditorMode.Auto || Helper.EditorMode == LookupEditorMode.AllItemsWithSearch)
+                    IsSelector = cs != null && cs.List.Count > 20;
             }
 
             String displayFormat = String.Concat(DisplayFormat);
@@ -113,24 +112,25 @@ namespace XAF_Bootstrap.Editors.XafBootstrapPropertyEditors
                 DropDown = new XafBootstrapDropdownEdit();
                 DropDown.OnClickScript = GetImmediatePostDataScript();                
                 var listView = (IModelListView)App.Model.Views[App.FindLookupListViewId(MemberInfo.MemberType)];
-                foreach (var obj in cs.List)
-                {
-                    var item = DropDown.Items.Add();
-                    var cols = listView.Columns.Where(f => f.Index == null || f.Index > -1).OrderBy(f => f.Index);
-                    if (cols.Count() > 1) {
-                        var builder = new List<String>();                    
-                        foreach (var col in cols)
-                        {
-                            builder.Add(String.Format(new ObjectFormatter(), "{0:" + col.GetValue<String>("FieldName") +  "}", obj));
+                if (cs != null)
+                    foreach (var obj in cs.List)
+                    {
+                        var item = DropDown.Items.Add();
+                        var cols = listView.Columns.Where(f => f.Index == null || f.Index > -1).OrderBy(f => f.Index);
+                        if (cols.Count() > 1) {
+                            var builder = new List<String>();                    
+                            foreach (var col in cols)
+                            {
+                                builder.Add(String.Format(new ObjectFormatter(), "{0:" + col.GetValue<String>("FieldName") +  "}", obj));
+                            }
+                            builder = builder.Where(f => String.Concat(f) != "").ToList();
+                            item.Text = builder.First();                        
+                            item.Hint = String.Join("<br>", builder.Skip(1).Take(builder.Count-1));
+                        } else {
+                            item.Text = String.Format(new ObjectFormatter(), String.Concat(displayFormat) == "" ? "{0}" : displayFormat, obj);
                         }
-                        builder = builder.Where(f => String.Concat(f) != "").ToList();
-                        item.Text = builder.First();                        
-                        item.Hint = String.Join("<br>", builder.Skip(1).Take(builder.Count-1));
-                    } else {
-                        item.Text = String.Format(new ObjectFormatter(), String.Concat(displayFormat) == "" ? "{0}" : displayFormat, obj);
+                        item.Value = ObjectSpace.GetObject(obj);
                     }
-                    item.Value = ObjectSpace.GetObject(obj);
-                }
             }
         }
 

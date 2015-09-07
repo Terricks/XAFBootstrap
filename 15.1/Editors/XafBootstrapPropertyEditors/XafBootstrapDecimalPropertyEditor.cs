@@ -45,7 +45,7 @@ namespace XAF_Bootstrap.Editors.XafBootstrapPropertyEditors
         private void InitEdit()
         {   
             Edit = new XafBootstrapNumericEdit();
-            Edit.Placeholder = this.Caption;
+            Edit.Placeholder = EditorHelper.GetPlaceholder(this, this.Caption);
             Edit.IsPassword = Model.IsPassword;
             Edit.PropertyName = PropertyName;
             Edit.RowCount = Model.RowCount;

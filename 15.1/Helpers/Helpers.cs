@@ -42,6 +42,7 @@ using System.Text;
 using System.Web.UI;
 using DevExpress.ExpressApp.SystemModule;
 using System.Web.UI.HtmlControls;
+using XAF_Bootstrap.ModelExtensions.Attributes;
 
 namespace XAF_Bootstrap.Templates
 {
@@ -60,6 +61,21 @@ namespace XAF_Bootstrap.Templates
         public String ID;
         public CreateFunc CreateFunc;
         public DevExpress.ExpressApp.View View;
+    }
+
+    public static class EditorHelper
+    {
+        public static String GetPlaceholder(PropertyEditor editor, String defaultValue = "")
+        {
+            String ret = defaultValue;
+            if (editor != null && editor.MemberInfo != null)
+            {
+                var placeholder = editor.MemberInfo.FindAttribute<PlaceholderAttribute>();
+                if (placeholder != null)
+                    ret = placeholder.Placeholder;
+            }
+            return ret;
+        }
     }
 
     public static class Helpers

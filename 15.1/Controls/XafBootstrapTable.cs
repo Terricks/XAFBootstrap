@@ -37,6 +37,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.UI;
+using System.Drawing;
 
 namespace XAF_Bootstrap.Controls
 {
@@ -178,6 +179,94 @@ namespace XAF_Bootstrap.Controls
             public int MaxWidth = -1;
             public int FixedWidth = -1;
             public int MinWidth = -1;
+            public String Filter = "";
+            public SortDirection Sorting = SortDirection.None;
+            public double SortIndex = -1;
+        }
+
+        private void ProcessBitmap(IMemberInfo memberInfo, object objValue, IModelColumn columnModel, int RowNumber, ref String Value)
+        {
+            ASPxImage img = new ASPxImage();
+            if (columnModel != null)
+            {
+                if (columnModel.ImageEditorCustomHeight > 0)
+                    img.Height = columnModel.ImageEditorCustomHeight;
+                if (columnModel.ImageEditorFixedHeight > 0)
+                    img.Height = columnModel.ImageEditorFixedHeight;
+            }
+            System.IO.MemoryStream stream = new System.IO.MemoryStream();
+            (objValue as System.Drawing.Bitmap).Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+            byte[] imageBytes = stream.ToArray();
+            string base64String = Convert.ToBase64String(imageBytes);
+            img.ImageUrl = "data:image/png;base64," + base64String;
+            img.CssClass = "img-responsive";
+            Value = Helpers.ContentHelper.RenderControl(img);
+        }
+
+        private void ProcessEnum(IMemberInfo memberInfo, object objValue, IModelColumn columnModel, int RowNumber, ref String Value)
+        {
+            Value = Helpers.GetXafDisplayName((Enum)objValue);
+        }
+
+        private void ProcessBoolean(IMemberInfo memberInfo, object objValue, IModelColumn columnModel, int RowNumber, ref String Value)
+        {
+            if ((Boolean)objValue)
+                Value = "<span class=\"glyphicon glyphicon-ok\"></span>";
+        }
+
+        private void ProcessColor(IMemberInfo memberInfo, object objValue, IModelColumn columnModel, int RowNumber, ref String Value)
+        {
+            var color = (Color)objValue;
+            if (color != Color.Empty)
+            {
+                Value = String.Format("<div style='width: 20px; height: 20px; border: 1px solid; border-color: rgba(0,0,0,0.2); background: rgba({0},{1},{2},{3});' class='img-circle'><span style='padding-left: 24px'>{4}</span></div>", color.R, color.G, color.B, color.A / 255, ColorTranslator.ToHtml(color));
+            }
+        }
+
+        private void ProcessDefault(IMemberInfo memberInfo, object objValue, IModelColumn columnModel, int RowNumber, ref String Value)
+        {
+            String displayFormat = "{0}";
+            if (columnModel != null)
+            {
+                var valuePath = columnModel.GetValue<String>("FieldName").Split('.');
+                if (!(objValue is XPBaseObject) && !(objValue is String) && !objValue.GetType().IsPrimitive)
+                    if (valuePath.Length > 1)
+                    {
+                        IMemberInfo mInfo;
+                        var val = ObjectFormatValues.GetValueRecursive(String.Join(".", valuePath.Skip(1).Take(valuePath.Length - 1)), objValue, out mInfo);
+                        if (val != new object())
+                            objValue = String.Concat(val);
+                    }
+
+                if (String.Concat(columnModel.DisplayFormat) != "")
+                    displayFormat = columnModel.DisplayFormat;
+                else
+                    if (memberInfo.MemberTypeInfo != null)
+                    {
+                        var attr = memberInfo.MemberTypeInfo.FindAttribute<ObjectCaptionFormatAttribute>();
+                        if (attr != null)
+                        {
+                            displayFormat = attr.FormatString;
+                            Value = String.Format(new ObjectFormatter(), displayFormat, objValue);
+                        }
+                        else
+                        {
+                            var defPropAttr = memberInfo.MemberTypeInfo.FindAttribute<XafDefaultPropertyAttribute>();
+                            if (defPropAttr != null)
+                            {
+                                displayFormat = attr.FormatString;
+                                Value = "{0:" + defPropAttr.Name + "}";
+                                Value = String.Format(new ObjectFormatter(), displayFormat, objValue);
+                            }
+                        }
+                    };
+            }
+
+            if (Value == "")
+                Value = String.Format(displayFormat, objValue);
+
+            if (memberInfo.MemberTypeInfo != null && memberInfo.MemberTypeInfo.IsDomainComponent && columnModel != null)
+                Value = String.Format(@"<a href=""javascript:;"" onclick=""event = event || window.event; event.stopPropagation(); {0}"">{1}</a>", Handler.GetScript(String.Format("'BrowseObject|{0}|{1}'", RowNumber, columnModel.PropertyName)), Value);                    
         }
 
         public String FormatValue(IMemberInfo memberInfo, object objValue, IModelColumn columnModel, int RowNumber)
@@ -185,82 +274,19 @@ namespace XAF_Bootstrap.Controls
             String Value = "";
             if (memberInfo != null && objValue != null)
             {
-                if (objValue is System.Drawing.Bitmap)
-                {
-                    ASPxImage img = new ASPxImage();
-                    if (columnModel != null)
-                    {
-                        if (columnModel.ImageEditorCustomHeight > 0)
-                            img.Height = columnModel.ImageEditorCustomHeight;
-                        if (columnModel.ImageEditorFixedHeight > 0)
-                            img.Height = columnModel.ImageEditorFixedHeight;
-                    }
-                    System.IO.MemoryStream stream = new System.IO.MemoryStream();
-                    (objValue as System.Drawing.Bitmap).Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                    byte[] imageBytes = stream.ToArray();
-                    string base64String = Convert.ToBase64String(imageBytes);
-                    img.ImageUrl = "data:image/png;base64," + base64String;
-                    img.CssClass = "img-responsive";
-                    Value = Helpers.ContentHelper.RenderControl(img);
-                }
+                if (objValue is System.Drawing.Bitmap)                
+                    ProcessBitmap(memberInfo, objValue, columnModel, RowNumber, ref Value);                    
                 else                
                 if (objValue is Enum)
-                {
-                    Value = Helpers.GetXafDisplayName((Enum)objValue);
-                }
+                    ProcessEnum(memberInfo, objValue, columnModel, RowNumber, ref Value);      
                 else
-                {
-                    if (objValue is Boolean)
-                    {
-                        if ((Boolean)objValue)
-                            Value = "<span class=\"glyphicon glyphicon-ok\"></span>";
-                    }
-                    else
-                    {
-                        String displayFormat = "{0}";
-                        if (columnModel != null)
-                        {
-                            var valuePath = columnModel.GetValue<String>("FieldName").Split('.');
-                            if (!(objValue is XPBaseObject) && !(objValue is String) && !objValue.GetType().IsPrimitive)
-                                if (valuePath.Length > 1)
-                                {
-                                    IMemberInfo mInfo;
-                                    var val = ObjectFormatValues.GetValueRecursive(String.Join(".", valuePath.Skip(1).Take(valuePath.Length -1)), objValue, out mInfo);
-                                    if (val != new object())
-                                        objValue = String.Concat(val);
-                                }
-
-                            if (String.Concat(columnModel.DisplayFormat) != "")
-                                displayFormat = columnModel.DisplayFormat;
-                            else
-                                if (memberInfo.MemberTypeInfo != null)
-                                {
-                                    var attr = memberInfo.MemberTypeInfo.FindAttribute<ObjectCaptionFormatAttribute>();
-                                    if (attr != null)
-                                    {
-                                        displayFormat = attr.FormatString;
-                                        Value = String.Format(new ObjectFormatter(), displayFormat, objValue);
-                                    }
-                                    else
-                                    {
-                                        var defPropAttr = memberInfo.MemberTypeInfo.FindAttribute<XafDefaultPropertyAttribute>();
-                                        if (defPropAttr != null)
-                                        {
-                                            displayFormat = attr.FormatString;
-                                            Value = "{0:" + defPropAttr.Name + "}";
-                                            Value = String.Format(new ObjectFormatter(), displayFormat, objValue);
-                                        }
-                                    }
-                                };                            
-                        }
-                            
-                        if (Value == "")                            
-                            Value = String.Format(displayFormat, objValue);
-
-                        if (memberInfo.MemberTypeInfo != null && memberInfo.MemberTypeInfo.IsDomainComponent && columnModel != null)
-                            Value = String.Format(@"<a href=""javascript:;"" onclick=""event = event || window.event; event.stopPropagation(); {0}"">{1}</a>", Handler.GetScript(String.Format("'BrowseObject|{0}|{1}'", RowNumber, columnModel.PropertyName)), Value);
-                    }
-                }
+                if (objValue is Boolean)
+                    ProcessBoolean(memberInfo, objValue, columnModel, RowNumber, ref Value);
+                else
+                if (objValue is Color)
+                    ProcessColor(memberInfo, objValue, columnModel, RowNumber, ref Value);
+                else
+                    ProcessDefault(memberInfo, objValue, columnModel, RowNumber, ref Value);
             }
             return Value;
         }        
@@ -268,6 +294,45 @@ namespace XAF_Bootstrap.Controls
         public Boolean TableHover = true;
         public Boolean TableStriped = true;
         public Boolean ShowHeaders = true;
+        public Boolean ShowFilter = true;
+
+        internal class SummaryValue
+        {
+            public IModelColumn Column;            
+            private decimal Max;
+            private decimal Min;
+            private decimal Sum;
+            private decimal Count;
+            public decimal Summary
+            {
+                get
+                {                    
+                    switch (Column.Summary[0].SummaryType)
+                    {
+                        case SummaryType.Average:
+                            return Sum / Count;                            
+                        case SummaryType.Count:
+                            return Count;
+                        case SummaryType.Max:
+                            return Max;
+                        case SummaryType.Min:
+                            return Min;
+                        case SummaryType.Custom:
+                        case SummaryType.None:
+                        case SummaryType.Sum:
+                            return Sum;
+                    }
+                    return 0;
+                }
+            }
+
+            public void AddValue(decimal Value) {
+                Count++;
+                Max = Math.Max(Max, Value);
+                Min = Math.Min(Min, Value);
+                Sum += Value;
+            }
+        }
 
         public void InnerRender()
         {
@@ -278,42 +343,28 @@ namespace XAF_Bootstrap.Controls
             }
 
             Content.Controls.Clear();
-            InnerLoadControlState();            
+            InnerLoadControlState();
 
-            AddStringContent("<div class='table-responsive panel panel-default'>");
-            AddStringContent(String.Format(@"<table class='table {1} {2} xaf-bootstrap' id = '{0}_Table'>"
-                , ClientID
-                , TableHover ? "table-hover" : ""
-                , TableStriped ? "table-striped" : ""));
+            #region Read headers info
 
-            ASPxLabel script = null;
-            if (IsFloatThead)
-            {
-                script = new ASPxLabel() { };
-                script.EncodeHtml = false;
-                AddContent(script);
-            }
-
-            int ItemsCount = 0;
-
-            #region Build Header Row
             //Make headers
-            HeaderColumns = new List<HeaderInfo>();            
+            HeaderColumns = new List<HeaderInfo>();
 
             //Counter column
             if (ShowNumbers)
-                HeaderColumns.Add(new HeaderInfo() { FixedWidth = 20, Align = "right", Caption = "#", FieldName = "SystemColumn_RowCounter", ID = "SystemColumn_RowCounter", Index = 0 });            
+                HeaderColumns.Add(new HeaderInfo() { FixedWidth = 20, Align = "right", Caption = "#", FieldName = "SystemColumn_RowCounter", ID = "SystemColumn_RowCounter", Index = 0 });
 
-            foreach (var item in CustomColumns)            
-                HeaderColumns.Add(item);            
+            foreach (var item in CustomColumns)
+                HeaderColumns.Add(item);
 
             int ColumnIdx = 0;
             if (ListView != null)
                 foreach (var column in ListView.Columns)
                 {
                     var columnIsVisible = true;
-                    #region CALCULATE ELEMENT APPEARANCE                
-                    if (ObjectTypeInfo != null && ObjectSpace != null) {
+                    #region CALCULATE ELEMENT APPEARANCE
+                    if (ObjectTypeInfo != null && ObjectSpace != null)
+                    {
                         var member = ObjectTypeInfo.FindMember(column.Id);
                         if (member != null)
                             foreach (var appearanceItem in member.FindAttributes<AppearanceAttribute>().Where(f => (String.Concat(f.Context) == "" || String.Concat(f.Context) == "Any" || f.Context.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList().IndexOf("ListView") > -1)))
@@ -355,11 +406,13 @@ namespace XAF_Bootstrap.Controls
                     if ((column.Index == null || column.Index > -1) && columnIsVisible)
                     {
                         var align = "left";
-                        if (ObjectTypeInfo != null) {
+                        if (ObjectTypeInfo != null)
+                        {
                             var member = ObjectTypeInfo.FindMember(column.GetValue<String>("FieldName"));
-                            switch(Type.GetTypeCode(member.MemberType)) {
+                            switch (Type.GetTypeCode(member.MemberType))
+                            {
                                 case TypeCode.Boolean:
-                                case TypeCode.Decimal:                            
+                                case TypeCode.Decimal:
                                 case TypeCode.Int16:
                                 case TypeCode.Int32:
                                 case TypeCode.Int64:
@@ -367,44 +420,136 @@ namespace XAF_Bootstrap.Controls
                                 case TypeCode.UInt32:
                                 case TypeCode.UInt64:
                                 case TypeCode.Double:
-                                    align = "right";                                
+                                    align = "right";
                                     break;
                                 default:
-                                    align = "left";                                
+                                    align = "left";
                                     break;
                             }
                         }
-                    
+
                         HeaderColumns.Add(new HeaderInfo() { Index = ColumnIdx, Caption = column.Caption, FieldName = column.GetValue<String>("FieldName"), ID = column.Id, Align = align, Model = column, MinWidth = column.Width });
                         ColumnIdx++;
                     }
                 }
 
+            #region read form values
+
+            foreach (var column in HeaderColumns.Where(f => f.Model != null)) {
+                var sorting = String.Concat(Request.Form[ClientID + "_sort_" + column.FieldName]);
+                var sortingOptions = sorting.Split(new String[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                if (sortingOptions.Length > 0)
+                {
+                    column.Sorting = (SortDirection)(sortingOptions[0] == "1" ? 1 : sortingOptions[0] == "2" ? 2 : 0);
+                    if (sortingOptions.Length > 1)
+                        column.SortIndex = double.Parse(sortingOptions[1]);
+                }
+                column.Filter = Request.Form[ClientID + "_filter_" + column.FieldName];
+            }
+
+            #endregion
+
+            #endregion
+
+            AddStringContent("<div>");
+
+            #region FilterButton
+
+            if (ShowHeaders)
+            {
+                if (ShowFilter)
+                {
+                    AddStringContent(String.Format(@"<div class=""table-filter-button {0}"" onclick=""if ($(this).hasClass('btn-default')) {{ $(this).removeClass('btn-default').addClass('btn-primary'); }} else {{ $(this).addClass('btn-default').removeClass('btn-primary'); }}; $(this).parent().find('.filter-row').first().toggle();""><span class=""glyphicon glyphicon-filter""></span></div>"
+                        , (HeaderColumns.Count(f => String.Concat(f.Filter) != "") > 0 ? "btn-primary" : "btn-default")));
+                }
+            }
+
+            #endregion
+
+            AddStringContent("<div class='table-responsive panel panel-default'>");
+
+            AddStringContent(String.Format(@"<table class='table {1} {2} xaf-bootstrap' id = '{0}_Table'>"
+                , ClientID
+                , TableHover ? "table-hover" : ""
+                , TableStriped ? "table-striped" : ""));
+
+            StringBuilder TableScripts = new StringBuilder();            
+
+            int ItemsCount = 0;
+            IMemberInfo memberInfo;
+
+            #region Build Header Row, Filters                        
+            
             if (ShowHeaders)
             {
                 AddStringContent("<thead>");
-                AddStringContent("<tr>");
-
+                AddStringContent("<tr>");                
+                
                 foreach (var column in HeaderColumns.OrderBy(f => f.Index))
-                {
+                {   
                     String columnVal = column.Caption;
-                    String columnFormat = String.Format("<th {{1}} style=\"text-align: {{2}}; {0} {1} {2}\">{{0}}</th>"
+                    String columnFormat = String.Format(@"<th {{1}} {{4}} style=""text-align: {{2}}; {0} {1} {2}"">{{0}} {{3}}<input type=""hidden"" name=""{3}_sort_{4}"" value=""{5}""></th>"
                         , column.MaxWidth > -1 ? String.Format("max-width: {0}px;", column.MaxWidth) : ""
                         , column.MinWidth > -1 ? String.Format("min-width: {0}px;", column.MinWidth) : ""
                         , column.FixedWidth > -1 ? String.Format("width: {0}px;", column.FixedWidth) : ""
+                        , ClientID
+                        , column.FieldName
+                        , (int)column.Sorting
                     );
                     if (OnGenerateHeader != null)
                         OnGenerateHeader(ref columnFormat, column.FieldName, ref columnVal, null);
 
-                    AddStringContent(String.Format(columnFormat, columnVal, (column.Model != null && column.Model.ImageEditorFixedHeight > 0) ? String.Format("width={0}", column.Model.ImageEditorFixedHeight) : "", column.Align));
-                }
+                    String sort = "";
+                    String sortClick = "";
+                    if (column.Model != null)
+                    {
+                        switch (column.Sorting)
+                        {
+                            case SortDirection.Ascending:
+                                sort = @"<span class=""glyphicon glyphicon-chevron-up""></span>";
+                                break;
+                            case SortDirection.Descending:
+                                sort = @"<span class=""glyphicon glyphicon-chevron-down""></span>";
+                                break;
+                        }
+                        
+                        sortClick = String.Format(@"onclick=""{1}_DoSort(this)""", column.FieldName, ClientID);
+                    }
+
+                    AddStringContent(
+                        String.Format(columnFormat
+                            , columnVal
+                            , (column.Model != null && column.Model.ImageEditorFixedHeight > 0) ? String.Format("width={0}", column.Model.ImageEditorFixedHeight) : ""
+                            , column.Align
+                            , sort
+                            , sortClick));
+                }                
 
                 AddStringContent("</tr>");
-                AddStringContent("</thead>");
+
+                if (ShowFilter)
+                {
+                    AddStringContent(String.Format(@"<tr class=""filter-row"" style=""{0}"">", HeaderColumns.Count(f => String.Concat(f.Filter) != "") == 0 ? "display: none" : ""));
+
+                    foreach (var column in HeaderColumns.OrderBy(f => f.Index))
+                    {
+                        AddStringContent(@"<td class=""filter-header"">");
+                        if (column.Model != null)
+                        {
+                            AddStringContent(String.Format(@"<input name=""{0}_filter_{1}"" type=""text"" class=""form-control input-sm"" onkeypress=""{0}_DoFilter(this, event)"" onchange=""{0}_DoFilter(this)"" value=""{2}"">", ClientID, column.FieldName, column.Filter));
+                        }
+                        AddStringContent("</td>");
+                    }
+
+                    AddStringContent("</tr>");
+                }
+
+                AddStringContent("</thead>");                
             }
-            #endregion
+            #endregion            
 
             #region Build Data Rows
+            IList<Object> objects = null;
             //Make data
             if (DataSource != null)
             {
@@ -413,7 +558,38 @@ namespace XAF_Bootstrap.Controls
 
                 if (DataSource is IList)
                 {
-                    IList<Object> objects = (DataSource as IList).OfType<Object>().ToList();
+                    objects = (DataSource as IList).OfType<Object>().ToList();
+
+                    //Apply filter
+                    foreach (var column in HeaderColumns.Where(f => String.Concat(f.Filter) != ""))
+                        objects = objects.Where(f => IsObjectFiltered(column, column.Filter, f, RowCounter)).ToList();
+
+                    //Apply sorting
+                    int sortCounter = 0;
+                    var sortings = HeaderColumns.Where(f => f.Sorting != SortDirection.None);
+                    IOrderedEnumerable<object> orderedList = null;
+                    foreach (var column in sortings.OrderBy(f => f.SortIndex))
+                    {
+                        switch (column.Sorting)
+                        {
+                            case SortDirection.Ascending:
+                                if (sortCounter == 0)
+                                    orderedList = objects.OrderBy(f => ObjectFormatValues.GetValueRecursive(column.FieldName, f, out memberInfo));
+                                else
+                                    orderedList = orderedList.ThenBy(f => ObjectFormatValues.GetValueRecursive(column.FieldName, f, out memberInfo));
+                                break;
+                            case SortDirection.Descending:
+                                if (sortCounter == 0)
+                                    orderedList = objects.OrderByDescending(f => ObjectFormatValues.GetValueRecursive(column.FieldName, f, out memberInfo));
+                                else
+                                    orderedList = orderedList.ThenByDescending(f => ObjectFormatValues.GetValueRecursive(column.FieldName, f, out memberInfo));
+                                break;
+                        }
+                        sortCounter++;
+                    }
+                    if (orderedList != null)
+                        objects = orderedList.ToList();
+                    
                     ItemsCount = objects.Count;
 
                     PagesCount = (int)Math.Ceiling(((float)objects.Count / PageItemsCount));
@@ -452,8 +628,7 @@ namespace XAF_Bootstrap.Controls
                         foreach (var column in HeaderColumns.OrderBy(f => f.Index))
                         {
                             String FieldName = (column.Model != null ? column.Model.PropertyName : column.FieldName);
-
-                            IMemberInfo memberInfo;
+                            
                             var objValue = ObjectFormatValues.GetValueRecursive(FieldName, item, out memberInfo);
 
                             String Value = FormatValue(memberInfo, objValue, column.Model, RowCounter);
@@ -488,7 +663,61 @@ namespace XAF_Bootstrap.Controls
             }            
             #endregion
 
+            #region Build Footers
+
+            if (ListView != null)
+            {
+                var SummaryColumns = ListView.Columns.Where(f => f.Summary.Count > 0).ToList();
+                var HasFooters = SummaryColumns.Count > 0;
+                IList<SummaryValue> SummaryValues = new List<SummaryValue>();
+                foreach (var col in SummaryColumns)
+                    SummaryValues.Add(new SummaryValue() { Column = col });
+
+                AddStringContent("<tfoot>");
+                int colSpan = 0;
+                if (HasFooters && objects != null)
+                {
+                    foreach (var item in objects)
+                    {
+                        foreach (var summary in SummaryValues)
+                        {
+                            decimal summaryValue = 0;
+                            if (decimal.TryParse(String.Concat(ObjectFormatValues.GetValueRecursive(summary.Column.FieldName, item, out memberInfo)), out summaryValue))
+                            {
+                                summary.AddValue(summaryValue);
+                            }
+                        }
+                    }
+
+                    AddStringContent("<tr>");
+                    foreach (var column in HeaderColumns.OrderBy(f => f.Index))
+                    {
+
+                        var summary = SummaryValues.Where(f => f.Column == column.Model).FirstOrDefault();
+                        if (summary != null)
+                        {
+                            if (colSpan > 0)
+                                AddStringContent(String.Format("<td colspan=\"{0}\"></td>", colSpan));
+
+                            AddStringContent(String.Format("<td class=\"text-right\">{0:n}</td>", summary.Summary));
+                            colSpan = 0;
+                        }
+                        else
+                        {
+                            colSpan++;
+                        }
+                    }
+                    if (colSpan > 0)
+                        AddStringContent(String.Format("<td colspan=\"{0}\"></td>", colSpan));
+                    AddStringContent("</tr>");
+                }
+                AddStringContent("</tfoot>");
+            }
+            #endregion
+
             AddStringContent("</table>");
+            AddStringContent("</div>");
+
             AddStringContent("</div>");
 
             #region Build Pager
@@ -561,13 +790,39 @@ namespace XAF_Bootstrap.Controls
             }
             #endregion                        
             
-            if (IsFloatThead && (ItemsCount > 1) && 0==1)
-                script.ClientSideEvents.Init = String.Format(@"function(s,e) {{
+            IsFloatThead = false;
+            if (IsFloatThead && (ItemsCount > 1))
+                TableScripts.AppendFormat(@"
                     var offset = $('.navbar-fixed-top').height();                
-                    $('#{0}_Table').floatThead({{ scrollingTop: offset }});
-                }}", ClientID);
+                    $('#{0}_Table').floatThead({{ scrollingTop: offset }});                    
+                ", ClientID);
+
+            TableScripts.AppendFormat(@"
+                window['{0}_DoFilter'] = function(filterInput, keyPressEvent) {{
+                    var refresh = ((!keyPressEvent) || keyPressEvent.which == 13 || keyPressEvent.keyCode == 13);                    
+                    if (refresh == true) {{
+                        {1};
+                    }};                
+                }};
+                window['{0}_DoSort'] = function(sortProp) {{
+                    var values = $(sortProp).find('input').val().split(',');
+                    var val = parseInt(values[0], 0) + 1;
+                    var timestamp = Date.now();                    
+                    if (val > 2)
+                        val = 0;
+                    else if (values.length > 1)
+                        timestamp = values[1];                    
+                    
+                    $(sortProp).find('input').val(val + ',' + timestamp);
+                    {2};
+                }};
+                
+            ", ClientID, Handler.GetScript("'FiltersUpdated|'"), Handler.GetScript("'DoSort|' + sortProp"));
 
             #region Scripts
+
+            if (TableScripts.Length > 0)
+                WebWindow.CurrentRequestWindow.RegisterStartupScript(ClientID + "_scripts", TableScripts.ToString(), true);                           
 
             Scripts = new ASPxLabel();
             Scripts.ClientSideEvents.Init = ClientSideEvents.Init;
@@ -576,6 +831,15 @@ namespace XAF_Bootstrap.Controls
             AddContent(Scripts);
 
             #endregion
+        }
+
+        private Boolean IsObjectFiltered(HeaderInfo column, String filter, object obj, int RowNumber)
+        {
+            IMemberInfo info;
+            String FieldName = (column.Model != null ? column.Model.PropertyName : column.FieldName);
+            var objValue = ObjectFormatValues.GetValueRecursive(FieldName, obj, out info);
+            var Value = String.Concat(FormatValue(info, objValue, column.Model, RowNumber));
+            return Value.ToLower().IndexOf(filter.ToLower()) > -1;
         }
 
         void Handler_OnCallback(object source, CallbackEventArgs e)
@@ -654,6 +918,16 @@ namespace XAF_Bootstrap.Controls
                         }
                         break;
                         #endregion
+                    case "FiltersUpdated":
+                        #region FiltersUpdated
+
+                        #endregion
+                        break;
+                    case "DoSort":
+                        #region FiltersUpdated
+
+                        #endregion
+                        break;
                 }
                 InnerSaveControlState();
                 InnerRender();                

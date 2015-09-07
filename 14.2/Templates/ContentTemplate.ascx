@@ -107,7 +107,7 @@
                                 Tag="button" ItemClass="btn btn-info btn-sm" LeftDirection="False" />                                                            
                         </cc3:XafUpdatePanel>
                     </span>
-                    <span class="panel">
+                    <span>
                         <!-- View -->
                         <cc3:XafUpdatePanel ID="UPEI" runat="server">
                             <cc1:XafBootstrapErrorInfoControl ID="ErrorInfo" Style="margin: 10px 0px 10px 0px" runat="server" />
@@ -173,7 +173,7 @@
     window.modalsStartZIndex = 1050;
     function ShowXafMessage(caption, confirmationMessage, callback, buttonOKCaption, isCancelButtonNeeded) {
         var modals = $('.modal.in');
-        if (buttonOKCaption == '')
+        if (buttonOKCaption == '' || buttonOKCaption == undefined)
             buttonOKCaption = '<%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"DialogButtons", "OK") %>';
         var cancelButton = '';
         if (isCancelButtonNeeded + "" != 'false')

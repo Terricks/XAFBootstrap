@@ -1,6 +1,6 @@
-﻿<%@ Control Language="C#" CodeBehind="ContentTemplate.ascx.cs" ClassName="ContentTemplate" Inherits="SofIA_XAF_Bootstrap.Templates.ContentTemplate" %>
-<%@ Register Assembly="SofIA XAF Bootstrap" Namespace="SofIA_XAF_Bootstrap.Controls" TagPrefix="cc1" %>
-<%@ Register Assembly="DevExpress.Web.v14.2, Version=14.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web" TagPrefix="dx" %>
+﻿<%@ Control Language="C#" CodeBehind="ContentTemplate.ascx.cs" ClassName="ContentTemplate" Inherits="XAF_Bootstrap.Templates.ContentTemplate" %>
+<%@ Register Assembly="XAF Bootstrap" Namespace="XAF_Bootstrap.Controls" TagPrefix="cc1" %>
+<%@ Register Assembly="DevExpress.Web.v14.2" Namespace="DevExpress.Web" TagPrefix="dx" %>
 <%@ Register Assembly="DevExpress.Web.v14.2" Namespace="DevExpress.Web"
     TagPrefix="dxrp" %>
 <%@ Register Assembly="DevExpress.Web.v14.2" Namespace="DevExpress.Web"
@@ -19,19 +19,21 @@
     TagPrefix="tc" %>
 
 <div>
-    <dx:ASPxGlobalEvents ID="GE" ClientInstanceName="GE" ClientSideEvents-EndCallback=""
-        runat="server" />
-    <!--
-    <script id="dxis_748224825" src="/DXR.axd?r=1_171,1_94,1_164,1_93,1_146,1_134,1_91,1_156,1_162,1_147,1_114,1_121,1_105,1_149,1_104,6_12,1_154,1_92,1_153-UZ9i9" type="text/javascript"></script>
-    -->
+    <cc3:XafUpdatePanel ID="UPPopupWindowControl" runat="server">
+        <cc4:XafPopupWindowControl runat="server" ID="PopupWindowControl" />
+    </cc3:XafUpdatePanel>
 
-    <div class="jumbotron">
-        <div class="container well content" id="content">            
-            <div class="view-header row">
-                <span class="col-md-6" id="leftColumnActions">
+    <dx:ASPxGlobalEvents ID="GE" ClientInstanceName="GE" ClientSideEvents-EndCallback=""
+        runat="server" />    
+    
+    <div class="content well">
+        <div class="container well" id="content">            
+            <div class="view-header row no-margin">
+                
+                <span class="col-md-6 no-padding" id="leftColumnActions">
                     <!-- HEADER -->
                     <cc3:XafUpdatePanel ID="UPVH" runat="server">
-                        <span class="h4 pull-left">
+                        <span class="h4">
                             <span class="pull-left view-header-image">
                                 <!-- Image -->
                                 <cc4:ViewImageControl ID="VIC" runat="server" />
@@ -41,31 +43,20 @@
                                 <cc4:ViewCaptionControl ID="VCC" runat="server" />                                
                             </span>
                         </span>
-                        <span style="display: none">
-                            <!-- ViewRecordActions -->
-                            <cc3:XafUpdatePanel ID="VRUP" runat="server" EnableTheming="False" UpdateAlways="True">
-                                <cc2:ActionContainerHolder runat="server" ID="VRAH" ContainerStyle="Buttons"
-                                    Orientation="Horizontal" Categories="ObjectsCreation;Edit;RecordEdit;View;Unspecified;" EnableViewState="False">
-                                    <menu width="100%" itemautowidth="False" clientinstancename="mainMenu">
-                                        <bordertop borderstyle="None" />
-                                        <borderbottom borderstyle="None" />
-                                        <borderleft borderstyle="None" />
-                                        <borderright borderstyle="None" />
-                                    </menu>
-                                </cc2:ActionContainerHolder>
-                            </cc3:XafUpdatePanel>
-                        </span>     
-                        <span class="pull-left view-record-actions">
-                            <dx:ASPxLabel runat="server" Text="" ID="ViewRecordActions"></dx:ASPxLabel>
-                        </span>
+                        
+                        <!-- ViewRecordActions -->
+                        <cc3:XafUpdatePanel ID="VRUP" runat="server" EnableTheming="False" UpdateAlways="True">
+                            <cc1:XbActionContainerHolder runat="server" ID="VRAH" 
+                                Categories="ObjectsCreation;Edit;RecordEdit;View;Unspecified;" EnableViewState="False" 
+                                Tag="a" ItemClass="view-action" ContainerClass="link-actions h6" />                                
+                        </cc3:XafUpdatePanel>                        
 
                         <span>
                             <!-- Navigation to rows buttons -->
                             <div style="display: none">
-                                <cc2:ActionContainerHolder runat="server" ID="RNC" ContainerStyle="Links" Orientation="Horizontal"
-                                    Categories="RecordsNavigation" UseLargeImage="True" PaintStyle="Image">
-                                    <menu width="100%" itemautowidth="False" horizontalalign="Right" />
-                                </cc2:ActionContainerHolder>
+                                <cc1:XbActionContainerHolder runat="server" ID="RNC" Categories="RecordsNavigation"
+                                    Tag="a" ItemClass="view-action" ContainerClass="link-actions h6"
+                                    />
                             </div>
 
                         </span>
@@ -73,46 +64,32 @@
                     </cc3:XafUpdatePanel>
                 </span>
 
-                <span class="col-md-6" id="rightColumnActions">
+                <span class="col-md-6 no-padding" id="rightColumnActions">
                     <!-- Security -->
                     <span class="pull-right" style="display: none">
                         <cc3:XafUpdatePanel ID="UPSAC" runat="server">
-                            <span style="display: none">
-                                <cc2:ActionContainerHolder runat="server" ID="SAC" CssClass="Security" Categories="Security"
-                                    ContainerStyle="Links" ShowSeparators="True" />
-                            </span>
-                            <dx:ASPxLabel runat="server" Text="" ID="SecurityActions"></dx:ASPxLabel>
+                            <span>
+                                <cc1:XbActionContainerHolder runat="server" ID="SAC" Categories="Security"
+                                    Tag="a" ItemClass="view-action" ContainerClass="link-actions h6" />
+                            </span>                                       
                         </cc3:XafUpdatePanel>
                     </span>
 
                     <!-- Search and others -->
                     <span class="pull-right">
-                        <cc3:XafUpdatePanel ID="UPSHC" runat="server">
-                            <span style="display:none">
-                                <cc2:ActionContainerHolder ID="SHC" runat="server" Categories="RootObjectsCreation;Search;FullTextSearch;"
-                                    ContainerStyle="Links" CssClass="TabsContainer" />                                
-                            </span>
-                            <dx:ASPxLabel ID="SearchActions" runat="server" Text="ASPxLabel"></dx:ASPxLabel>
+                        <cc3:XafUpdatePanel ID="UPSHC" runat="server">                            
+                            <cc1:XbActionContainerHolder ID="SHC" runat="server" Categories="RootObjectsCreation;Search;FullTextSearch;"
+                                Tag="button" ItemClass="btn btn-primary btn-sm view-action" LeftDirection="False" />
                         </cc3:XafUpdatePanel>                        
                     </span>
-
-                    <div>
+                    
+                    <div class="col-md-12">
                         <!-- Object Actions -->
 
                         <span class="pull-right">
-                            <cc3:XafUpdatePanel ID="UPTB" runat="server" EnableTheming="False" UpdateAlways="True">
-                                <span style="display: none">
-                                    <cc2:ActionContainerHolder runat="server" ID="TB" ContainerStyle="Buttons"
-                                        Orientation="Horizontal" Categories="Export;Reports;Filters;" EnableViewState="False">
-                                        <menu width="100%" itemautowidth="False" clientinstancename="mainMenu">
-                                            <bordertop borderstyle="None" />
-                                            <borderbottom borderstyle="None" />
-                                            <borderleft borderstyle="None" />
-                                            <borderright borderstyle="None" />
-                                        </menu>
-                                    </cc2:ActionContainerHolder>
-                                </span>
-                                <dx:ASPxLabel runat="server" Text="" ID="Actions"></dx:ASPxLabel>
+                            <cc3:XafUpdatePanel ID="UPTB" runat="server" EnableTheming="False" UpdateAlways="True">                                
+                                <cc1:XbActionContainerHolder runat="server" ID="TB" Categories="Export;Reports;Filters;" EnableViewState="False"
+                                    Tag="button" ItemClass="btn btn-primary btn-sm" LeftDirection="False" />                                
                             </cc3:XafUpdatePanel>
                         </span>
                     </div>
@@ -121,24 +98,19 @@
 
 
             <!-- ACTIONS -->
-            <div class="container-actions">
+            <div class="container-actions row no-margin">
                 <span>
                     <span class="pull-right">
                         <!-- Top Actions -->
-                        <cc3:XafUpdatePanel ID="UPEMA" runat="server">
-                            <span style="display: none">
-                                <cc2:ActionContainerHolder runat="server" ID="EMA" ContainerStyle="Links" Orientation="Horizontal"
-                                    Categories="Save;UndoRedo" CssClass="EditModeActions">
-                                    <menu width="100%" itemautowidth="False" horizontalalign="Right" />
-                                </cc2:ActionContainerHolder>
-                            </span>
-                            <dx:ASPxLabel runat="server" ID="TopActions"></dx:ASPxLabel>
+                        <cc3:XafUpdatePanel ID="UPEMA" runat="server">                            
+                            <cc1:XbActionContainerHolder runat="server" ID="EMA" Categories="Save;UndoRedo"
+                                Tag="button" ItemClass="btn btn-info btn-sm" LeftDirection="False" />                                                            
                         </cc3:XafUpdatePanel>
                     </span>
-                    <span class="">
+                    <span class="panel">
                         <!-- View -->
                         <cc3:XafUpdatePanel ID="UPEI" runat="server">
-                            <tc:ErrorInfoControl ID="ErrorInfo" Style="margin: 10px 0px 10px 0px" runat="server" />
+                            <cc1:XafBootstrapErrorInfoControl ID="ErrorInfo" Style="margin: 10px 0px 10px 0px" runat="server" />
                         </cc3:XafUpdatePanel>
                         <br />
                         <cc3:XafUpdatePanel ID="UPVSC" runat="server">
@@ -146,15 +118,10 @@
                             <cc4:ViewSiteControl ID="VSC" runat="server" />
 
                             <!-- Bottom Actions -->
-                            <span style="display: none">
-                                <cc2:ActionContainerHolder runat="server" ID="EditModeActions2" ContainerStyle="Links"
-                                    Orientation="Horizontal" Categories="Save;UndoRedo" CssClass="EditModeActions">
-                                    <menu width="100%" itemautowidth="False" horizontalalign="Right" paddings-paddingtop="15px" />
-                                </cc2:ActionContainerHolder>
-                            </span>
                             <span class="pull-right">
-                                <dx:ASPxLabel runat="server" ID="BottomActions"></dx:ASPxLabel>
-                            </span>
+                                <cc1:XbActionContainerHolder runat="server" ID="EditModeActions2" Categories="Save;UndoRedo"
+                                    Tag="button" ItemClass="btn btn-info btn-sm" LeftDirection="False" />                                 
+                            </span>                            
                         </cc3:XafUpdatePanel>
 
                     </span>
@@ -180,11 +147,7 @@
     </div>    
 </div>
 
-
-
-<div class="container">
-    <span class="pull-right"><a href="#">Техническая поддержка</a></span>
-    <hr />
+<div class="container">    
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
         <tr>
             <td align="left">
@@ -198,50 +161,76 @@
     <br />
 </div>
 
-<cc1:XafBootstrapCallback runat="server" ID="PopupCallback" ClientInstanceName="PopupCallback" EnableViewState="False" OnCallback="PopupCallback_Callback"></cc1:XafBootstrapCallback>
+<cc3:XafUpdatePanel ID="XafUpdatePanel1" runat="server">
+    <dx:ASPxLabel ID="Scripts" runat="server"></dx:ASPxLabel>
+</cc3:XafUpdatePanel>
 
-<div id="LPcell" style="display: none" />
-<div id="separatorCell" style="display: none" />
-<div id="separatorImage" style="display: none" />
-<div id="MT" style="display: none" />
-<div id="MRC" style="display: none" />
+<div id="pleaseWaitDialog" class="hidden">
+    <div class="modal-backdrop fade in" style="position: fixed; bottom: 0px; left: 0px; right: 0px; top: 0px; z-index: 2000; opacity:0"></div>    
+</div>
 
 <script type="text/javascript">
-    function ShowXafMessage(caption, confirmationMessage, callback) {
+    window.modalsStartZIndex = 1050;
+    function ShowXafMessage(caption, confirmationMessage, callback, buttonOKCaption, isCancelButtonNeeded) {
+        var modals = $('.modal.in');
+        if (buttonOKCaption == '')
+            buttonOKCaption = '<%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"DialogButtons", "OK") %>';
+        var cancelButton = '';
+        if (isCancelButtonNeeded + "" != 'false')
+            cancelButton = '<button type="button" class="btn btn-default" data-dismiss="modal"><%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"DialogButtons", "Cancel") %></button>';
         var modal = $(
-            '<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">' +
-                '<div class="modal-header">' +
-                    '<button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;' +
-                    '<span aria-hidden="true"></span>' +
-                '</button>' +
-                '<h4 class="modal-title"></h4>' +
-            '</div>' +
-            '<div class="modal-body">' +
-                '<p></p>' +
-            '</div>' +
-            '<div class="modal-footer">' +
-                '<button type="button" class="btn btn-primary" data-dismiss="modal" id="XafBootstrapConfirmButton">Подтвердить</button>' +
-                '<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>' +
-            '</div>' +
+            '<div class="modal fade is-temporary" tabindex="-1" role="dialog" aria-hidden="true"  style="z-index:' + (window.modalsStartZIndex + modals.length) + '">' +
+                '<div class="modal-dialog">' +
+                    '<div class="modal-content">' +
+                        '<div class="modal-header">' +
+                            '<button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;' +
+                            '<span aria-hidden="true"></span>' +
+                        '</button>' +
+                        '<h4 class="modal-title"></h4>' +
+                        '</div>' +
+                        '<div class="modal-body">' +                
+                        '</div>' +
+                        '<div class="modal-footer">' +
+                            '<button type="button" class="btn btn-primary" data-dismiss="modal" id="XafBootstrapConfirmButton">' + buttonOKCaption + '</button>' +
+                            cancelButton +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
             '</div>'
             );
-        modal.find('h4.modal-title').text(caption);
-        modal.find('div.modal-body').text(confirmationMessage);
-        modal.find('#XafBootstrapConfirmButton').on('click', callback);
+        modal.find('h4.modal-title').text(caption);        
+        modal.find('div.modal-body').append(confirmationMessage);
+        modal.find('#XafBootstrapConfirmButton').on('click', callback);        
+        modal.on('show.bs.modal', function (e) {
+            $('body').css({ overflow: 'hidden' });
+        });
         modal.modal();
+
+        return modal;
     }
 </script>
 
-<script>
+<script>    
+    function checkWindowScrolls(modalsCount) {
+        var modals = $('.modal.in:visible');
+        if (modals.length > modalsCount) {
+            $('body').css({ overflow: 'hidden' });
+        }
+        else {
+            $('body').css({ overflow: 'auto' });            
+        };
+    };
+
     $(document).ready(function () {
         $("#content").css('margin-top', $('#navbar').height());
-        $(window).resize(function () {
-            if ($(window).width() < 744)
-                $("#content").css('margin-top', $('#navbar').height() - 40);
-            else
-                $("#content").css('margin-top', $('#navbar').height());
-        });
+        
+        window.calcHeaderOffset = function () {            
+            $("#content").css('margin-top', $('#navbar').height());
+        };
 
+        $(window).resize(window.calcHeaderOffset);
+        setTimeout(window.calcHeaderOffset, 750);        
+        
         window.openXafPopupWindowCached = window.openXafPopupWindow;
         window.openXafPopupWindow = function (popupWindowCallbackPanelId, targetControlId, url, isSizeable, forcePostBack, callBackFuncName) {
             window.createXafBootstrapPopup(popupWindowCallbackPanelId, targetControlId, url, isSizeable, forcePostBack, callBackFuncName);
@@ -251,20 +240,17 @@
             if (!(sender))
                 sender = window;
 
-            var modal = $("<div class='modal container fade'>"
-                    + "<div class='loader' style='position: absolute; left: 50%; top: 50%;'>"
-                        + "<div style='position: relative; left: -50%; top: -50%;'>"
-                            + "<img src='images/ajax-loader.gif'>"
-                        + "</div>"
-                    + "</div>"
-                + "</div>")
+            var modal = $("<div class='modal fade'><div class='modal-dialog modal-lg'><div class='modal-content'>"
+                    + "<div class='modal-body' style='height: 200px'><div class='progress' style='margin: 0;height: 14px; position: absolute; width: 20%; top: 50%; left: 40%'>"
+                        + "<div class='progress-bar progress-bar-info progress-bar-striped active' role='progressbar' aria-valuenow='100' aria-valuemin='0' aria-valuemax='100' style='width: 100%'></div>"
+                    + "</div></div>"
+                + "</div></div></div>")
             var iframe = $("<iframe scrolling='no' frameborder='0' src='" + url + "' style='width: 100%; height: 254px; overflow: auto; vertical-align: text-bottom;'></iframe>");
+
+            startProgress();
 
             iframe.on("load", function () {
                 var iframeDoc = iframe[0].contentWindow;
-                modal.find('.loader').each(function () {
-                    $(this).hide();
-                });
 
                 iframeDoc.createXafBootstrapPopup = window.createXafBootstrapPopup;
                 iframeDoc.ShowXafMessage = window.ShowXafMessage;
@@ -272,50 +258,46 @@
                     window.RaiseXafCallback(callbackControl, handlerId, parameters, confirmation, usePostBack, iframeDoc);
                 };
 
-                iframeDoc.startProgress = function () {
-                    if (!iframeDoc.isCancelProgress) {
-                        iframeDoc.ProgressControlTimer = iframeDoc.setTimeout("xafProgressControl.Show();", 500);
-                        iframeDoc.document.onstop = stopProgress;
-                        iframeDoc.onblur = stopProgress;
-                        iframeDoc.setTimeout(function () {
-                            if (iframeDoc.stopProgress)
-                                iframeDoc.stopProgress();
-                        }, 4000);
-                    }
-                    isCancelProgress = false;
-                };
-
-                iframeDoc.stopProgress = function () {
-                    iframeDoc.clearTimeout(iframeDoc.ProgressControlTimer);
-                    if (iframeDoc.xafProgressControl && iframeDoc.xafProgressControl.shown) {
-                        iframeDoc.xafProgressControl.Hide();
-                        iframeDoc.xafProgressControl.started = false;
-                    }
-                    iframeDoc.document.body.onscroll = null;
-                    iframeDoc.document.body.onresize = null;
-                };
+                iframeDoc.startProgress = startProgress;
+                iframeDoc.stopProgress = stopProgress;
 
                 iframeDoc.closeThisModal = function () {
                     modal.modal('hide');
                 };
+
+                iframeDoc.fullscreenThisModal = function () {
+                    if (modal.find('.modal-dialog').attr("style"))
+                        $('.modal.in .modal-dialog').removeAttr('style');
+                    else
+                        $('.modal.in .modal-dialog').attr('style', 'width: 100%');
+                };
+
                 iframeDoc.isChildFrame = true;
                 if (sender.isChildFrame) {
                     iframeDoc.parentFrameWindow = sender;
                 }
                 iframeDoc.calculateWindowSize = function () {
-                    var frameWindow = iframe[0].contentWindow;                    
+                    var frameWindow = iframe[0].contentWindow;
                     if (frameWindow != null) {
                         var newHeight = frameWindow.document.body.offsetHeight;
                         if (iframe.height() != newHeight) {
-                            iframe.height(newHeight + "px");
-                            $(window).trigger('resize.modal');
+                            iframe.animate({
+                                height: newHeight + "px"
+                            }, 100, function () {
+                                $(window).trigger('resize.modal');
+                            });
                         }
                         newHeight = iframe.height();
                     }
                 }
 
-                var calcFunc = function () { setTimeout(iframeDoc.calculateWindowSize, 250); };
+                var calcFunc = function () {
+                    for (i = 250; i < 7750; i += 750)
+                        setTimeout(iframeDoc.calculateWindowSize, i);
+                };
+
                 iframeDoc.globalCallbackControl.EndCallback.AddHandler(calcFunc);
+
                 $(iframeDoc).click(function () {
                     calcFunc();
                 });
@@ -328,43 +310,57 @@
                 calcFunc();
                 modal.on('hidden.bs.modal', function (e) {
                     if (sender.isChildFrame) {
-                        globalCallbackControl.EndCallback.RemoveHandler(calcFunc);
+                        iframeDoc.globalCallbackControl.EndCallback.RemoveHandler(calcFunc);
                     }
                     sender.RaiseXafCallback(sender.globalCallbackControl, "", "XafParentWindowRefresh", "", false);
                 });
+
+                stopProgress();
             });
-            modal.append(iframe);
+            modal.on('show.bs.modal', function (e) {
+                setTimeout(function () {
+                    modal.find(".modal-content").html("");
+                    modal.find(".modal-content").append(iframe);
+                }, 100);
+            });
             modal.modal();
         };
 
-        window.startProgress = function () {
+        window.startProgress = function (immediate) {            
+            $('#loadingProgress .progress-bar').css('width', '0%');
+
+            $('#loadingProgress').fadeIn();
+
+            setTimeout(function () {
+                $('#loadingProgress .progress-bar').css('width', '100%');
+            }, 1);
+
             if (!isCancelProgress) {
-                window.ProgressControlTimer = window.setTimeout("xafProgressControl.Show();", 500);
+                window.ProgressControlTimer = window.setTimeout("$('#pleaseWaitDialog').removeClass('hidden');", 0);
                 document.onstop = stopProgress;
                 window.onblur = stopProgress;
                 setTimeout(function () {
                     if (window.stopProgress)
                         window.stopProgress();
-                }, 4000);
+                }, 7000);
             }
             isCancelProgress = false;
         };
         window.stopProgress = function () {
-            window.clearTimeout(window.ProgressControlTimer);
-            if (xafProgressControl && xafProgressControl.shown) {
-                xafProgressControl.Hide();
-                xafProgressControl.started = false;
-            }
+            $('#loadingProgress').fadeOut();            
+            $('#pleaseWaitDialog').addClass('hidden');
+            window.clearTimeout(window.ProgressControlTimer);            
             document.body.onscroll = null;
-            document.body.onresize = null;
-        };
+            document.body.onresize = null;            
+        };        
 
         window.RaiseXafCallbackCached = window.RaiseXafCallback;
-        window.RaiseXafCallback = function RaiseXafCallback(callbackControl, handlerId, parameters, confirmation, usePostBack, sender) {
+        window.RaiseXafCallback = function RaiseXafCallback(callbackControl, handlerId, parameters, confirmation, usePostBack, sender) {            
             if (!(sender))
-                sender = window;
+                sender = window;            
             var isRaised = false;
             var raiseFunc = function () {
+                startProgress();
                 var parameter = handlerId + ':' + parameters;
                 if (usePostBack) {
                     callbackControl.SendPostBack(parameter);
@@ -376,19 +372,21 @@
             };
 
             if (confirmation != "") {
-                sender.ShowXafMessage("Подтвердите действие", confirmation, raiseFunc);
+                sender.ShowXafMessage("<%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"XAF Bootstrap\Dialogs", "ConfirmAction") %>", confirmation, raiseFunc, '', '');
             } else {
                 raiseFunc();
             };
 
+            sender.checkWindowScrolls(0);
+
             return isRaised;
-        }
+        }        
     });
 </script>
 
 <script>
     $(document).ready(function () {
-         window.onbeforeunload = function (e) { if (window.DataChanged) return 'На странице присутствуют неподтвержденные изменения'; };
+        window.onbeforeunload = function (e) { if (window.DataChanged) return '<%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"XAF Bootstrap\Dialogs", "DiscardChangesText") %>'; };
          if (window.CachedRaiseXafCallback == null) {
             {
                 window.CachedRaiseXafCallback = RaiseXafCallback;
@@ -400,7 +398,7 @@
                         sender.DataChanged = false;
                         window.CachedRaiseXafCallback(callbackControl, handlerId, parameters, confirmation, usePostBack, sender);
                     }
-                    if (handlerId == 'MenuItemClickControllerCallback' || parameters == 'Action=Refresh')
+                    if (handlerId == 'MenuItemClickControllerCallback' || (handlerId.indexOf('$SAC_Callback') > -1) || parameters == 'Action=Refresh')
                         checkDataChanged(sender, sender.DataChangedFunctionWithoutCommit);
                     else
                     {
@@ -411,20 +409,42 @@
         }
     });
 
+    window.ProcessCallbackResult = function (callbackResult) {        
+        if (callbackResult.cpPageTitle) {
+            document.title = callbackResult.cpPageTitle;
+        }
+        ProcessMarkup(callbackResult);
+        if (callbackResult.cpCurrentView && callbackResult.cpCurrentView != '') {
+            UpdateDocumentLocation(callbackResult.cpCurrentView);
+        }
+        stopProgress();
+    }
+
     function checkDataChanged(sender, callback) {
+        if (!(sender))
+            sender = window;
         if (sender.DataChanged == true)
         {
+            var modals = $('.modal.in');            
+
             var dialog =
-           $('<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">'
-                + '<div class="modal-header">Подтверждение'
-                + '</div>'
-                + '<div class="modal-body">Изменения не сохранены. Продолжить?'
-                + '</div>'
-                + '<div class="modal-footer">'
-                    + '<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>'
-                    + '<button id="DoWithoutCommitButton"type="button" class="btn btn-danger danger" data-dismiss="modal">Без сохранения</button>'
+            $('<div class="modal fade is-temporary" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:' + (window.modalsStartZIndex + modals.length) + '">'
+                + '<div class="modal-dialog">'
+                    + '<div class="modal-content">'
+                        + '<div class="modal-header"><%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"XAF Bootstrap\Dialogs", "DiscardChangesCaption") %>'
+                        + '</div>'
+                        + '<div class="modal-body"><%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"XAF Bootstrap\Dialogs", "DiscardChangesText") %>'
+                        + '</div>'
+                        + '<div class="modal-footer">'
+                            + '<button type="button" class="btn btn-default" data-dismiss="modal"><%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"DialogButtons", "Cancel") %></button>'
+                            + '<button id="DoWithoutCommitButton"type="button" class="btn btn-danger danger" data-dismiss="modal"><%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"DialogButtons", "Ignore") %></button>'
+                        + '</div>'
+                    + '</div>'
                 + '</div>'
             + '</div>');
+            dialog.on('show.bs.modal', function (e) {
+                $('body').css({ overflow: 'hidden' });
+            });
             dialog.modal({ show: true });
             if (callback)
             {
@@ -437,5 +457,114 @@
             callback();
         }
     }
+
+    function CalcActionsColumns() {
+        var leftCount = $('#leftColumnActions .view-action:visible').length + $('#leftColumnActions .parametrized-action:visible').length * 2;
+        var rightCount = $('#rightColumnActions .view-action:visible').length + $('#rightColumnActions .parametrized-action:visible').length * 2;
+
+        var left = 6;
+        var right = 6;
+
+        if (leftCount == 0) {
+            left = 2;
+            right = 10;
+
+            if (rightCount < 4) {
+                left = 6;
+                right = 6;
+            }
+        }
+        else if (rightCount == 0) {
+            left = 12;
+            right = 0;
+        }
+        else {
+            var maxRelation = Math.max(leftCount, rightCount) / Math.min(leftCount, rightCount);
+
+            if (maxRelation >= 2) {
+                left = leftCount > rightCount ? 7 : 5;
+                right = rightCount > leftCount ? 7 : 5;
+            }
+
+            if (maxRelation >= 3) {
+                left = leftCount > rightCount ? 8 : 4;
+                right = rightCount > leftCount ? 8 : 4;
+            }
+
+            if (maxRelation >= 4) {
+                left = leftCount > rightCount ? 9 : 3;
+                right = rightCount > leftCount ? 9 : 3;
+            }
+
+            if (maxRelation >= 5) {
+                left = leftCount > rightCount ? 10 : 2;
+                right = rightCount > leftCount ? 10 : 2;
+            }
+        }
+
+        $('#leftColumnActions').attr('class', 'no-padding col-md-' + left + ' col-sm-' + left); 
+        $('#rightColumnActions').attr('class', 'no-padding col-md-' + right + ' col-sm-' + right);
+    };
 </script>
 
+<script>
+    $(document)
+        .on('show.bs.modal', '.modal', function (event) {            
+            $('body').css({ overflow: 'hidden' });
+        })
+        .on('shown.bs.modal', '.modal.in', function (event) {
+            setModalsAndBackdropsOrder();
+            $('body').css({ overflow: 'hidden' });            
+        })
+        .on('hide.bs.modal', '.modal.in', function (event) {
+            window.checkWindowScrolls(1);
+        })
+        .on('hidden.bs.modal', '.modal', function (event) {
+            if ($(this).hasClass('is-temporary')) {
+                $(this).remove();
+            };
+        });
+
+    function setModalsAndBackdropsOrder() {
+        var modalZIndex = modalsStartZIndex;
+        var modals = $('.modal.in');
+        modals.each(function (index) {
+            var $modal = $(this);
+            modalZIndex++;
+            $modal.css({ overflow: 'auto', zIndex: modalZIndex });
+            $backdrop = $modal.find('.modal-backdrop.in');
+            if ($backdrop.length > 0) {
+                $backdrop.css({ zIndex: modalZIndex, width: '100%', height: '100%', position: 'fixed' });
+                $backdrop.insertBefore($modal);                
+            }
+
+            if (!$modal.hasClass("managed")) {
+                var contentClicked = false;
+                $modal.find('.modal-content').click(function (e) {                    
+                    contentClicked = true;
+                });
+                $modal.click(function (e) {
+                    if (!contentClicked)
+                        $modal.modal('hide');
+                    contentClicked = false;
+                });
+                $modal.addClass("managed");
+            }
+        });        
+        $('.modal.in:visible:last').focus().next('.modal-backdrop.in').removeClass('hidden');
+    }
+
+    $(document).ready(function () {
+        globalCallbackControl.RaiseCallbackError = function (message) {
+            stopProgress();
+            ShowXafMessage("<%= XAF_Bootstrap.Templates.Helpers.GetLocalizedText(@"XAF Bootstrap\Dialogs", "ConfirmAction") %>", message, "", "", "");  
+            return { isHandled: false };
+        };
+    });
+</script>
+
+<div id="LPcell" style="display: none"></div>
+<div id="separatorCell" style="display: none"></div>
+<div id="separatorImage" style="display: none"></div>
+<div id="MT" style="display: none" ></div>
+<div id="MRC" style="display: none" ></div>

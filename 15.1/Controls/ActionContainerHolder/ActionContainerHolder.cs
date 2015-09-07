@@ -183,7 +183,7 @@ namespace XAF_Bootstrap.Controls
             {
                 Callback = new CallbackHandler(UniqueID + "_Callback");
                 Callback.OnCallback += Callback_OnCallback;
-            }            
+            }
         }
         protected override void OnUnload(EventArgs e)
         {
@@ -385,7 +385,7 @@ namespace XAF_Bootstrap.Controls
                         Helpers.ProcessAction(action);
                 }
 
-            }            
+            }
             EnsureChildControls();
         }
 

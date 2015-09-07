@@ -278,7 +278,7 @@ namespace XafBootstrap.Web
                                 , layoutGroup.Caption
                                 , isActive ? " class='active'" : ""
                                 , (Parent as TabbedGroupTemplateContainer).Model.Id
-                                , manager.Request.Form[layoutGroup.Model.Id + "_activated"] != "1" && !isActive ? String.Format("$('#{0}_activated').val(1); refreshView();".Replace("'", "&quot;"), layoutGroup.Model.Id) : ""
+                                , manager.Request.Form[layoutGroup.Model.Id + "_activated"] != "1" && !isActive ? String.Format("$('#{0}_activated').val(1); {1}".Replace("'", "&quot;"), layoutGroup.Model.Id, handler.GetScript("")) : ""
                                 )
                             :
                             "</li>"
@@ -529,7 +529,19 @@ namespace XafBootstrap.Web
                 }
             }
             return true;
-        }        
+        }
+
+        internal class InnerHTMLText : HTMLText
+        {
+            public InnerHTMLText()
+            {
+            }
+
+            public InnerHTMLText(String Text)
+                : base(Text)
+            {
+            }
+        }
         
         private Boolean BuildRecursiveElement(Control control, Control Parent, ElemType type, object Container)
         {
@@ -721,33 +733,33 @@ namespace XafBootstrap.Web
                             classActive = (item.Value.Model.Id == activeTabId) ? " active" : "";
                         }
 
-                        AddContent(new HTMLText() { Text = String.Format("<div role='tabpanel' class='tab-pane fade in{1}' id='{0}'><input type='hidden' id='{0}_activated' value='{2}' name = '{0}_activated'/>", item.Value.Model.Id, classActive, manager.Request.Form[item.Value.Model.Id + "_activated"] == "1" || (i == 0) ? "1" : "0") }, checkTab);
-                        AddContent(new HTMLText() { Text = String.Format(@"<div class=""row no-margin""><div class=""col-sm-12"">") }, checkTab);
+                        AddContent(new InnerHTMLText() { Text = String.Format("<div role='tabpanel' class='tab-pane fade in{1}' id='{0}'><input type='hidden' id='{0}_activated' value='{2}' name = '{0}_activated'/>", item.Value.Model.Id, classActive, manager.Request.Form[item.Value.Model.Id + "_activated"] == "1" || (i == 0) ? "1" : "0") }, checkTab);
+                        AddContent(new InnerHTMLText() { Text = String.Format(@"<div class=""row no-margin""><div class=""col-sm-12"">") }, checkTab);
 
                         var checkTabCounter = new List<Control>();
                         BuildRecursiveElement(item.Value, null, (i == 0) ? ElemType.FirstObject : (i == 0) ? ElemType.LastObject : ElemType.SingleObject, checkTabCounter);                        
                         if (manager.Request.Form[item.Value.Model.Id + "_activated"] == "1" || (i == 0))
                             checkTab.AddRange(checkTabCounter);
                         else
-                            if (checkTabCounter.Count > 4)
-                            {
-                                AddContent(new HTMLText() { Text = "" }, checkTab);
-                                AddContent(new HTMLText() { Text = @"<div class=""progress loading-progress"">
+                            if (checkTabCounter.Count(f => !(f is InnerHTMLText)) > 0)
+                            {                                
+                                AddContent(new HTMLText()
+                                {
+                                    Text = @"<div class=""progress loading-progress"">
   <div class=""progress-bar progress-bar-info progress-bar-striped active"" role=""progressbar"" aria-valuenow=""100"" aria-valuemin=""0"" aria-valuemax=""100"" style=""width: 100%"">
     <span class=""sr-only"">40% Complete (success)</span>
   </div>
 </div>" }, checkTab);
-                                AddContent(new HTMLText() { Text = "" }, checkTab);
-                            }
+                                }
 
-                        AddContent(new HTMLText() { Text = String.Format(@"</div></div>") }, checkTab);
-                        AddContent(new HTMLText() { Text = "</div>" }, checkTab);
+                        AddContent(new InnerHTMLText() { Text = String.Format(@"</div></div>") }, checkTab);
+                        AddContent(new InnerHTMLText() { Text = "</div>" }, checkTab);
                         
                         checkTabs.Add(i, checkTab);
                         i++;
                     }
 
-                    AddContent(new HTMLText() { Text = "<div class='panel panel-default'>" }, Container);
+                    AddContent(new InnerHTMLText() { Text = "<div class='panel panel-default'>" }, Container);
 
                     //BUILD HEADERS
                     i = 0;
@@ -756,7 +768,7 @@ namespace XafBootstrap.Web
                     var visibleCount = (checkTabs.Where(f => f.Value.Count > 4).Count());
                     foreach (KeyValuePair<string, LayoutItemTemplateContainerBase> item in AccessableItems)
                     {
-                        if (checkTabs[i].Count > 4)
+                        if (checkTabs[i].Count(f => !(f is InnerHTMLText)) > 0)
                         {
                             BuildRecursiveTag(item.Value, control, true, (k == 0) ? ElemType.FirstObject : (k == visibleCount) ? ElemType.LastObject : ElemType.SingleObject, Container);
                             BuildRecursiveTag(item.Value, control, false, (k == 0) ? ElemType.FirstObject : (k == visibleCount) ? ElemType.LastObject : ElemType.SingleObject, Container);
@@ -767,7 +779,7 @@ namespace XafBootstrap.Web
                     BuildRecursiveTag(control, Parent, false, type, Container);
 
                     //DISPLAY TAB DATA
-                    AddContent(new HTMLText() { Text = "<div class='tab-content'>" }, Container);
+                    AddContent(new InnerHTMLText() { Text = "<div class='tab-content'>" }, Container);
                     foreach (var tab in checkTabs.Where(f => f.Value.Count > 2))
                     {
                         foreach (Control c in tab.Value)
@@ -781,9 +793,9 @@ namespace XafBootstrap.Web
                             AddContent(c, Container);
                         }
                     }
-                    AddContent(new HTMLText() { Text = "</div>" }, Container);
+                    AddContent(new InnerHTMLText() { Text = "</div>" }, Container);
 
-                    AddContent(new HTMLText() { Text = "</div><br>" }, Container);
+                    AddContent(new InnerHTMLText() { Text = "</div><br>" }, Container);
                 }
             }
             else
@@ -816,7 +828,7 @@ namespace XafBootstrap.Web
                 }
                 BuildRecursiveTag(control, Parent, false, type, checkContainer);
 
-                if (checkContainer.OfType<HTMLText>().Count() < checkContainer.Count)
+                if (checkContainer.OfType<InnerHTMLText>().Count() < checkContainer.Count)
                     foreach (Control c in checkContainer)
                         AddContent(c, Container);
             }
@@ -868,9 +880,7 @@ namespace XafBootstrap.Web
             handler.OnCallback += handler_OnCallback;
             DetailViewContent = new Control();
             Controls.Add(DetailViewContent);
-            InnerRender();
-
-            WebWindow.CurrentRequestWindow.RegisterClientScript("viewRefresh", String.Format("$(document).ready(function() {{ window.refreshView = function() {{ {0} }}; }});", handler.GetScript("'refresh'")));
+            InnerRender();            
         }
 
         void handler_OnCallback(object source, DevExpress.Web.CallbackEventArgs e)

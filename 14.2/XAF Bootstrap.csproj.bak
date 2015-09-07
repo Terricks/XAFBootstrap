@@ -195,7 +195,6 @@
     <Compile Include="Editors\XafBootstrapPropertyEditors\XafBootstrapStringPropertyEditor.cs" />
     <Compile Include="Editors\XafBootstrapTableEditor\XafBootstrapTreeEditor.cs" />
     <Compile Include="Editors\XafBootstrapTableEditor\XafBootstrapTableEditor.cs" />
-	<Compile Include="ModelExtensions\Attributes\PlaceholderAtrribute.cs" />
     <Compile Include="ModelExtensions\Extensions.cs" />
     <Compile Include="ModelExtensions\TagSelector\TagSourceAttribute.cs" />
     <Compile Include="ModelExtensions\TagSelector\TagSourceKind.cs" />

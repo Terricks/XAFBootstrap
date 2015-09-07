@@ -27,6 +27,7 @@ using XAF_Bootstrap.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using XAF_Bootstrap.Templates;
 
 namespace XAF_Bootstrap.Editors.XafBootstrapPropertyEditors
 {
@@ -40,7 +41,7 @@ namespace XAF_Bootstrap.Editors.XafBootstrapPropertyEditors
         private void InitEdit()
         {   
             Edit = new XafBootstrapStringEdit();
-            Edit.Placeholder = this.Caption;
+            Edit.Placeholder = EditorHelper.GetPlaceholder(this, this.Caption);
             Edit.IsPassword = Model.IsPassword;
             Edit.PropertyName = PropertyName;
             Edit.RowCount = Model.RowCount;                        

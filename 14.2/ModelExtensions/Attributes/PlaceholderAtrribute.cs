@@ -24,13 +24,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace XAF_Bootstrap.ModelExtensions
+namespace XAF_Bootstrap.ModelExtensions.Attributes
 {
-    [FlagsAttribute]
-    public enum TagSourceKind
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
+    public class PlaceholderAttribute : Attribute 
     {
-        TypeSource = 0,
-        Values = 1,
-        ObjectValue = 2
+        private String _Placeholder;
+
+        public PlaceholderAttribute(String Placeholder)
+        {
+            _Placeholder = Placeholder;
+        }
+
+        public String Placeholder
+        {
+            get { return _Placeholder; }
+        }        
     }
 }

@@ -68,9 +68,9 @@ namespace XAF_Bootstrap.DatabaseUpdate
             }
         }
 
-        private static void CheckResource(string location, string resourceName, Boolean copyOnlyIfNotExists = true)
+        public static void CheckResource(string location, string resourceName, Boolean copyOnlyIfNotExists = true, String Path = "XAF_Bootstrap.Content")
         {
-            CopyResource(String.Format("XAF_Bootstrap.Content.{0}.{1}", location, resourceName), AssemblyDirectory + location.Replace(".", "\\") + "\\" + resourceName, copyOnlyIfNotExists);
+            CopyResource(String.Format("{2}.{0}.{1}", location, resourceName, Path), AssemblyDirectory + location.Replace(".", "\\") + "\\" + resourceName, copyOnlyIfNotExists);
         }
 
         public static string AssemblyDirectory

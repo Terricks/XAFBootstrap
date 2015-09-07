@@ -68,6 +68,7 @@ namespace XafBootstrap.Web
         {
             IsObjectChanged = true;
         }
+
         
         void ObjectSpace_ObjectChanged(object sender, ObjectChangedEventArgs e)
         {
