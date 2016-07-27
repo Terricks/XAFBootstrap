@@ -123,7 +123,6 @@ namespace XAF_Bootstrap
         {
             base.RegisterEditorDescriptors(editorDescriptors);
             editorDescriptors.Add(new PropertyEditorDescriptor(new EditorTypeRegistration(EditorAliases.LookupPropertyEditor, typeof(object), typeof(XafBootstrapLookupPropertyEditor), true)));
-            editorDescriptors.Add(new PropertyEditorDescriptor(new EditorTypeRegistration(EditorAliases.HtmlPropertyEditor, typeof(string), typeof(HtmlPropertyEditor), true)));            
             editorDescriptors.Add(new PropertyEditorDescriptor(new EditorTypeRegistration(EditorAliases.HtmlPropertyEditor, typeof(string), typeof(HtmlPropertyEditor), true)));
             editorDescriptors.Add(new ListEditorDescriptor(new EditorTypeRegistration(EditorAliases.GridListEditor, typeof(object), typeof(XafBootstrapTableEditor), true)));
         }
