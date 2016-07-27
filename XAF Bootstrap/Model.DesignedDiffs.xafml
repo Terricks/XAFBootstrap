@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <ActionDesign>
+    <Actions>
+      <Action Id="Cancel" Glyphicon="glyphicon-remove" />
+      <Action Id="CopyModelDifference" Glyphicon="glyphicon-list-alt" />
+      <Action Id="CreateDashboard" Glyphicon="glyphicon-asterisk" />
+      <Action Id="CreateModelDifferences" Glyphicon="glyphicon-asterisk" />
+      <Action Id="Delete" Glyphicon="glyphicon-trash" />
+      <Action Id="Delete Item" Glyphicon="glyphicon-trash" />
+      <Action Id="DeleteDashboard" Glyphicon="glyphicon-trash" />
+      <Action Id="Diagnostic Info" Glyphicon="glyphicon-info-sign" />
+      <Action Id="Diagnostic Info.Actions Info" Glyphicon="glyphicon-info-sign" />
+      <Action Id="Diagnostic Info.View Info" Glyphicon="glyphicon-info-sign" />
+      <Action Id="DialogCancel" Glyphicon="glyphicon-remove" />
+      <Action Id="DialogClose" Glyphicon="glyphicon-remove" />
+      <Action Id="DialogOK" Glyphicon="glyphicon-ok" />
+      <Action Id="ExportModelDifferences" Glyphicon="glyphicon-export" />
+      <Action Id="FullTextSearch" Glyphicon="glyphicon-search" />
+      <Action Id="HideItemsFromDashboard" Glyphicon="glyphicon glyphicon-minus" />
+      <Action Id="ImportSharedModelDifference" Glyphicon="glyphicon-import" />
+      <Action Id="Link" Glyphicon="glyphicon-link" />
+      <Action Id="ListViewShowObject" Glyphicon="glyphicon-th-list" />
+      <Action Id="Logoff" Glyphicon="glyphicon-log-out" />
+      <Action Id="Logon" Glyphicon="glyphicon-log-in" />
+      <Action Id="NavigateBack" Glyphicon="glyphicon-arrow-left" />
+      <Action Id="NavigateForward" Glyphicon="glyphicon-arrow-right" />
+      <Action Id="New" Glyphicon="glyphicon-plus" />
+      <Action Id="NextObject" Glyphicon="glyphicon-forward" />
+      <Action Id="OrganizeDashboard" Glyphicon="glyphicon-cog" />
+      <Action Id="PreviousObject" Glyphicon="glyphicon-backward" />
+      <Action Id="Refresh" Glyphicon="glyphicon-refresh" ShortCaption="" />
+      <Action Id="ResetModelDifferences" Glyphicon="glyphicon-repeat" />
+      <Action Id="ResetViewSettings" Glyphicon="glyphicon-repeat" />
+      <Action Id="Save" Glyphicon="glyphicon-save" />
+      <Action Id="SaveAndClose" Glyphicon="glyphicon-saved" />
+      <Action Id="SaveAndNew" Glyphicon="glyphicon-export" />
+      <Action Id="SetFilter" Glyphicon="glyphicon-filter" />
+      <Action Id="ShowItemsOnDashboard" Glyphicon="glyphicon-th-list" />
+      <Action Id="ShowNavigationItem" Glyphicon="glyphicon-th-list" />
+      <Action Id="Unlink" Glyphicon="glyphicon-link" />
+      <Action Id="XafBootstrapConfigurationActionItem" Glyphicon="glyphicon glyphicon-cog" />
+    </Actions>
+  </ActionDesign>
+  <Localization>
+    <LocalizationGroup Name="XAF Bootstrap" IsNewNode="True">
+      <LocalizationGroup Name="Controls" IsNewNode="True">
+        <LocalizationGroup Name="XafBootstrapDataSelectorEdit" IsNewNode="True">
+          <LocalizationItem Name="EmptyText" Value="Не выбрано" IsNewNode="True" />
+        </LocalizationGroup>
+        <LocalizationGroup Name="XafBootstrapDropdownEdit" IsNewNode="True">
+          <LocalizationItem Name="EmptyText" Value="Не выбрано" IsNewNode="True" />
+        </LocalizationGroup>
+        <LocalizationGroup Name="XafBootstrapTable" IsNewNode="True">
+          <LocalizationItem Name="AllItems" Value="Все" IsNewNode="True" />
+          <LocalizationItem Name="DialogGotoPageCaption" Value="Переход на страницу" IsNewNode="True" />
+          <LocalizationItem Name="DialogGotoPageEnterPageNumber" Value="Укажите номер страницы" IsNewNode="True" />
+          <LocalizationItem Name="GotoPage" Value="Переход" IsNewNode="True" />
+        </LocalizationGroup>
+      </LocalizationGroup>
+      <LocalizationGroup Name="Dialogs" IsNewNode="True">
+        <LocalizationItem Name="ConfirmAction" Value="Подтвердите действие" IsNewNode="True" />
+        <LocalizationItem Name="DiscardChangesCaption" Value="Подтверждение" IsNewNode="True" />
+        <LocalizationItem Name="DiscardChangesText" Value="Изменения не сохранены. Продолжить?" IsNewNode="True" />
+        <LocalizationItem Name="FastSearchText" Value="Быстрый поиск" IsNewNode="True" />
+      </LocalizationGroup>
+      <LocalizationGroup Name="Footer" IsNewNode="True">
+        <LocalizationItem Name="@c09f1265-14c9-4388-9104-sdfs974b2a12f00d" IsNewNode="True" />
+      </LocalizationGroup>
+    </LocalizationGroup>
+  </Localization>
+  <SchemaModules>
+    <SchemaModule Name="SystemModule" Version="15.2.4.0" IsNewNode="True" />
+  </SchemaModules>
+</Application>
