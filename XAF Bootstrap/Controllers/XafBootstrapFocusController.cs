@@ -55,7 +55,7 @@ namespace XAF_Bootstrap.Controllers
                             placeholder = placeholderAttr.Placeholder;
 
                         if (String.Concat(placeholder) != "")
-                            WebWindow.CurrentRequestWindow.RegisterStartupScript("SetFocusToElement", String.Format("$('[placeholder={0}]').focus();", placeholder), true);
+                            WebWindow.CurrentRequestWindow.RegisterStartupScript("SetFocusToElement", String.Format(@"try {{ $('[placeholder=\'{0}\']').focus(); }} catch(ex) {{ }};", placeholder), true);
                     }
                 }
             }
