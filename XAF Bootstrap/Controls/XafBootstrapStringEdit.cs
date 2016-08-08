@@ -63,6 +63,9 @@ namespace XAF_Bootstrap.Controls
         public XafBootstrapStringEdit()
         {
             EncodeHtml = true;
+
+            Content = new HTMLText();
+            Controls.Add(Content);
         }
 
         public void InnerRender()
@@ -73,7 +76,7 @@ namespace XAF_Bootstrap.Controls
                 if (EditValueChanged != null)
                     EditValueChanged(this, EventArgs.Empty);
             }
-
+            
             Content.Text = "";
 
             String val = Value;
@@ -86,7 +89,10 @@ namespace XAF_Bootstrap.Controls
             {
                 if (IsPassword)
                     val = new Regex(".").Replace(val, "*");
-                Content.Text += String.Format(@"<span>{0}</span>", val);
+                if (RowCount <= 1)
+                    Content.Text += String.Format(@"<span>{0}</span>", val);
+                else
+                    Content.Text += String.Format(@"<pre class=""xb-pre"">{0}</pre>", val);
             }
             else
             {
@@ -108,9 +114,6 @@ namespace XAF_Bootstrap.Controls
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
-            Content = new HTMLText();
-            Controls.Add(Content);
-
             if (Helpers.RequestManager.Request.Form[ClientID + "_changed"] == "1")
             {
                 Value = Helpers.RequestManager.Request.Form[ClientID];
